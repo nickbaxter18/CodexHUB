@@ -1,0 +1,37 @@
+{
+  "name": "codexbuilder",
+  "version": "1.0.0",
+  "description": "GPT-powered coding assistant with a clean, enterprise-grade Node.js scaffold.",
+  "type": "module",
+  "main": "src/index.js",
+  "bin": {
+    "ask": "./scripts/ask.js"
+  },
+  "scripts": {
+    "dev": "node src/index.js",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "test": "node test/example.test.js",
+    "prepare": "husky install",
+    "release": "semantic-release"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": "eslint --fix",
+    "*.{js,jsx,ts,tsx,json,md}": "prettier --write"
+  },
+  "dependencies": {
+    "openai": "^5.22.0"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.5.0",
+    "@commitlint/config-conventional": "^19.5.0",
+    "eslint": "^9.0.0",
+    "husky": "^9.0.0",
+    "lint-staged": "^15.0.0",
+    "prettier": "^3.0.0",
+    "semantic-release": "^24.0.0"
+  },
+  "keywords": ["openai", "codex", "gpt", "cli", "nodejs"],
+  "author": "Nick",
+  "license": "MIT"
+}
