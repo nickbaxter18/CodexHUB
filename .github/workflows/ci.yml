@@ -47,6 +47,9 @@ jobs:
       - name: Install Python tooling
         run: pip install -r requirements-dev.txt
 
+      - name: Validate governance configuration
+        run: python scripts/validate_configs.py
+
       - name: TypeScript type check
         run: pnpm typecheck
 

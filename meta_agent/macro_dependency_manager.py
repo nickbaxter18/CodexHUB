@@ -3,14 +3,14 @@
 # === Imports / Dependencies ===
 from __future__ import annotations
 
+import contextlib
 import json
 import os
 import threading
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, Iterable, List, Mapping, Optional, Set
-import contextlib
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Set
 
 
 # === Types, Interfaces, Contracts, Schema ===
@@ -23,7 +23,7 @@ class MacroState:
     dependencies: Dict[str, str] = field(default_factory=dict)
     blocked: bool = False
     reason: Optional[str] = None
-    diff: Dict[str, object] = field(default_factory=dict)
+    diff: Dict[str, Any] = field(default_factory=dict)
 
 
 class MacroDependencyManager:
@@ -56,7 +56,9 @@ class MacroDependencyManager:
             previous = self._macros.get(macro)
             if previous:
                 self._remove_reverse_links(macro, previous.dependencies.keys())
-            state = MacroState(macro=macro, schema_version=normalized_schema, dependencies=normalized_dependencies)
+            state = MacroState(
+                macro=macro, schema_version=normalized_schema, dependencies=normalized_dependencies
+            )
             self._macros[macro] = state
             self._add_reverse_links(macro, normalized_dependencies.keys())
             self._evaluate_macro(macro)
@@ -138,7 +140,9 @@ class MacroDependencyManager:
                 reason = f"dependency {dependency} schema unknown"
                 break
             if actual != expected:
-                reason = f"dependency {dependency} schema mismatch: expected {expected}, got {actual}"
+                reason = (
+                    f"dependency {dependency} schema mismatch: expected {expected}, got {actual}"
+                )
                 break
         state.blocked = reason is not None
         state.reason = reason
@@ -199,12 +203,14 @@ class MacroDependencyManager:
         )
         return decorated
 
-    def _diff_dependencies(self, previous: Mapping[str, str], current: Mapping[str, str]) -> Dict[str, Dict[str, object]]:
+    def _diff_dependencies(
+        self, previous: Mapping[str, str], current: Mapping[str, str]
+    ) -> Dict[str, Dict[str, Any]]:
         prev_keys = set(previous)
         curr_keys = set(current)
-        added = {key: current[key] for key in curr_keys - prev_keys}
-        removed = {key: previous[key] for key in prev_keys - curr_keys}
-        changed = {
+        added: Dict[str, Any] = {key: current[key] for key in curr_keys - prev_keys}
+        removed: Dict[str, Any] = {key: previous[key] for key in prev_keys - curr_keys}
+        changed: Dict[str, Dict[str, Any]] = {
             key: {"before": previous[key], "after": current[key]}
             for key in prev_keys & curr_keys
             if previous[key] != current[key]

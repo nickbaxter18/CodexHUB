@@ -8,9 +8,8 @@ import time
 import uuid
 from collections import defaultdict
 from dataclasses import dataclass
-from queue import Queue, Empty
+from queue import Empty, Queue
 from typing import Any, Callable, DefaultDict, Dict, List, Optional
-
 
 # === Types, Interfaces, Contracts, Schema ===
 QAEventCallback = Callable[[str, Dict[str, Any]], None]
@@ -45,7 +44,9 @@ class QAEventBus:
         }
         self._metrics_lock = threading.Lock()
         for index in range(worker_count):
-            worker = threading.Thread(target=self._worker, name=f"qa-event-worker-{index}", daemon=True)
+            worker = threading.Thread(
+                target=self._worker, name=f"qa-event-worker-{index}", daemon=True
+            )
             worker.start()
             self._workers.append(worker)
 
@@ -74,7 +75,9 @@ class QAEventBus:
             if not callbacks:
                 self._subscribers.pop(event_type, None)
 
-    def publish(self, event_type: str, payload: Dict[str, Any], correlation_id: Optional[str] = None) -> None:
+    def publish(
+        self, event_type: str, payload: Dict[str, Any], correlation_id: Optional[str] = None
+    ) -> None:
         """Publish ``payload`` for ``event_type`` to all subscribers asynchronously."""
 
         if payload is None:
@@ -116,7 +119,7 @@ class QAEventBus:
 
         self._shutdown.set()
         for _ in self._workers:
-            self._queue.put(None)  # type: ignore[arg-type]
+            self._queue.put(None)
         for worker in self._workers:
             worker.join(timeout=1.0)
 

@@ -1,0 +1,14 @@
+{
+  "latency_ms_p95": {
+    "threshold": 300,
+    "confidence": 0.95
+  },
+  "accessibility_contrast_ratio": {
+    "min_ratio": 4.5,
+    "confidence": 0.95
+  },
+  "security_vuln_count": {
+    "max_vulns": 0,
+    "confidence": 0.99
+  }
+}

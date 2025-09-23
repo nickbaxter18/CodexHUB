@@ -14,11 +14,7 @@
           "budgets": {
             "type": "object",
             "additionalProperties": {
-              "anyOf": [
-                { "type": "number" },
-                { "type": "boolean" },
-                { "type": "string" }
-              ]
+              "anyOf": [{ "type": "number" }, { "type": "boolean" }, { "type": "string" }]
             }
           },
           "tests": {

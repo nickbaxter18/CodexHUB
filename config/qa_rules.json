@@ -6,11 +6,7 @@
         "lighthouse_score": 90,
         "accessibility_pass": true
       },
-      "tests": [
-        "jest_unit",
-        "axe_core_a11y",
-        "lighthouse"
-      ],
+      "tests": ["jest_unit", "axe_core_a11y", "lighthouse"],
       "metrics": {
         "lighthouse_score": {
           "comparison": "gte",
@@ -27,12 +23,8 @@
         },
         "accessibility_pass": {
           "comparison": "eq",
-          "remediation_steps": [
-            "Resolve accessibility audit failures and re-run axe-core checks."
-          ],
-          "remediation_macros": [
-            "::frontendgen-access"
-          ],
+          "remediation_steps": ["Resolve accessibility audit failures and re-run axe-core checks."],
+          "remediation_macros": ["::frontendgen-access"],
           "weight": 1.0
         }
       }
@@ -41,11 +33,7 @@
       "budgets": {
         "api_latency_ms_p95": 300
       },
-      "tests": [
-        "pytest_unit",
-        "api_fuzz",
-        "contract"
-      ],
+      "tests": ["pytest_unit", "api_fuzz", "contract"],
       "metrics": {
         "api_latency_ms_p95": {
           "comparison": "lte",
@@ -53,40 +41,22 @@
             "Profile slow endpoints and optimise database access patterns.",
             "Introduce caching or queueing where appropriate to reduce response times."
           ],
-          "remediation_macros": [
-            "::perfprofile",
-            "::backendgen-logging"
-          ],
+          "remediation_macros": ["::perfprofile", "::backendgen-logging"],
           "weight": 1.5
         }
       }
     },
     "Architect": {
       "budgets": {},
-      "tests": [
-        "schema_validation",
-        "macro_dependency"
-      ]
+      "tests": ["schema_validation", "macro_dependency"]
     },
     "QA": {
       "budgets": {},
-      "tests": [
-        "full_suite"
-      ]
+      "tests": ["full_suite"]
     }
   },
   "macros": {
-    "required_fields": [
-      "inputs",
-      "outputs",
-      "failure_cases",
-      "dependencies",
-      "context"
-    ],
-    "default_context": [
-      "dev",
-      "staging",
-      "prod"
-    ]
+    "required_fields": ["inputs", "outputs", "failure_cases", "dependencies", "context"],
+    "default_context": ["dev", "staging", "prod"]
   }
 }

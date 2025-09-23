@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Agents Schema",
+  "type": "object",
+  "additionalProperties": {
+    "type": "object",
+    "required": ["responsibilities", "permissions", "default_trust"],
+    "properties": {
+      "responsibilities": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "permissions": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "default_trust": {
+        "type": "number"
+      }
+    },
+    "additionalProperties": false
+  }
+}
