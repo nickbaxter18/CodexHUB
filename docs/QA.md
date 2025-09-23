@@ -2,7 +2,7 @@
 
 ## 1. Purpose & Scope
 - Establish a shared quality framework for all Codex agents and macro orchestrators.
-- Provide a human-readable companion to the machine-readable rules in `qa/qa_rules.json`.
+- Provide a human-readable companion to the machine-readable rules in `config/qa_rules.json`.
 - Ensure transparency, explainability, and continuous improvement for every generated artifact.
 
 ## 2. Governing Principles

@@ -1,4 +1,5 @@
 """Unit tests for the QAEngine covering rule loading, budget evaluation, and trust management."""
+
 from __future__ import annotations
 
 import json
@@ -8,12 +9,7 @@ from typing import Dict
 import pytest
 
 from macro_system.engine import MacroEngine
-from qa.qa_engine import (
-    MacroValidationResult,
-    MetricViolation,
-    QAEngine,
-    QARules,
-)
+from qa.qa_engine import MacroValidationResult, MetricViolation, QAEngine, QARules
 
 
 @pytest.fixture()
@@ -22,8 +18,8 @@ def qa_files() -> Dict[str, Path]:
 
     base = Path(__file__).resolve().parent.parent
     return {
-        "rules": base / "qa" / "qa_rules.json",
-        "schema": base / "qa" / "qa_rules.schema.json",
+        "rules": base / "config" / "qa_rules.json",
+        "schema": base / "config" / "qa_rules.schema.json",
     }
 
 
@@ -127,11 +123,9 @@ def test_weighted_failures_decay_trust_faster(qa_engine: QAEngine) -> None:
     """Failure weights should amplify trust decay according to severity."""
 
     initial_trust = qa_engine.get_agent_trust("Frontend")
-    qa_engine.record_agent_failures(
-        "Frontend", ["major regression"], weights=[2.0]
-    )
+    qa_engine.record_agent_failures("Frontend", ["major regression"], weights=[2.0])
     expected = max(
-        initial_trust * (qa_engine.FAILURE_DECAY ** 2.0),
+        initial_trust * (qa_engine.FAILURE_DECAY**2.0),
         qa_engine.FAILURE_FLOOR,
     )
     assert qa_engine.get_agent_trust("Frontend") == pytest.approx(expected)
@@ -162,9 +156,7 @@ def test_evaluate_metrics_detailed_returns_structured_data(qa_engine: QAEngine) 
     metrics = {"lighthouse_score": 70, "accessibility_pass": True}
     violations = qa_engine.evaluate_metrics_detailed("Frontend", metrics)
     assert any(isinstance(item, MetricViolation) for item in violations)
-    lighthouse_violation = next(
-        item for item in violations if item.metric == "lighthouse_score"
-    )
+    lighthouse_violation = next(item for item in violations if item.metric == "lighthouse_score")
     assert lighthouse_violation.weight > 1.0
     assert "::frontendgen-tests" in lighthouse_violation.remediation_macros
 
@@ -174,9 +166,7 @@ def test_assess_task_result_success_returns_evaluation(qa_engine: QAEngine) -> N
 
     metrics = {"lighthouse_score": 95, "accessibility_pass": True}
     required_tests = qa_engine.get_agent_tests("Frontend")
-    evaluation = qa_engine.assess_task_result(
-        "Frontend", metrics, tests_executed=required_tests
-    )
+    evaluation = qa_engine.assess_task_result("Frontend", metrics, tests_executed=required_tests)
     assert evaluation.passed is True
     assert evaluation.violations == []
     assert evaluation.metrics["lighthouse_score"] == 95
@@ -196,9 +186,7 @@ def test_assess_task_result_failure_includes_remediation(qa_engine: QAEngine) ->
     """Failed assessments should return remediation guidance and log history."""
 
     metrics = {"lighthouse_score": 50, "accessibility_pass": False}
-    evaluation = qa_engine.assess_task_result(
-        "Frontend", metrics, tests_executed=["jest_unit"]
-    )
+    evaluation = qa_engine.assess_task_result("Frontend", metrics, tests_executed=["jest_unit"])
     assert evaluation.passed is False
     assert len(evaluation.violations) >= 3
     assert evaluation.remediation, "Expected remediation actions when violations occur"
@@ -207,10 +195,7 @@ def test_assess_task_result_failure_includes_remediation(qa_engine: QAEngine) ->
         set(qa_engine.get_agent_tests("Frontend")) - {"jest_unit"}
     )
     assert evaluation.tests_executed == ["jest_unit"]
-    assert any(
-        "Required QA tests not executed" in violation
-        for violation in evaluation.violations
-    )
+    assert any("Required QA tests not executed" in violation for violation in evaluation.violations)
     assert any(isinstance(item, MetricViolation) for item in evaluation.metric_violations)
     assert "::frontendgen-access" in evaluation.remediation_macros
     assert evaluation.severity > 0
@@ -232,9 +217,7 @@ def test_generate_remediation_plan_scales_with_history(qa_engine: QAEngine) -> N
 def test_generate_remediation_plan_includes_macros(qa_engine: QAEngine) -> None:
     """Metric-specific remediation should include macro recommendations."""
 
-    plan = qa_engine.generate_remediation_plan(
-        "Frontend", violated_metrics=["lighthouse_score"]
-    )
+    plan = qa_engine.generate_remediation_plan("Frontend", violated_metrics=["lighthouse_score"])
     assert any("Optimise" in step for step in plan.steps)
     assert "::frontendgen-motion" in plan.macros
 
@@ -269,14 +252,9 @@ def test_assess_task_result_requires_all_tests(qa_engine: QAEngine) -> None:
     """Agents must report all mandatory tests; omissions should produce violations."""
 
     metrics = {"lighthouse_score": 95, "accessibility_pass": True}
-    evaluation = qa_engine.assess_task_result(
-        "Frontend", metrics, tests_executed=["lighthouse"]
-    )
+    evaluation = qa_engine.assess_task_result("Frontend", metrics, tests_executed=["lighthouse"])
     assert evaluation.passed is False
-    assert any(
-        "Required QA tests not executed" in violation
-        for violation in evaluation.violations
-    )
+    assert any("Required QA tests not executed" in violation for violation in evaluation.violations)
     assert sorted(evaluation.missing_tests) == sorted(
         set(qa_engine.get_agent_tests("Frontend")) - {"lighthouse"}
     )
@@ -313,7 +291,9 @@ def test_generate_health_report_includes_agents(qa_engine: QAEngine) -> None:
     assert "::frontendgen-tests" in frontend["recommended_macros"]
 
 
-def test_reload_rules_reconciles_agents(qa_engine: QAEngine, tmp_path: Path, qa_files: Dict[str, Path]) -> None:
+def test_reload_rules_reconciles_agents(
+    qa_engine: QAEngine, tmp_path: Path, qa_files: Dict[str, Path]
+) -> None:
     """Reloading rules should adjust tracked agents and reset trust for new ones."""
 
     rules_data = json.loads(qa_files["rules"].read_text(encoding="utf-8"))

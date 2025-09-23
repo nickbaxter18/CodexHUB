@@ -1,0 +1,22 @@
+{
+  "Frontend": {
+    "responsibilities": ["UI implementation", "Accessibility compliance"],
+    "permissions": ["read", "write"],
+    "default_trust": 1.0
+  },
+  "Backend": {
+    "responsibilities": ["API development", "Database integration"],
+    "permissions": ["read", "write", "deploy"],
+    "default_trust": 1.0
+  },
+  "QA": {
+    "responsibilities": ["Test creation", "Accessibility, security, performance checks"],
+    "permissions": ["read", "execute"],
+    "default_trust": 1.2
+  },
+  "Meta": {
+    "responsibilities": ["Orchestration", "Arbitration", "Governance enforcement"],
+    "permissions": ["read", "write", "approve"],
+    "default_trust": 1.0
+  }
+}

@@ -1,0 +1,36 @@
+---
+name: Scheduled Security Scans
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install Node dependencies
+        run: pnpm install --frozen-lockfile
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+      - name: Install Python tooling
+        run: pip install -r requirements-dev.txt
+      - name: npm audit
+        run: pnpm audit --audit-level=high
+      - name: pip audit
+        run: pip-audit -r requirements-dev.txt
+      - name: Bandit
+        run: bandit -q -r macro_system meta_agent qa -x macro_system/tests,meta_agent/tests,tests
