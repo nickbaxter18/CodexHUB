@@ -6,9 +6,7 @@ from __future__ import annotations
 import time
 import uuid
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
-
-from .qa_rules_loader import load_governance_rules
+from typing import Any, Dict, List, Mapping, Optional, Sequence
 
 
 # === Types, Interfaces, Contracts, Schema ===
@@ -30,11 +28,37 @@ class ArbitrationDecision:
 class ArbitrationEngine:
     """Coordinate arbitration decisions using trust scores and governance priorities."""
 
-    def __init__(self, stale_after: float = 30.0, max_queue: int = 50) -> None:
+    def __init__(
+        self,
+        priorities: Optional[Mapping[str, Sequence[str]]] = None,
+        *,
+        stale_after: float = 30.0,
+        max_queue: int = 50,
+    ) -> None:
         self.pending_events: Dict[str, List[_PendingEvent]] = {}
-        self.governance = load_governance_rules()
+        self._priorities: Dict[str, Dict[str, float]] = {}
+        if priorities:
+            self.update_priorities(priorities)
         self._stale_after = stale_after
         self._max_queue = max_queue
+
+    def update_priorities(self, priorities: Mapping[str, Sequence[str]]) -> None:
+        """Replace governance priorities using ordered agent sequences per metric."""
+
+        compiled: Dict[str, Dict[str, float]] = {}
+        for metric, agents in priorities.items():
+            order = list(agents)
+            weights: Dict[str, float] = {}
+            if order:
+                base = float(len(order))
+                for index, agent in enumerate(order):
+                    try:
+                        priority = base - float(index)
+                    except (TypeError, ValueError):
+                        priority = base
+                    weights[str(agent)] = max(priority, 1.0)
+            compiled[str(metric)] = weights
+        self._priorities = compiled
 
     def add_event(self, event: Dict[str, Any]) -> None:
         """Queue ``event`` for later conflict resolution grouped by metric."""
@@ -46,11 +70,17 @@ class ArbitrationEngine:
         agent = event.get("agent")
         if agent:
             queue[:] = [pending for pending in queue if pending.event.get("agent") != agent]
-        queue.append(_PendingEvent(event=dict(event), received_at=time.monotonic(), event_id=str(uuid.uuid4())))
+        queue.append(
+            _PendingEvent(
+                event=dict(event), received_at=time.monotonic(), event_id=str(uuid.uuid4())
+            )
+        )
         if len(queue) > self._max_queue:
             queue.pop(0)
 
-    def collect_ready_conflicts(self, metric: str, now: Optional[float] = None) -> List[Dict[str, Any]]:
+    def collect_ready_conflicts(
+        self, metric: str, now: Optional[float] = None
+    ) -> List[Dict[str, Any]]:
         """Retrieve queued events when conflicts are ready for resolution."""
 
         queue = self.pending_events.get(metric)
@@ -81,21 +111,29 @@ class ArbitrationEngine:
                 participants=[],
                 rationale={"reason": "no_conflicts"},
             )
-        metric = next((event.get("metric") for event in conflicts if event.get("metric")), "unknown")
+        metric_value = next(
+            (event.get("metric") for event in conflicts if event.get("metric")), "unknown"
+        )
+        metric = metric_value if isinstance(metric_value, str) else "unknown"
         scores: List[Dict[str, Any]] = []
+        metric_priorities = self._priorities.get(metric, {})
         for event in conflicts:
             agent = event.get("agent") or "unknown"
             trust = float(trust_scores.get(agent, 1.0))
-            priority = float(self.governance.get_priority(metric, agent))
+            priority = float(metric_priorities.get(agent, 1.0))
             weight = trust * priority
-            scores.append({
-                "agent": agent,
-                "trust": trust,
-                "priority": priority,
-                "weight": weight,
-            })
+            scores.append(
+                {
+                    "agent": agent,
+                    "trust": trust,
+                    "priority": priority,
+                    "weight": weight,
+                }
+            )
         sorted_scores = sorted(scores, key=lambda item: item["weight"], reverse=True)
-        winner = sorted_scores[0]["agent"] if sorted_scores else conflicts[0].get("agent", "unknown")
+        winner = (
+            sorted_scores[0]["agent"] if sorted_scores else conflicts[0].get("agent", "unknown")
+        )
         runner_up_weight = sorted_scores[1]["weight"] if len(sorted_scores) > 1 else 0.0
         top_weight = sorted_scores[0]["weight"] if sorted_scores else 0.0
         confidence = 0.0

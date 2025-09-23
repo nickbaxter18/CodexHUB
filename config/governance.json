@@ -1,0 +1,27 @@
+{
+  "version": "1.0.0",
+  "arbitration": {
+    "metrics": {
+      "latency": ["QA", "Backend"],
+      "accessibility": ["QA", "Frontend"],
+      "security": ["Security", "QA", "Backend"],
+      "availability": ["QA", "Backend", "Meta"]
+    },
+    "stale_after_seconds": 15,
+    "max_queue_size": 100
+  },
+  "trust_thresholds": {
+    "minimum": 0.1,
+    "maximum": 1.5,
+    "success_multiplier": 1.05,
+    "failure_multiplier": 0.9
+  },
+  "drift_detection": {
+    "window_size": 5,
+    "failure_threshold": 3
+  },
+  "fallbacks": {
+    "latency": "macro_id_latency_fallback",
+    "availability": "macro_id_availability_fallback"
+  }
+}

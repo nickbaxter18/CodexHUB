@@ -4,13 +4,15 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Any, Dict, List, Tuple
 
 import pytest
 
 from meta_agent.arbitration_engine import ArbitrationEngine
+from meta_agent.config_loader import ConfigLoader
 from meta_agent.drift_detector import DriftDetector
 from meta_agent.fallback_manager import FallbackManager
+from meta_agent.logger import Logger
 from meta_agent.macro_dependency_manager import MacroDependencyManager
 from meta_agent.meta_agent_v2 import MetaAgent
 from meta_agent.qa_event_bus import QAEventBus
@@ -35,7 +37,17 @@ def meta_stack(tmp_path: Path) -> Dict[str, object]:
     fallback = FallbackManager({"latency": latency_fallback})
     macro_manager = MacroDependencyManager()
     bus = QAEventBus()
-    agent = MetaAgent(trust_engine, arbitration, drift, fallback, macro_manager, bus, log_path)
+    logger = Logger(log_dir=tmp_path)
+    agent = MetaAgent(
+        trust_engine,
+        arbitration,
+        drift,
+        fallback,
+        macro_manager,
+        bus,
+        logger,
+        arbitration_log_path=log_path,
+    )
     return {
         "agent": agent,
         "bus": bus,
@@ -47,12 +59,13 @@ def meta_stack(tmp_path: Path) -> Dict[str, object]:
 
 # === Tests ===
 
+
 def test_arbitration_prefers_high_trust(meta_stack: Dict[str, object]) -> None:
     """When conflicts arise, the higher-trust agent should win the decision."""
 
     bus: QAEventBus = meta_stack["bus"]  # type: ignore[assignment]
     agent: MetaAgent = meta_stack["agent"]  # type: ignore[assignment]
-    decisions: List[Dict[str, object]] = []
+    decisions: List[Dict[str, Any]] = []
     bus.subscribe("qa_arbitration", lambda event_type, payload: decisions.append(payload))
     agent.trust_engine.trust_scores.update({"alpha": 1.2, "beta": 0.8})
     bus.publish(
@@ -70,7 +83,7 @@ def test_arbitration_prefers_high_trust(meta_stack: Dict[str, object]) -> None:
     log_path: Path = meta_stack["log_path"]  # type: ignore[assignment]
     assert log_path.exists()
     log_entries = [line for line in log_path.read_text().splitlines() if line.strip()]
-    assert any("\"winner\": \"alpha\"" in entry for entry in log_entries)
+    assert any('"winner": "alpha"' in entry for entry in log_entries)
 
 
 def test_trust_updates_on_failure_and_success(meta_stack: Dict[str, object]) -> None:
@@ -103,7 +116,13 @@ def test_success_synonym_updates_trust(meta_stack: Dict[str, object]) -> None:
     initial = agent.trust_engine.get_trust_scores().get("theta", 1.0)
     bus.publish(
         "qa_success",
-        {"agent": "theta", "metric": "accuracy", "value": 0.98, "threshold": 0.9, "status": "success"},
+        {
+            "agent": "theta",
+            "metric": "accuracy",
+            "value": 0.98,
+            "threshold": 0.9,
+            "status": "success",
+        },
     )
     assert bus.wait_for_idle(timeout=1.0)
     after_success = agent.trust_engine.get_trust_scores()["theta"]
@@ -115,9 +134,14 @@ def test_macro_dependency_blocking(meta_stack: Dict[str, object]) -> None:
 
     bus: QAEventBus = meta_stack["bus"]  # type: ignore[assignment]
     agent: MetaAgent = meta_stack["agent"]  # type: ignore[assignment]
-    states: List[Dict[str, object]] = []
-    bus.subscribe("macro_blocked", lambda event_type, payload: states.append({"event": event_type, **payload}))
-    bus.subscribe("macro_unblocked", lambda event_type, payload: states.append({"event": event_type, **payload}))
+    states: List[Dict[str, Any]] = []
+    bus.subscribe(
+        "macro_blocked", lambda event_type, payload: states.append({"event": event_type, **payload})
+    )
+    bus.subscribe(
+        "macro_unblocked",
+        lambda event_type, payload: states.append({"event": event_type, **payload}),
+    )
 
     bus.publish(
         "macro_definition",
@@ -148,7 +172,7 @@ def test_drift_detection_emits_proposal(meta_stack: Dict[str, object]) -> None:
     """Repeated failures should publish a drift amendment proposal."""
 
     bus: QAEventBus = meta_stack["bus"]  # type: ignore[assignment]
-    drift_events: List[Dict[str, object]] = []
+    drift_events: List[Dict[str, Any]] = []
     bus.subscribe("qa_drift", lambda event_type, payload: drift_events.append(payload))
     bus.publish(
         "qa_failure",
@@ -177,3 +201,17 @@ def test_fallback_trigger_invoked(meta_stack: Dict[str, object]) -> None:
     )
     assert bus.wait_for_idle(timeout=1.0)
     assert fallback_calls == [(400.0, 300.0)]
+
+
+def test_from_config_builder(tmp_path: Path) -> None:
+    """MetaAgent.from_config should wire dependencies using governance files."""
+
+    config_loader = ConfigLoader(config_dir=Path("config"))
+    bus = QAEventBus()
+    agent = MetaAgent.from_config(
+        config_loader,
+        bus,
+        trust_store=tmp_path / "trust.json",
+        log_dir=tmp_path,
+    )
+    assert agent.expose_trust()

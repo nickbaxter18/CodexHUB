@@ -5,14 +5,13 @@ from __future__ import annotations
 
 from meta_agent.arbitration_engine import ArbitrationDecision, ArbitrationEngine
 
-
 # === Tests ===
+
 
 def test_resolve_conflict_with_priority() -> None:
     """Higher governance priority should outweigh raw trust."""
 
-    engine = ArbitrationEngine()
-    engine.governance.get_priority = lambda metric, agent: {"A": 1.5, "B": 1.0}.get(agent, 1.0)
+    engine = ArbitrationEngine(priorities={"latency": ["A", "B"]})
     conflicts = [
         {"agent": "A", "metric": "latency"},
         {"agent": "B", "metric": "latency"},

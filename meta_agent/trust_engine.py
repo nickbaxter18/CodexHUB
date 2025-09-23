@@ -3,14 +3,14 @@
 # === Imports / Dependencies ===
 from __future__ import annotations
 
+import contextlib
 import json
 import os
 import threading
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, Iterable, Optional
-import contextlib
+from typing import Dict, Iterable, Mapping, Optional
 
 
 # === Types, Interfaces, Contracts, Schema ===
@@ -27,7 +27,14 @@ class _JournalEntry:
 class TrustEngine:
     """Maintain agent trust scores backed by durable journaled storage."""
 
-    def __init__(self, storage_path: Path, flush_interval: int = 10) -> None:
+    def __init__(
+        self,
+        storage_path: Path,
+        flush_interval: int = 10,
+        *,
+        thresholds: Optional[Mapping[str, float]] = None,
+        default_scores: Optional[Mapping[str, float]] = None,
+    ) -> None:
         self.storage_path = storage_path
         self.journal_path = storage_path.with_suffix(f"{storage_path.suffix}.journal")
         self.trust_scores: Dict[str, float] = {}
@@ -35,7 +42,16 @@ class TrustEngine:
         self._pending_writes = 0
         self._lock = threading.RLock()
         self._ensure_storage_dir()
+        thresholds = thresholds or {}
+        self._minimum = float(thresholds.get("minimum", 0.1))
+        self._maximum = float(thresholds.get("maximum", 1.5))
+        self._success_multiplier = float(thresholds.get("success_multiplier", 1.05))
+        self._failure_multiplier = float(thresholds.get("failure_multiplier", 0.9))
+        self._defaults: Dict[str, float] = {
+            str(agent): float(score) for agent, score in (default_scores or {}).items()
+        }
         self.load()
+        self._apply_defaults()
 
     def _ensure_storage_dir(self) -> None:
         self.storage_path.parent.mkdir(parents=True, exist_ok=True)
@@ -47,6 +63,17 @@ class TrustEngine:
             self.trust_scores = self._load_snapshot()
             for entry in self._read_journal():
                 self.trust_scores[entry.agent] = entry.score
+
+    def _apply_defaults(self) -> None:
+        for agent, score in self._defaults.items():
+            self.trust_scores.setdefault(agent, score)
+
+    def ensure_agent(self, agent: str) -> None:
+        """Ensure ``agent`` has a trust score entry using defaults when needed."""
+
+        with self._lock:
+            if agent not in self.trust_scores:
+                self.trust_scores[agent] = self._defaults.get(agent, 1.0)
 
     def _load_snapshot(self) -> Dict[str, float]:
         try:
@@ -86,7 +113,9 @@ class TrustEngine:
                 timestamp = str(payload.get("timestamp", ""))
             except (ValueError, TypeError, KeyError):
                 continue
-            entries.append(_JournalEntry(agent=agent, score=score, event=event, timestamp=timestamp))
+            entries.append(
+                _JournalEntry(agent=agent, score=score, event=event, timestamp=timestamp)
+            )
         return entries
 
     def save(self) -> None:
@@ -114,19 +143,19 @@ class TrustEngine:
     def record_failure(self, agent: str) -> None:
         """Demote trust for ``agent`` in response to a failure event."""
 
-        self._record(agent, multiplier=0.9, minimum=0.1, maximum=1.5, event="failure")
+        self._record(agent, multiplier=self._failure_multiplier, event="failure")
 
     def record_success(self, agent: str) -> None:
         """Promote trust for ``agent`` when a success event is observed."""
 
-        self._record(agent, multiplier=1.05, minimum=0.1, maximum=1.5, event="success")
+        self._record(agent, multiplier=self._success_multiplier, event="success")
 
-    def _record(self, agent: Optional[str], multiplier: float, minimum: float, maximum: float, event: str) -> None:
+    def _record(self, agent: Optional[str], multiplier: float, event: str) -> None:
         if not agent:
             return
         with self._lock:
             score = self.trust_scores.get(agent, 1.0)
-            new_score = max(min(score * multiplier, maximum), minimum)
+            new_score = max(min(score * multiplier, self._maximum), self._minimum)
             self.trust_scores[agent] = new_score
             self._append_journal(agent, new_score, event)
             self._pending_writes += 1

@@ -1,4 +1,5 @@
 """Integration tests covering Agent, QAEngine, QAEventBus, and MetaAgent interactions."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -39,7 +40,9 @@ def qa_engine_obj() -> QAEngine:
     """Provide a QAEngine loaded from the repository's bundled rules and schema."""
 
     base = Path(__file__).resolve().parent.parent
-    rules = QARules.load_from_file(base / "qa" / "qa_rules.json", base / "qa" / "qa_rules.schema.json")
+    rules = QARules.load_from_file(
+        base / "config" / "qa_rules.json", base / "config" / "qa_rules.schema.json"
+    )
     return QAEngine(rules)
 
 
@@ -64,7 +67,9 @@ def test_agent_success_flow_emits_events(qa_engine_obj: QAEngine) -> None:
     result = agent.run_with_qa()
 
     assert result["qa_evaluation"].passed is True
-    assert result["qa_evaluation_payload"]["tests_executed"] == qa_engine_obj.get_agent_tests("Frontend")
+    assert result["qa_evaluation_payload"]["tests_executed"] == qa_engine_obj.get_agent_tests(
+        "Frontend"
+    )
     assert result["qa_tests_executed"] == qa_engine_obj.get_agent_tests("Frontend")
     assert success_events and success_events[0]["status"] == "success"
     assert arbitration_events and arbitration_events[0]["decision"] == "success_recorded"
