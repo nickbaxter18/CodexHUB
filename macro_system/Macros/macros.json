@@ -1,0 +1,1412 @@
+{
+  "::analytics-abtest": {
+    "calls": [],
+    "expansion": "Creates instrumentation for A/B testing of variants and features.",
+    "metadata": {
+      "category": "analytics",
+      "domain": "analytics",
+      "level": "task",
+      "pillar": "insights"
+    }
+  },
+  "::analytics-events": {
+    "calls": [],
+    "expansion": "Tracks page views, clicks and custom events across the application.",
+    "metadata": {
+      "category": "analytics",
+      "domain": "analytics",
+      "level": "task",
+      "pillar": "insights"
+    }
+  },
+  "::analytics-performance": {
+    "calls": [],
+    "expansion": "Measures load times, rendering performance and resource usage for analytics.",
+    "metadata": {
+      "category": "analytics",
+      "domain": "analytics",
+      "level": "task",
+      "pillar": "insights"
+    }
+  },
+  "::analytics-userflow": {
+    "calls": [],
+    "expansion": "Collects funnel and conversion metrics to understand user behaviour.",
+    "metadata": {
+      "category": "analytics",
+      "domain": "analytics",
+      "level": "task",
+      "pillar": "insights"
+    }
+  },
+  "::analyticsinject": {
+    "calls": [
+      "::analytics-events",
+      "::analytics-performance",
+      "::analytics-userflow",
+      "::analytics-abtest"
+    ],
+    "expansion": "Inserts analytics instrumentation with probabilistic sampling for event tracking and performance metrics.",
+    "metadata": {
+      "category": "analyticsinject",
+      "domain": "analytics",
+      "level": "macro",
+      "pillar": "insights"
+    }
+  },
+  "::apidocgen": {
+    "calls": [
+      "::apidocgen-swagger",
+      "::apidocgen-code",
+      "::apidocgen-errors",
+      "::apidocgen-tests"
+    ],
+    "expansion": "Generates comprehensive API documentation including endpoints, request/response examples and error codes.",
+    "metadata": {
+      "category": "apidocgen",
+      "domain": "documentation",
+      "level": "macro",
+      "pillar": "documentation"
+    }
+  },
+  "::apidocgen-code": {
+    "calls": [],
+    "expansion": "Provides example code snippets (curl, Python, JS) demonstrating API usage.",
+    "metadata": {
+      "category": "apidocgen",
+      "domain": "documentation",
+      "level": "task",
+      "pillar": "documentation"
+    }
+  },
+  "::apidocgen-errors": {
+    "calls": [],
+    "expansion": "Documents standardised error codes and messages with causes and solutions.",
+    "metadata": {
+      "category": "apidocgen",
+      "domain": "documentation",
+      "level": "task",
+      "pillar": "documentation"
+    }
+  },
+  "::apidocgen-swagger": {
+    "calls": [],
+    "expansion": "Creates an OpenAPI/Swagger specification for the API.",
+    "metadata": {
+      "category": "apidocgen",
+      "domain": "documentation",
+      "level": "task",
+      "pillar": "documentation"
+    }
+  },
+  "::apidocgen-tests": {
+    "calls": [],
+    "expansion": "Creates tests to validate that the API documentation matches the actual implementation.",
+    "metadata": {
+      "category": "apidocgen",
+      "domain": "documentation",
+      "level": "task",
+      "pillar": "documentation"
+    }
+  },
+  "::backendgen": {
+    "calls": [
+      "::backendgen-api",
+      "::backendgen-auth",
+      "::backendgen-models",
+      "::backendgen-security",
+      "::backendgen-migrations",
+      "::backendgen-logging",
+      "::backendgen-tests",
+      "::backendgen-docs"
+    ],
+    "expansion": "Creates a robust RESTful API scaffold using FastAPI (or chosen framework), including database connection, models and security primitives.",
+    "metadata": {
+      "category": "backendgen",
+      "domain": "backend",
+      "level": "macro",
+      "pillar": "services"
+    }
+  },
+  "::backendgen-api": {
+    "calls": [],
+    "expansion": "Scaffolds CRUD endpoints with pagination and filtering on the chosen framework.",
+    "metadata": {
+      "category": "backendgen",
+      "domain": "backend",
+      "level": "task",
+      "pillar": "services"
+    }
+  },
+  "::backendgen-auth": {
+    "calls": [],
+    "expansion": "Implements authentication and authorization mechanisms (JWT or OAuth2).",
+    "metadata": {
+      "category": "backendgen",
+      "domain": "backend",
+      "level": "task",
+      "pillar": "services"
+    }
+  },
+  "::backendgen-docs": {
+    "calls": [],
+    "expansion": "Auto-generates API documentation (OpenAPI/Swagger) and example usages.",
+    "metadata": {
+      "category": "backendgen",
+      "domain": "backend",
+      "level": "task",
+      "pillar": "services"
+    }
+  },
+  "::backendgen-logging": {
+    "calls": [],
+    "expansion": "Sets up structured logging and monitoring hooks to trace API behaviour and performance.",
+    "metadata": {
+      "category": "backendgen",
+      "domain": "backend",
+      "level": "task",
+      "pillar": "services"
+    }
+  },
+  "::backendgen-migrations": {
+    "calls": [],
+    "expansion": "Creates database migration scripts to manage schema evolution (Alembic or equivalent).",
+    "metadata": {
+      "category": "backendgen",
+      "domain": "backend",
+      "level": "task",
+      "pillar": "services"
+    }
+  },
+  "::backendgen-models": {
+    "calls": [],
+    "expansion": "Defines ORM models and Pydantic schemas based on the database schema.",
+    "metadata": {
+      "category": "backendgen",
+      "domain": "backend",
+      "level": "task",
+      "pillar": "services"
+    }
+  },
+  "::backendgen-security": {
+    "calls": [],
+    "expansion": "Adds security measures such as input sanitization, CSRF protection and rate limiting.",
+    "metadata": {
+      "category": "backendgen",
+      "domain": "backend",
+      "level": "task",
+      "pillar": "services"
+    }
+  },
+  "::backendgen-tests": {
+    "calls": [],
+    "expansion": "Generates API unit and integration tests to ensure endpoint correctness and error handling.",
+    "metadata": {
+      "category": "backendgen",
+      "domain": "backend",
+      "level": "task",
+      "pillar": "services"
+    }
+  },
+  "::backendsuite": {
+    "calls": [
+      "::backendgen",
+      "::dbdesign",
+      "::apidocgen"
+    ],
+    "expansion": "Runs back-end scaffolding, DB design and API documentation macros.",
+    "metadata": {
+      "category": "backendsuite",
+      "domain": "backend",
+      "level": "suite",
+      "pillar": "suite"
+    }
+  },
+  "::cicd-build": {
+    "calls": [],
+    "expansion": "Builds and bundles the application (e.g., Webpack/Vite bundling or Docker image creation).",
+    "metadata": {
+      "category": "cicd",
+      "domain": "delivery",
+      "level": "task",
+      "pillar": "cicd"
+    }
+  },
+  "::cicd-deploy": {
+    "calls": [],
+    "expansion": "Deploys the application to the target environment (Docker, Render, Kubernetes) and performs environment configuration.",
+    "metadata": {
+      "category": "cicd",
+      "domain": "delivery",
+      "level": "task",
+      "pillar": "cicd"
+    }
+  },
+  "::cicd-lint": {
+    "calls": [],
+    "expansion": "Runs linting tools (ESLint, PEP8, Prettier) and applies automatic fixes to formatting issues.",
+    "metadata": {
+      "category": "cicd",
+      "domain": "delivery",
+      "level": "task",
+      "pillar": "cicd"
+    }
+  },
+  "::cicd-monitor": {
+    "calls": [],
+    "expansion": "Monitors deployed applications with health checks and alerts to detect failures or performance degradations.",
+    "metadata": {
+      "category": "cicd",
+      "domain": "delivery",
+      "level": "task",
+      "pillar": "cicd"
+    }
+  },
+  "::cicd-notify": {
+    "calls": [],
+    "expansion": "Sends notifications (Slack, email) about pipeline status and deployment outcomes.",
+    "metadata": {
+      "category": "cicd",
+      "domain": "delivery",
+      "level": "task",
+      "pillar": "cicd"
+    }
+  },
+  "::cicd-rollback": {
+    "calls": [],
+    "expansion": "Provides automated rollback procedures when deployments fail or regress.",
+    "metadata": {
+      "category": "cicd",
+      "domain": "delivery",
+      "level": "task",
+      "pillar": "cicd"
+    }
+  },
+  "::cicd-test": {
+    "calls": [],
+    "expansion": "Executes unit, integration and end-to-end tests during the pipeline.",
+    "metadata": {
+      "category": "cicd",
+      "domain": "delivery",
+      "level": "task",
+      "pillar": "cicd"
+    }
+  },
+  "::cicdsetup": {
+    "calls": [
+      "::cicd-lint",
+      "::cicd-test",
+      "::cicd-build",
+      "::cicd-deploy",
+      "::cicd-monitor",
+      "::cicd-notify",
+      "::cicd-rollback"
+    ],
+    "expansion": "Sets up continuous integration and deployment pipelines with linting, testing, building, deployment and monitoring stages.",
+    "metadata": {
+      "category": "cicdsetup",
+      "domain": "delivery",
+      "level": "macro",
+      "pillar": "cicd"
+    }
+  },
+  "::cicdsuite": {
+    "calls": [
+      "::cicdsetup",
+      "::securityaudit",
+      "::perfprofile"
+    ],
+    "expansion": "Runs the CI/CD setup including linting, testing, building, deploying, monitoring and notifications, along with security and performance profiling.",
+    "metadata": {
+      "category": "cicdsuite",
+      "domain": "delivery",
+      "level": "suite",
+      "pillar": "suite"
+    }
+  },
+  "::codequality": {
+    "calls": [
+      "::codequality-read",
+      "::codequality-maintain",
+      "::codequality-architecture",
+      "::codequality-standards"
+    ],
+    "expansion": "Evaluates code readability, maintainability, architecture and adherence to standards.",
+    "metadata": {
+      "category": "codequality",
+      "domain": "quality",
+      "level": "macro",
+      "pillar": "analysis"
+    }
+  },
+  "::codequality-architecture": {
+    "calls": [],
+    "expansion": "Evaluates overall architecture coherence and alignment with best practices.",
+    "metadata": {
+      "category": "codequality",
+      "domain": "quality",
+      "level": "task",
+      "pillar": "analysis"
+    }
+  },
+  "::codequality-maintain": {
+    "calls": [],
+    "expansion": "Identifies maintainability issues such as tight coupling and poor separation of concerns.",
+    "metadata": {
+      "category": "codequality",
+      "domain": "quality",
+      "level": "task",
+      "pillar": "analysis"
+    }
+  },
+  "::codequality-read": {
+    "calls": [],
+    "expansion": "Assesses variable naming, code clarity and documentation quality.",
+    "metadata": {
+      "category": "codequality",
+      "domain": "quality",
+      "level": "task",
+      "pillar": "analysis"
+    }
+  },
+  "::codequality-standards": {
+    "calls": [],
+    "expansion": "Ensures adherence to organisational coding standards and style guides.",
+    "metadata": {
+      "category": "codequality",
+      "domain": "quality",
+      "level": "task",
+      "pillar": "analysis"
+    }
+  },
+  "::coderefactor": {
+    "calls": [
+      "::refactor-smells",
+      "::refactor-patterns",
+      "::refactor-modular",
+      "::refactor-complexity",
+      "::refactor-docs"
+    ],
+    "expansion": "Refactors code to improve maintainability and architecture using design patterns and modularisation.",
+    "metadata": {
+      "category": "coderefactor",
+      "domain": "architecture",
+      "level": "macro",
+      "pillar": "refactoring"
+    }
+  },
+  "::datasuite": {
+    "calls": [
+      "::typegen",
+      "::mockdata"
+    ],
+    "expansion": "Generates data schemas, type definitions and mock data.",
+    "metadata": {
+      "category": "datasuite",
+      "domain": "data",
+      "level": "suite",
+      "pillar": "suite"
+    }
+  },
+  "::dbdesign": {
+    "calls": [
+      "::dbdesign-schema",
+      "::dbdesign-normalize",
+      "::dbdesign-index",
+      "::dbdesign-seed",
+      "::dbdesign-migrate"
+    ],
+    "expansion": "Designs a database schema (relational or NoSQL) from business requirements.",
+    "metadata": {
+      "category": "dbdesign",
+      "domain": "database",
+      "level": "macro",
+      "pillar": "design"
+    }
+  },
+  "::dbdesign-index": {
+    "calls": [],
+    "expansion": "Suggests indexes and partitioning strategies to optimise query performance.",
+    "metadata": {
+      "category": "dbdesign",
+      "domain": "database",
+      "level": "task",
+      "pillar": "design"
+    }
+  },
+  "::dbdesign-migrate": {
+    "calls": [],
+    "expansion": "Writes migration scripts to evolve the database schema safely across versions.",
+    "metadata": {
+      "category": "dbdesign",
+      "domain": "database",
+      "level": "task",
+      "pillar": "design"
+    }
+  },
+  "::dbdesign-normalize": {
+    "calls": [],
+    "expansion": "Normalises the schema to third normal form while balancing denormalization for performance.",
+    "metadata": {
+      "category": "dbdesign",
+      "domain": "database",
+      "level": "task",
+      "pillar": "design"
+    }
+  },
+  "::dbdesign-schema": {
+    "calls": [],
+    "expansion": "Produces entity\u2013relationship diagrams and table/collection definitions with keys and constraints.",
+    "metadata": {
+      "category": "dbdesign",
+      "domain": "database",
+      "level": "task",
+      "pillar": "design"
+    }
+  },
+  "::dbdesign-seed": {
+    "calls": [],
+    "expansion": "Generates seed data aligned with schema definitions for development and testing.",
+    "metadata": {
+      "category": "dbdesign",
+      "domain": "database",
+      "level": "task",
+      "pillar": "design"
+    }
+  },
+  "::deploy-docker": {
+    "calls": [],
+    "expansion": "Generates Dockerfile and docker-compose configurations with best practices.",
+    "metadata": {
+      "category": "deploy",
+      "domain": "deployment",
+      "level": "task",
+      "pillar": "automation"
+    }
+  },
+  "::deploy-env": {
+    "calls": [],
+    "expansion": "Creates environment variable templates and secrets management guidelines.",
+    "metadata": {
+      "category": "deploy",
+      "domain": "deployment",
+      "level": "task",
+      "pillar": "automation"
+    }
+  },
+  "::deploy-monitor": {
+    "calls": [],
+    "expansion": "Integrates logging and monitoring agents for observability after deployment.",
+    "metadata": {
+      "category": "deploy",
+      "domain": "deployment",
+      "level": "task",
+      "pillar": "automation"
+    }
+  },
+  "::deploy-scaling": {
+    "calls": [],
+    "expansion": "Produces configuration for autoscaling clusters (Kubernetes, Render) with resource limits and health probes.",
+    "metadata": {
+      "category": "deploy",
+      "domain": "deployment",
+      "level": "task",
+      "pillar": "automation"
+    }
+  },
+  "::deployscript": {
+    "calls": [
+      "::deploy-docker",
+      "::deploy-env",
+      "::deploy-scaling",
+      "::deploy-monitor"
+    ],
+    "expansion": "Creates deployment scripts and configuration for various environments (Docker, Kubernetes, Render).",
+    "metadata": {
+      "category": "deployscript",
+      "domain": "deployment",
+      "level": "macro",
+      "pillar": "automation"
+    }
+  },
+  "::deploysuite": {
+    "calls": [
+      "::deployscript"
+    ],
+    "expansion": "Generates deployment scripts and configures scaling and monitoring.",
+    "metadata": {
+      "category": "deploysuite",
+      "domain": "deployment",
+      "level": "suite",
+      "pillar": "suite"
+    }
+  },
+  "::error-fixsuggest": {
+    "calls": [],
+    "expansion": "Suggests code changes or configuration adjustments to fix identified issues.",
+    "metadata": {
+      "category": "error",
+      "domain": "observability",
+      "level": "task",
+      "pillar": "stability"
+    }
+  },
+  "::error-logparser": {
+    "calls": [],
+    "expansion": "Parses application logs and extracts error events, stack traces and context.",
+    "metadata": {
+      "category": "error",
+      "domain": "observability",
+      "level": "task",
+      "pillar": "stability"
+    }
+  },
+  "::error-report": {
+    "calls": [],
+    "expansion": "Summarizes the error analysis in a clear report for developers and stakeholders.",
+    "metadata": {
+      "category": "error",
+      "domain": "observability",
+      "level": "task",
+      "pillar": "stability"
+    }
+  },
+  "::error-reproduce": {
+    "calls": [],
+    "expansion": "Generates reproducible test cases to trigger the observed error.",
+    "metadata": {
+      "category": "error",
+      "domain": "observability",
+      "level": "task",
+      "pillar": "stability"
+    }
+  },
+  "::error-rootcause": {
+    "calls": [],
+    "expansion": "Identifies the root cause of errors by analysing call stacks and dependencies.",
+    "metadata": {
+      "category": "error",
+      "domain": "observability",
+      "level": "task",
+      "pillar": "stability"
+    }
+  },
+  "::erroranalysis": {
+    "calls": [
+      "::error-logparser",
+      "::error-rootcause",
+      "::error-fixsuggest",
+      "::error-reproduce",
+      "::error-report"
+    ],
+    "expansion": "Parses logs and diagnostics to identify root causes of errors and suggest fixes.",
+    "metadata": {
+      "category": "erroranalysis",
+      "domain": "observability",
+      "level": "macro",
+      "pillar": "stability"
+    }
+  },
+  "::frontendgen": {
+    "calls": [
+      "::frontendgen-layout",
+      "::frontendgen-state",
+      "::frontendgen-forms",
+      "::frontendgen-access",
+      "::frontendgen-motion",
+      "::frontendgen-tests",
+      "::frontendgen-docs"
+    ],
+    "expansion": "Generates a full front-end scaffold using React/Vite/Tailwind/Shadcn UI/Motion with proper component structure, responsive design, accessibility checks and styling best practices.",
+    "metadata": {
+      "category": "frontendgen",
+      "domain": "frontend",
+      "level": "macro",
+      "pillar": "experience"
+    }
+  },
+  "::frontendgen-access": {
+    "calls": [],
+    "expansion": "Performs accessibility audits including contrast ratio checks, ARIA attributes and keyboard navigation.",
+    "metadata": {
+      "category": "frontendgen",
+      "domain": "frontend",
+      "level": "task",
+      "pillar": "experience"
+    }
+  },
+  "::frontendgen-docs": {
+    "calls": [],
+    "expansion": "Produces UI documentation with Storybook or equivalent to showcase components and usage.",
+    "metadata": {
+      "category": "frontendgen",
+      "domain": "frontend",
+      "level": "task",
+      "pillar": "experience"
+    }
+  },
+  "::frontendgen-forms": {
+    "calls": [],
+    "expansion": "Creates form components with validation, error handling and user friendly UX guidelines.",
+    "metadata": {
+      "category": "frontendgen",
+      "domain": "frontend",
+      "level": "task",
+      "pillar": "experience"
+    }
+  },
+  "::frontendgen-layout": {
+    "calls": [],
+    "expansion": "Designs grid layouts using patterns such as cinematic Z, modular cockpit, F-pattern or gallery spotlight to organise the UI.",
+    "metadata": {
+      "category": "frontendgen",
+      "domain": "frontend",
+      "level": "task",
+      "pillar": "experience"
+    }
+  },
+  "::frontendgen-motion": {
+    "calls": [],
+    "expansion": "Integrates Framer Motion to add subtle animations following motion grammar for natural interactions.",
+    "metadata": {
+      "category": "frontendgen",
+      "domain": "frontend",
+      "level": "task",
+      "pillar": "experience"
+    }
+  },
+  "::frontendgen-state": {
+    "calls": [],
+    "expansion": "Sets up state management (Context API or Redux) and data flow for components, ensuring unidirectional data and predictable updates.",
+    "metadata": {
+      "category": "frontendgen",
+      "domain": "frontend",
+      "level": "task",
+      "pillar": "experience"
+    }
+  },
+  "::frontendgen-tests": {
+    "calls": [],
+    "expansion": "Generates front-end unit tests using React Testing Library with high coverage.",
+    "metadata": {
+      "category": "frontendgen",
+      "domain": "frontend",
+      "level": "task",
+      "pillar": "experience"
+    }
+  },
+  "::frontendsuite": {
+    "calls": [
+      "::frontendgen",
+      "::frontendgen-layout",
+      "::frontendgen-state",
+      "::frontendgen-forms",
+      "::frontendgen-access",
+      "::frontendgen-motion",
+      "::frontendgen-tests",
+      "::frontendgen-docs"
+    ],
+    "expansion": "Executes all front-end related macros including layout, state, forms, access, motion, tests and docs.",
+    "metadata": {
+      "category": "frontendsuite",
+      "domain": "frontend",
+      "level": "suite",
+      "pillar": "suite"
+    }
+  },
+  "::fulldeveloper": {
+    "calls": [
+      "::prototype-scaffold",
+      "::prototype-tests",
+      "::prototype-deploy",
+      "::prototype-docs"
+    ],
+    "expansion": "Orchestrates the rapid creation of an end-to-end prototype by combining front-end, back-end, database, testing and deployment tasks.",
+    "metadata": {
+      "category": "fulldeveloper",
+      "domain": "orchestration",
+      "level": "suite",
+      "pillar": "execution"
+    }
+  },
+  "::fullstacksuite": {
+    "calls": [
+      "::frontendsuite",
+      "::backendsuite",
+      "::testsuite",
+      "::cicdsuite",
+      "::deploysuite"
+    ],
+    "expansion": "Builds a cohesive stack by orchestrating front-end, back-end, testing, CI/CD and deployment macros.",
+    "metadata": {
+      "category": "fullstacksuite",
+      "domain": "orchestration",
+      "level": "suite",
+      "pillar": "suite"
+    }
+  },
+  "::integration-call": {
+    "calls": [],
+    "expansion": "Sends requests to APIs and services with various payloads during integration tests.",
+    "metadata": {
+      "category": "integration",
+      "domain": "testing",
+      "level": "task",
+      "pillar": "integration"
+    }
+  },
+  "::integration-setup": {
+    "calls": [],
+    "expansion": "Sets up the testing environment and any required test data for integration tests.",
+    "metadata": {
+      "category": "integration",
+      "domain": "testing",
+      "level": "task",
+      "pillar": "integration"
+    }
+  },
+  "::integration-teardown": {
+    "calls": [],
+    "expansion": "Cleans up the environment after integration tests are executed.",
+    "metadata": {
+      "category": "integration",
+      "domain": "testing",
+      "level": "task",
+      "pillar": "integration"
+    }
+  },
+  "::integration-validate": {
+    "calls": [],
+    "expansion": "Validates responses and side effects from integration tests against expected outcomes.",
+    "metadata": {
+      "category": "integration",
+      "domain": "testing",
+      "level": "task",
+      "pillar": "integration"
+    }
+  },
+  "::integrationtest": {
+    "calls": [
+      "::integration-setup",
+      "::integration-call",
+      "::integration-validate",
+      "::integration-teardown"
+    ],
+    "expansion": "Builds automated integration test scripts for third-party APIs and services.",
+    "metadata": {
+      "category": "integrationtest",
+      "domain": "testing",
+      "level": "macro",
+      "pillar": "integration"
+    }
+  },
+  "::lintfix": {
+    "calls": [],
+    "expansion": "Applies linting and formatting rules to all project files and reports violations.",
+    "metadata": {
+      "category": "lintfix",
+      "domain": "quality",
+      "level": "macro",
+      "pillar": "linting"
+    }
+  },
+  "::masterdev": {
+    "calls": [
+      "::fullstacksuite",
+      "::datasuite",
+      "::securesuite",
+      "::optimizsuite",
+      "::uxsuite"
+    ],
+    "expansion": "Coordinates the entire macro system by constructing belief structures, calibrating uncertainty and executing all relevant suites to produce a complete production-grade software package with ethical, secure and performant characteristics.",
+    "metadata": {
+      "category": "masterdev",
+      "domain": "orchestration",
+      "level": "suite",
+      "pillar": "command"
+    }
+  },
+  "::mockdata": {
+    "calls": [
+      "::mockdata-sample",
+      "::mockdata-distrib",
+      "::mockdata-edge",
+      "::mockdata-sensitive"
+    ],
+    "expansion": "Generates realistic test data for development, testing and demonstration purposes.",
+    "metadata": {
+      "category": "mockdata",
+      "domain": "data",
+      "level": "macro",
+      "pillar": "testing"
+    }
+  },
+  "::mockdata-distrib": {
+    "calls": [],
+    "expansion": "Samples data from statistical distributions to mimic real-world values.",
+    "metadata": {
+      "category": "mockdata",
+      "domain": "data",
+      "level": "task",
+      "pillar": "testing"
+    }
+  },
+  "::mockdata-edge": {
+    "calls": [],
+    "expansion": "Produces edge-case data to test boundary conditions.",
+    "metadata": {
+      "category": "mockdata",
+      "domain": "data",
+      "level": "task",
+      "pillar": "testing"
+    }
+  },
+  "::mockdata-sample": {
+    "calls": [],
+    "expansion": "Creates standard dummy data consistent with given types and constraints.",
+    "metadata": {
+      "category": "mockdata",
+      "domain": "data",
+      "level": "task",
+      "pillar": "testing"
+    }
+  },
+  "::mockdata-sensitive": {
+    "calls": [],
+    "expansion": "Generates anonymised versions of sensitive data to preserve privacy while testing.",
+    "metadata": {
+      "category": "mockdata",
+      "domain": "data",
+      "level": "task",
+      "pillar": "testing"
+    }
+  },
+  "::optimizsuite": {
+    "calls": [
+      "::perfprofile",
+      "::coderefactor",
+      "::codequality"
+    ],
+    "expansion": "Runs performance profiling, refactoring and code quality evaluation macros.",
+    "metadata": {
+      "category": "optimizsuite",
+      "domain": "performance",
+      "level": "suite",
+      "pillar": "suite"
+    }
+  },
+  "::perf-benchmark": {
+    "calls": [],
+    "expansion": "Provides comparative benchmarks across different implementations or configurations.",
+    "metadata": {
+      "category": "perf",
+      "domain": "performance",
+      "level": "task",
+      "pillar": "optimisation"
+    }
+  },
+  "::perf-cpu": {
+    "calls": [],
+    "expansion": "Measures CPU usage and identifies hot spots in the code.",
+    "metadata": {
+      "category": "perf",
+      "domain": "performance",
+      "level": "task",
+      "pillar": "optimisation"
+    }
+  },
+  "::perf-io": {
+    "calls": [],
+    "expansion": "Profiles disk and network I/O patterns to detect bottlenecks.",
+    "metadata": {
+      "category": "perf",
+      "domain": "performance",
+      "level": "task",
+      "pillar": "optimisation"
+    }
+  },
+  "::perf-memory": {
+    "calls": [],
+    "expansion": "Analyzes memory allocations and detects leaks.",
+    "metadata": {
+      "category": "perf",
+      "domain": "performance",
+      "level": "task",
+      "pillar": "optimisation"
+    }
+  },
+  "::perf-network": {
+    "calls": [],
+    "expansion": "Measures network latency, throughput and concurrency for API endpoints.",
+    "metadata": {
+      "category": "perf",
+      "domain": "performance",
+      "level": "task",
+      "pillar": "optimisation"
+    }
+  },
+  "::perfprofile": {
+    "calls": [
+      "::perf-cpu",
+      "::perf-memory",
+      "::perf-io",
+      "::perf-network",
+      "::perf-benchmark"
+    ],
+    "expansion": "Profiles code performance (CPU, memory, I/O, network) and recommends optimisations.",
+    "metadata": {
+      "category": "perfprofile",
+      "domain": "performance",
+      "level": "macro",
+      "pillar": "optimisation"
+    }
+  },
+  "::project-brief": {
+    "calls": [],
+    "expansion": "Drafts a concise delivery brief for {{project_name}} prioritising {{primary_goal}} outcomes and stakeholder clarity.",
+    "metadata": {
+      "category": "strategy",
+      "domain": "strategy",
+      "level": "task",
+      "pillar": "planning"
+    }
+  },
+  "::project-kickoff": {
+    "calls": [
+      "::project-brief"
+    ],
+    "expansion": "Organises the initial kickoff workflow for {{project_name}}, aligning roles, cadences, and risk mitigations before execution begins.",
+    "metadata": {
+      "category": "strategy",
+      "domain": "strategy",
+      "level": "macro",
+      "pillar": "planning"
+    }
+  },
+  "::prototype-deploy": {
+    "calls": [],
+    "expansion": "Packages the prototype for deployment, creating necessary scripts and configuration.",
+    "metadata": {
+      "category": "prototype",
+      "domain": "orchestration",
+      "level": "task",
+      "pillar": "prototype"
+    }
+  },
+  "::prototype-docs": {
+    "calls": [],
+    "expansion": "Generates basic documentation describing the prototype\u2019s architecture and usage.",
+    "metadata": {
+      "category": "prototype",
+      "domain": "orchestration",
+      "level": "task",
+      "pillar": "prototype"
+    }
+  },
+  "::prototype-scaffold": {
+    "calls": [],
+    "expansion": "Quickly builds a working UI, API and database skeleton for prototyping.",
+    "metadata": {
+      "category": "prototype",
+      "domain": "orchestration",
+      "level": "task",
+      "pillar": "prototype"
+    }
+  },
+  "::prototype-tests": {
+    "calls": [],
+    "expansion": "Sets up a minimal testing harness for the prototype to ensure basic functionality.",
+    "metadata": {
+      "category": "prototype",
+      "domain": "orchestration",
+      "level": "task",
+      "pillar": "prototype"
+    }
+  },
+  "::refactor-complexity": {
+    "calls": [],
+    "expansion": "Reduces cyclomatic complexity by simplifying logic and improving cohesion.",
+    "metadata": {
+      "category": "refactor",
+      "domain": "architecture",
+      "level": "task",
+      "pillar": "refactoring"
+    }
+  },
+  "::refactor-docs": {
+    "calls": [],
+    "expansion": "Updates docstrings and comments to reflect refactored code structure.",
+    "metadata": {
+      "category": "refactor",
+      "domain": "architecture",
+      "level": "task",
+      "pillar": "refactoring"
+    }
+  },
+  "::refactor-modular": {
+    "calls": [],
+    "expansion": "Splits monoliths into modular components and services.",
+    "metadata": {
+      "category": "refactor",
+      "domain": "architecture",
+      "level": "task",
+      "pillar": "refactoring"
+    }
+  },
+  "::refactor-patterns": {
+    "calls": [],
+    "expansion": "Suggests design patterns and architecture improvements to enhance flexibility and extensibility.",
+    "metadata": {
+      "category": "refactor",
+      "domain": "architecture",
+      "level": "task",
+      "pillar": "refactoring"
+    }
+  },
+  "::refactor-smells": {
+    "calls": [],
+    "expansion": "Detects and resolves code smells such as duplication, large methods and long parameter lists.",
+    "metadata": {
+      "category": "refactor",
+      "domain": "architecture",
+      "level": "task",
+      "pillar": "refactoring"
+    }
+  },
+  "::securesuite": {
+    "calls": [
+      "::securityaudit"
+    ],
+    "expansion": "Combines security analysis, fairness and ethical review macros.",
+    "metadata": {
+      "category": "securesuite",
+      "domain": "security",
+      "level": "suite",
+      "pillar": "suite"
+    }
+  },
+  "::security-authz": {
+    "calls": [],
+    "expansion": "Audits roles, permissions and secrets management for proper authorization enforcement.",
+    "metadata": {
+      "category": "security",
+      "domain": "security",
+      "level": "task",
+      "pillar": "assurance"
+    }
+  },
+  "::security-deps": {
+    "calls": [],
+    "expansion": "Scans dependencies for known CVEs and insecure versions.",
+    "metadata": {
+      "category": "security",
+      "domain": "security",
+      "level": "task",
+      "pillar": "assurance"
+    }
+  },
+  "::security-ethics": {
+    "calls": [],
+    "expansion": "Evaluates ethical compliance including privacy, diversity and inclusion considerations.",
+    "metadata": {
+      "category": "security",
+      "domain": "security",
+      "level": "task",
+      "pillar": "assurance"
+    }
+  },
+  "::security-fairness": {
+    "calls": [],
+    "expansion": "Assesses algorithmic bias and fairness metrics across demographic groups.",
+    "metadata": {
+      "category": "security",
+      "domain": "security",
+      "level": "task",
+      "pillar": "assurance"
+    }
+  },
+  "::security-injection": {
+    "calls": [],
+    "expansion": "Identifies injection vulnerabilities in code paths accepting external input.",
+    "metadata": {
+      "category": "security",
+      "domain": "security",
+      "level": "task",
+      "pillar": "assurance"
+    }
+  },
+  "::security-report": {
+    "calls": [],
+    "expansion": "Generates a risk report with severity scores and remediation advice.",
+    "metadata": {
+      "category": "security",
+      "domain": "security",
+      "level": "task",
+      "pillar": "assurance"
+    }
+  },
+  "::security-static": {
+    "calls": [],
+    "expansion": "Performs static analysis (SAST) to detect vulnerabilities such as SQL injection or XSS.",
+    "metadata": {
+      "category": "security",
+      "domain": "security",
+      "level": "task",
+      "pillar": "assurance"
+    }
+  },
+  "::securityaudit": {
+    "calls": [
+      "::security-static",
+      "::security-deps",
+      "::security-injection",
+      "::security-authz",
+      "::security-report",
+      "::security-fairness",
+      "::security-ethics"
+    ],
+    "expansion": "Runs a comprehensive security audit, scanning source code, dependencies and configurations for vulnerabilities and ethics issues.",
+    "metadata": {
+      "category": "securityaudit",
+      "domain": "security",
+      "level": "macro",
+      "pillar": "assurance"
+    }
+  },
+  "::testgen": {
+    "calls": [
+      "::testgen-unit",
+      "::testgen-integration",
+      "::testgen-e2e",
+      "::testgen-coverage",
+      "::testgen-performance",
+      "::testgen-security"
+    ],
+    "expansion": "Constructs a suite of tests across units, integrations, end-to-end scenarios, coverage analysis and performance.",
+    "metadata": {
+      "category": "testgen",
+      "domain": "testing",
+      "level": "macro",
+      "pillar": "quality"
+    }
+  },
+  "::testgen-coverage": {
+    "calls": [],
+    "expansion": "Measures code coverage and identifies untested paths.",
+    "metadata": {
+      "category": "testgen",
+      "domain": "testing",
+      "level": "task",
+      "pillar": "quality"
+    }
+  },
+  "::testgen-e2e": {
+    "calls": [],
+    "expansion": "Creates end-to-end tests with headless browsers or API calls to simulate real user flows.",
+    "metadata": {
+      "category": "testgen",
+      "domain": "testing",
+      "level": "task",
+      "pillar": "quality"
+    }
+  },
+  "::testgen-integration": {
+    "calls": [],
+    "expansion": "Produces integration tests to verify interactions between components and external services.",
+    "metadata": {
+      "category": "testgen",
+      "domain": "testing",
+      "level": "task",
+      "pillar": "quality"
+    }
+  },
+  "::testgen-performance": {
+    "calls": [],
+    "expansion": "Implements performance stress tests and benchmarks to assess throughput and latency.",
+    "metadata": {
+      "category": "testgen",
+      "domain": "testing",
+      "level": "task",
+      "pillar": "quality"
+    }
+  },
+  "::testgen-security": {
+    "calls": [],
+    "expansion": "Creates security tests to check for vulnerabilities such as injection, authentication bypass and misconfigurations.",
+    "metadata": {
+      "category": "testgen",
+      "domain": "testing",
+      "level": "task",
+      "pillar": "quality"
+    }
+  },
+  "::testgen-unit": {
+    "calls": [],
+    "expansion": "Generates unit tests for individual functions or modules, covering nominal and edge cases.",
+    "metadata": {
+      "category": "testgen",
+      "domain": "testing",
+      "level": "task",
+      "pillar": "quality"
+    }
+  },
+  "::testsuite": {
+    "calls": [
+      "::testgen",
+      "::integrationtest",
+      "::erroranalysis"
+    ],
+    "expansion": "Executes unit, integration, end-to-end, coverage, performance, security and error analysis macros.",
+    "metadata": {
+      "category": "testsuite",
+      "domain": "testing",
+      "level": "suite",
+      "pillar": "suite"
+    }
+  },
+  "::typegen": {
+    "calls": [
+      "::typegen-pydantic",
+      "::typegen-ts",
+      "::typegen-jsonschema",
+      "::typegen-proto",
+      "::typegen-orm"
+    ],
+    "expansion": "Generates type definitions and schemas (Pydantic, TypeScript, JSON Schema, Protobuf, ORM models) from data samples or schemas.",
+    "metadata": {
+      "category": "typegen",
+      "domain": "data",
+      "level": "macro",
+      "pillar": "modelling"
+    }
+  },
+  "::typegen-jsonschema": {
+    "calls": [],
+    "expansion": "Produces JSON Schema definitions for data validation and documentation.",
+    "metadata": {
+      "category": "typegen",
+      "domain": "data",
+      "level": "task",
+      "pillar": "modelling"
+    }
+  },
+  "::typegen-orm": {
+    "calls": [],
+    "expansion": "Generates ORM models (SQLAlchemy, TypeORM) based on schema definitions.",
+    "metadata": {
+      "category": "typegen",
+      "domain": "data",
+      "level": "task",
+      "pillar": "modelling"
+    }
+  },
+  "::typegen-proto": {
+    "calls": [],
+    "expansion": "Creates Protocol Buffer definitions for gRPC services.",
+    "metadata": {
+      "category": "typegen",
+      "domain": "data",
+      "level": "task",
+      "pillar": "modelling"
+    }
+  },
+  "::typegen-pydantic": {
+    "calls": [],
+    "expansion": "Creates Pydantic models from JSON or Python dictionaries.",
+    "metadata": {
+      "category": "typegen",
+      "domain": "data",
+      "level": "task",
+      "pillar": "modelling"
+    }
+  },
+  "::typegen-ts": {
+    "calls": [],
+    "expansion": "Generates TypeScript interfaces from API responses or schemas.",
+    "metadata": {
+      "category": "typegen",
+      "domain": "data",
+      "level": "task",
+      "pillar": "modelling"
+    }
+  },
+  "::uiux-color": {
+    "calls": [],
+    "expansion": "Checks colour palettes for harmony and sufficient contrast ratios.",
+    "metadata": {
+      "category": "uiux",
+      "domain": "ux",
+      "level": "task",
+      "pillar": "experience"
+    }
+  },
+  "::uiux-emotion": {
+    "calls": [],
+    "expansion": "Reviews emotional tone and resonance of the user interface.",
+    "metadata": {
+      "category": "uiux",
+      "domain": "ux",
+      "level": "task",
+      "pillar": "experience"
+    }
+  },
+  "::uiux-layout": {
+    "calls": [],
+    "expansion": "Analyzes spatial rhythm, grid balance and alignment.",
+    "metadata": {
+      "category": "uiux",
+      "domain": "ux",
+      "level": "task",
+      "pillar": "experience"
+    }
+  },
+  "::uiux-motion": {
+    "calls": [],
+    "expansion": "Assesses animation usage for naturalness, timing and context.",
+    "metadata": {
+      "category": "uiux",
+      "domain": "ux",
+      "level": "task",
+      "pillar": "experience"
+    }
+  },
+  "::uiux-typography": {
+    "calls": [],
+    "expansion": "Evaluates typography flow, font choices and legibility across devices.",
+    "metadata": {
+      "category": "uiux",
+      "domain": "ux",
+      "level": "task",
+      "pillar": "experience"
+    }
+  },
+  "::uiuxaudit": {
+    "calls": [
+      "::uiux-color",
+      "::uiux-typography",
+      "::uiux-layout",
+      "::uiux-motion",
+      "::uiux-emotion"
+    ],
+    "expansion": "Conducts UI/UX audits covering colour harmony, typography, layout, motion and emotional resonance.",
+    "metadata": {
+      "category": "uiuxaudit",
+      "domain": "ux",
+      "level": "macro",
+      "pillar": "experience"
+    }
+  },
+  "::uxsuite": {
+    "calls": [
+      "::uiuxaudit",
+      "::analyticsinject"
+    ],
+    "expansion": "Performs a UI/UX audit and injects analytics instrumentation for better product insights.",
+    "metadata": {
+      "category": "uxsuite",
+      "domain": "ux",
+      "level": "suite",
+      "pillar": "suite"
+    }
+  }
+}
