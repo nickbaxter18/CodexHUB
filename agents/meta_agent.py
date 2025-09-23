@@ -1,12 +1,13 @@
 """
 SECTION: Header & Purpose
-    - Implements the ``MetaAgent`` responsible for arbitrating QA signals and coordinating trust updates.
-    - Listens to QA event bus topics, enforces missing-test escalations, weighs severity scoring, tracks error payloads,
-      and publishes consolidated arbitration outcomes.
+    - Implements the ``MetaAgent`` that arbitrates QA signals and coordinates trust updates.
+    - Listens to QA event bus topics, enforces missing-test escalations, and scores severity.
+    - Tracks error payloads and publishes consolidated arbitration outcomes.
 
 SECTION: Imports / Dependencies
     - Depends on the shared QA engine and event bus modules only.
 """
+
 from __future__ import annotations
 
 from typing import Any, Dict, List, Optional, Tuple
@@ -82,7 +83,8 @@ class MetaAgent:
 
         agent = evaluation["agent"]
         previous: Optional[Dict[str, Any]] = self.agent_last_event.get(agent)
-        conflict = bool(previous) and previous.get("status") != evaluation.get("status")
+        previous_status = previous.get("status") if previous else None
+        conflict = previous_status is not None and previous_status != evaluation.get("status")
         missing_tests = evaluation.get("missing_tests", [])
         severity = float(evaluation.get("severity", 0.0))
         severity_level = str(evaluation.get("severity_level", "none"))
@@ -141,9 +143,7 @@ class MetaAgent:
         if evaluation["status"] == "failure" and evaluation.get("remediation"):
             next_steps.extend(evaluation.get("remediation", []))
         if missing_tests:
-            next_steps.append(
-                "Execute required QA tests: " + ", ".join(sorted(set(missing_tests)))
-            )
+            next_steps.append("Execute required QA tests: " + ", ".join(sorted(set(missing_tests))))
         if recommended_macros:
             next_steps.append(
                 "Trigger remediation macros: " + ", ".join(sorted(set(recommended_macros)))

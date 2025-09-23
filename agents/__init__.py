@@ -10,6 +10,15 @@ SECTION: Exports / Public API
 """
 
 from .agent_base import Agent, AgentTaskError
+from .knowledge_agent import KnowledgeAgent, KnowledgeRecord, KnowledgeSearchResult, KnowledgeStore
 from .meta_agent import MetaAgent
 
-__all__ = ["Agent", "AgentTaskError", "MetaAgent"]
+__all__ = [
+    "Agent",
+    "AgentTaskError",
+    "KnowledgeAgent",
+    "KnowledgeRecord",
+    "KnowledgeSearchResult",
+    "KnowledgeStore",
+    "MetaAgent",
+]

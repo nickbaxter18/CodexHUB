@@ -72,6 +72,12 @@ It covers both the structure and process for maintaining governance configuratio
 - **Payload Validation:** `src/inference/inference.py` validates requests via Pydantic schemas and enforces concurrency + batch-size budgets.
 - **Monitoring Hooks:** The inference service exposes caching TTL and concurrency controls, preparing for upcoming monitoring modules.
 
+### Knowledge Governance
+
+- **Retrieval Agent:** `agents/knowledge_agent.KnowledgeAgent` indexes Brain Blocks NDJSON sources and reports coverage, latency, and recall proxies for every query.
+- **QA Enforcement:** `config/qa_rules.json` now defines `results_found`, `coverage_ratio`, and `latency_ms` budgets for the Knowledge agent; missing results trigger remediation guidance to refresh the corpus.
+- **Operational Checks:** The agent emits a `knowledge_store_health` self-check so the QA engine flags empty or stale corpora before orchestration relies on the results.
+
 ### Contribution Checklist
 
 1. Update relevant configs and ensure `pytest` passes.

@@ -14,6 +14,11 @@
     "permissions": ["read", "execute"],
     "default_trust": 1.2
   },
+  "Knowledge": {
+    "responsibilities": ["Knowledge retrieval", "Brain Blocks analysis", "Insight synthesis"],
+    "permissions": ["read"],
+    "default_trust": 1.0
+  },
   "Meta": {
     "responsibilities": ["Orchestration", "Arbitration", "Governance enforcement"],
     "permissions": ["read", "write", "approve"],
