@@ -1,0 +1,24 @@
+name: Enforce AGENTS.md Standards
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  codex-rules-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Validate AGENTS.md is present and follows spec
+        run: |
+          if [ ! -f AGENTS.md ]; then
+            echo "❌ AGENTS.md missing!" && exit 1
+          fi
+          grep -q "## Codex Instructions" AGENTS.md || echo "⚠️ No Codex section found."
+
+      - name: Display AGENTS.md summary
+        run: |
+          echo "----- AGENTS.md HEADERS -----"
+          grep '^##' AGENTS.md || echo "No headers found"
