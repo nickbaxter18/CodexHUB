@@ -23,14 +23,14 @@
 
   "compilerOptions": {
     "target": "ES2021",
-    "module": "ESNext",
+    "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "strict": true,
     "resolveJsonModule": true,
-    "allowJs": true,
+    "allowJs": false,
     "checkJs": false,
     "isolatedModules": true,
     "allowSyntheticDefaultImports": true,
@@ -63,7 +63,6 @@
 
   "include": [
     "src/**/*",
-    "codexbridge/**/*",
     "macros/**/*",
     "tests/**/*",
     "scripts/**/*",
@@ -76,6 +75,7 @@
     "build",
     "coverage",
     "tmp",
-    "**/__snapshots__/**"
+    "**/__snapshots__/**",
+    "codexbridge/**"
   ]
 }

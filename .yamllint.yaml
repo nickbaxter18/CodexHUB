@@ -1,0 +1,15 @@
+extends: default
+ignore: |
+  node_modules/
+  .pnpm-store/
+  AGENTS.md/
+  AGENTS.md/**
+  .github/workflows/agents-md-check.yml
+  pnpm-lock.yaml
+rules:
+  line-length:
+    max: 120
+    level: warning
+  trailing-spaces: enable
+  truthy:
+    level: warning

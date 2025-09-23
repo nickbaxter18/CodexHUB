@@ -1,0 +1,29 @@
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+
+[tool.isort]
+profile = "black"
+line_length = 100
+combine_as_imports = true
+include_trailing_comma = true
+
+[tool.flake8]
+max-line-length = 100
+extend-ignore = ["E203", "W503"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_unused_configs = true
+ignore_missing_imports = true
+check_untyped_defs = true
+pretty = true
+
+[tool.pytest.ini_options]
+addopts = "-ra --showlocals"
+testpaths = ["tests", "meta_agent/tests", "macro_system/tests"]
+
+[tool.bandit]
+targets = ["macro_system", "meta_agent", "qa"]
+exclude_dirs = ["tests"]
+skips = ["B101"]

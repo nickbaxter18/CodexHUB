@@ -1,25 +1,95 @@
-name: CI
+---
+name: QA Pipeline
 
 on:
   push:
-    branches: ["main", "master"]
+    branches: ['main', 'master']
   pull_request:
-    branches: ["main", "master"]
+    branches: ['main', 'master']
+
+env:
+  PNPM_STORE_PATH: ${{ runner.temp }}/pnpm-store
 
 jobs:
-  build:
+  quality:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Use Node.js
-        uses: actions/setup-node@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
         with:
-          node-version: "18"
-      - name: Install dependencies
-        run: npm install
-      - name: Lint
-        run: npm run lint
-      - name: Test
-        run: npm test
-      - name: Audit dependencies
-        run: npm audit --audit-level=moderate
+          version: 9
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Configure pnpm store
+        run: |
+          mkdir -p "$PNPM_STORE_PATH"
+          pnpm config set store-dir "$PNPM_STORE_PATH"
+
+      - name: Install Node.js dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: requirements-dev.txt
+
+      - name: Install Python tooling
+        run: pip install -r requirements-dev.txt
+
+      - name: TypeScript type check
+        run: pnpm typecheck
+
+      - name: ESLint
+        run: pnpm lint
+
+      - name: Prettier check
+        run: pnpm check-format
+
+      - name: Stylelint
+        run: pnpm lint:css
+
+      - name: Markdown lint
+        run: pnpm lint:md
+
+      - name: YAML lint
+        run: pnpm lint:yaml
+
+      - name: Spellcheck
+        run: pnpm spellcheck
+
+      - name: EditorConfig enforcement
+        run: pnpm lint:editorconfig
+
+      - name: Vitest coverage
+        run: pnpm coverage
+
+      - name: Pytest coverage
+        run: pytest --cov=macro_system --cov=meta_agent --cov=qa
+
+      - name: Bandit security scan
+        run: bandit -q -r macro_system meta_agent qa -x macro_system/tests,meta_agent/tests,tests
+
+      - name: pip-audit
+        run: pip-audit -r requirements-dev.txt
+
+      - name: pnpm audit
+        run: pnpm audit --audit-level=high
+
+      - name: Commitlint history
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            pnpm commitlint --from=${{ github.event.pull_request.base.sha }} --to=${{ github.event.pull_request.head.sha }}
+          else
+            pnpm commitlint --from=${{ github.sha }}~1 --to=${{ github.sha }}
+          fi
