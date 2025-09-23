@@ -1,0 +1,92 @@
+{
+  "version": "1.0.0",
+  "agents": {
+    "Frontend": {
+      "budgets": {
+        "lighthouse_score": 90,
+        "accessibility_pass": true
+      },
+      "tests": [
+        "jest_unit",
+        "axe_core_a11y",
+        "lighthouse"
+      ],
+      "metrics": {
+        "lighthouse_score": {
+          "comparison": "gte",
+          "remediation_steps": [
+            "Optimise bundle size, fonts, and media delivery to raise Lighthouse results.",
+            "Review Core Web Vitals and prioritise layout stability fixes."
+          ],
+          "remediation_macros": [
+            "::frontendgen-tests",
+            "::frontendgen-motion",
+            "::frontendgen-access"
+          ],
+          "weight": 1.3
+        },
+        "accessibility_pass": {
+          "comparison": "eq",
+          "remediation_steps": [
+            "Resolve accessibility audit failures and re-run axe-core checks."
+          ],
+          "remediation_macros": [
+            "::frontendgen-access"
+          ],
+          "weight": 1.0
+        }
+      }
+    },
+    "Backend": {
+      "budgets": {
+        "api_latency_ms_p95": 300
+      },
+      "tests": [
+        "pytest_unit",
+        "api_fuzz",
+        "contract"
+      ],
+      "metrics": {
+        "api_latency_ms_p95": {
+          "comparison": "lte",
+          "remediation_steps": [
+            "Profile slow endpoints and optimise database access patterns.",
+            "Introduce caching or queueing where appropriate to reduce response times."
+          ],
+          "remediation_macros": [
+            "::perfprofile",
+            "::backendgen-logging"
+          ],
+          "weight": 1.5
+        }
+      }
+    },
+    "Architect": {
+      "budgets": {},
+      "tests": [
+        "schema_validation",
+        "macro_dependency"
+      ]
+    },
+    "QA": {
+      "budgets": {},
+      "tests": [
+        "full_suite"
+      ]
+    }
+  },
+  "macros": {
+    "required_fields": [
+      "inputs",
+      "outputs",
+      "failure_cases",
+      "dependencies",
+      "context"
+    ],
+    "default_context": [
+      "dev",
+      "staging",
+      "prod"
+    ]
+  }
+}

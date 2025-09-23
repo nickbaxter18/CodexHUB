@@ -1,0 +1,75 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "QA Rules Schema",
+  "description": "Schema for validating QA rules used by agents and macros.",
+  "type": "object",
+  "required": ["version", "agents", "macros"],
+  "properties": {
+    "version": { "type": "string" },
+    "agents": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "budgets": {
+            "type": "object",
+            "additionalProperties": {
+              "anyOf": [
+                { "type": "number" },
+                { "type": "boolean" },
+                { "type": "string" }
+              ]
+            }
+          },
+          "tests": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "metrics": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "comparison": {
+                  "type": "string",
+                  "enum": ["auto", "lte", "gte", "eq"]
+                },
+                "remediation_steps": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                },
+                "remediation_macros": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                },
+                "weight": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": ["budgets", "tests"],
+        "additionalProperties": false
+      }
+    },
+    "macros": {
+      "type": "object",
+      "required": ["required_fields", "default_context"],
+      "properties": {
+        "required_fields": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "default_context": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
