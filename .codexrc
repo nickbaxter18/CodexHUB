@@ -1,0 +1,25 @@
+{
+  "codexbridge": {
+    "plans": {
+      "incomingDir": "plans/from_gpt",
+      "processedDir": "plans/processed",
+      "rejectedDir": "plans/rejected"
+    },
+    "macros": {
+      "rootDir": "macros",
+      "registryPath": "macros/registry.json",
+      "typesImport": null,
+      "typesSymbol": "MacroContext",
+      "functionSuffix": "Macro"
+    },
+    "resultsDir": "results",
+    "cache": {
+      "macro": "cache/macro_output.json",
+      "tests": "cache/test_outcomes.json"
+    },
+    "tests": {
+      "defaultCommand": "npm test",
+      "defaultTimeoutSeconds": 600
+    }
+  }
+}

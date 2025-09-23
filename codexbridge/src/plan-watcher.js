@@ -22,6 +22,10 @@ import { promisify } from 'util';
 import crypto from 'crypto';
 
 import PlanValidator, { PlanValidationError } from './plan-validator.js';
+import {
+  loadCodexBridgeConfig,
+  CodexRcConfigError
+} from './codexrc-loader.js';
 
 // ==========================================================================
 // Types / Interfaces / Schemas (JSDoc for tooling clarity)
@@ -728,15 +732,45 @@ export default PlanWatcher;
 const modulePath = fileURLToPath(import.meta.url);
 if (process.argv[1] && path.resolve(process.argv[1]) === modulePath) {
   // Module executed via `node codexbridge/src/plan-watcher.js`
-  const watcher = new PlanWatcher();
-  watcher
-    .processPendingPlans()
-    .then((outcomes) => {
+  (async () => {
+    try {
+      const { resolved } = await loadCodexBridgeConfig({ repoRoot: process.cwd() });
+      const watcherOptions = {
+        repoRoot: resolved.repoRoot,
+        plansDir: resolved.plans.incomingDir,
+        processedDir: resolved.plans.processedDir,
+        rejectedDir: resolved.plans.rejectedDir,
+        macrosDir: resolved.macros.rootDir,
+        registryPath: resolved.macros.registryPath,
+        resultsDir: resolved.resultsDir,
+        macroCachePath: resolved.cache.macro,
+        testCachePath: resolved.cache.tests,
+        macroTypesSymbol: resolved.macros.typesSymbol,
+        macroSuffix: resolved.macros.functionSuffix,
+        defaultTestCommand: resolved.tests.defaultCommand,
+        defaultTestTimeout: resolved.tests.defaultTimeoutSeconds
+      };
+      if (typeof resolved.macros.typesImport === 'string' && resolved.macros.typesImport.trim().length > 0) {
+        watcherOptions.macroTypesImport = resolved.macros.typesImport;
+      }
+
+      const watcher = new PlanWatcher(watcherOptions);
+      const outcomes = await watcher.processPendingPlans();
       const summary = outcomes.map((outcome) => `${outcome.filename}:${outcome.status}`).join(', ');
       console.log(`CodexBridge watcher processed plans → ${summary || 'no pending plans.'}`);
-    })
-    .catch((error) => {
+    } catch (error) {
+      if (error instanceof CodexRcConfigError) {
+        console.error('CodexBridge configuration error:', error.message);
+        if (error.issues?.length) {
+          for (const issue of error.issues) {
+            console.error(` - ${issue}`);
+          }
+        }
+        process.exitCode = 1;
+        return;
+      }
       console.error('CodexBridge watcher encountered an error:', error);
       process.exitCode = 1;
-    });
+    }
+  })();
 }

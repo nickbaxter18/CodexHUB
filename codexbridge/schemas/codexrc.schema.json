@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codexhub.dev/schemas/codexbridge/codexrc.schema.json",
+  "title": "CodexBridge Configuration",
+  "description": "Schema describing the .codexrc configuration used to govern the CodexBridge plan watcher.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["codexbridge"],
+  "properties": {
+    "codexbridge": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "plans": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "incomingDir": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Relative or absolute path to the directory holding incoming plans."
+            },
+            "processedDir": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Directory storing processed plans with audit metadata."
+            },
+            "rejectedDir": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Directory storing rejected plans for manual review."
+            }
+          }
+        },
+        "macros": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "rootDir": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Directory where macro stubs should be generated."
+            },
+            "registryPath": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Path to the macro registry JSON file."
+            },
+            "typesImport": {
+              "type": ["string", "null"],
+              "description": "Module specifier imported by generated macros for shared types."
+            },
+            "typesSymbol": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+              "description": "TypeScript symbol providing macro execution context typing."
+            },
+            "functionSuffix": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Suffix appended to generated macro function names."
+            }
+          }
+        },
+        "resultsDir": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Directory receiving execution result artefacts for planner feedback."
+        },
+        "cache": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "macro": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Path to the macro generation cache JSON file."
+            },
+            "tests": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Path to the test outcomes cache JSON file."
+            }
+          }
+        },
+        "tests": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "defaultCommand": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Command executed when a plan omits explicit tests."
+            },
+            "defaultTimeoutSeconds": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 3600,
+              "description": "Timeout applied to automated tests when plans do not specify one."
+            }
+          }
+        }
+      }
+    }
+  }
+}
