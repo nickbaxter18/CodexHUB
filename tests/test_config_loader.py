@@ -31,7 +31,7 @@ def test_agents_default_trust_extraction(loader: ConfigLoader) -> None:
 
     defaults = loader.default_trust_scores()
     assert defaults["QA"] > defaults["Frontend"]
-    assert set(defaults) >= {"Frontend", "Backend", "QA", "Meta"}
+    assert set(defaults) >= {"Frontend", "Backend", "QA", "Meta", "Architect", "CICD", "Knowledge"}
 
 
 def test_qa_rules_schema_validates(loader: ConfigLoader, tmp_path: Path) -> None:

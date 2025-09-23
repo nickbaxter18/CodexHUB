@@ -5,12 +5,13 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Dict, Iterable, Mapping
+from typing import Dict, Iterable, Mapping, cast
 
 from .schema import validate_macro_catalog
 from .types import Macro, MacroDefinitionError
 
 # === Implementation ===
+
 
 def load_macros(source: Mapping[str, object] | str | Path) -> Dict[str, Macro]:
     """Load and validate macros from a JSON file or mapping."""
@@ -30,11 +31,12 @@ def load_macros(source: Mapping[str, object] | str | Path) -> Dict[str, Macro]:
 
 # === Error Handling ===
 
+
 def _load_json(path: Path) -> Dict[str, object]:
     """Read JSON file from disk."""
 
     try:
-        return json.loads(path.read_text(encoding="utf-8"))
+        return cast(Dict[str, object], json.loads(path.read_text(encoding="utf-8")))
     except FileNotFoundError as exc:  # pragma: no cover - explicit error passthrough
         raise MacroDefinitionError(f"Macro definition file not found: {path}") from exc
     except json.JSONDecodeError as exc:
@@ -75,9 +77,7 @@ def _convert_macro(name: str, payload: object) -> Macro:
         )
 
     if owner_agent is not None and not isinstance(owner_agent, str):
-        raise MacroDefinitionError(
-            f"Macro '{name}' ownerAgent must be a string when provided."
-        )
+        raise MacroDefinitionError(f"Macro '{name}' ownerAgent must be a string when provided.")
 
     for optional_field, value in (
         ("phase", phase),
@@ -120,6 +120,7 @@ def _convert_macro(name: str, payload: object) -> Macro:
 
 
 # === Performance ===
+
 
 def _all_strings(values: Iterable[object]) -> bool:
     """Return True if all values are strings."""

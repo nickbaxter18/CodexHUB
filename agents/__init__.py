@@ -3,13 +3,39 @@ SECTION: Header & Purpose
     - Aggregates agent-facing utilities for consumers of the QA framework.
 
 SECTION: Imports / Dependencies
-    - Provides convenient imports for the base agent class and meta agent implementation.
+    - Provides convenient imports for the base agent class, meta agent implementation, and the
+      domain-specific specialist agents introduced in the governance roadmap.
 
 SECTION: Exports / Public API
-    - ``Agent`` and ``MetaAgent`` classes.
+    - ``Agent`` and ``MetaAgent`` classes together with concrete specialist agents for
+      architecture, frontend, backend, QA, CI/CD, and knowledge management.
 """
 
 from .agent_base import Agent, AgentTaskError
 from .meta_agent import MetaAgent
+from .specialist_agents import (
+    AgentTask,
+    ArchitectAgent,
+    BackendAgent,
+    CICDAgent,
+    FrontendAgent,
+    KnowledgeAgent,
+    KnowledgeDocument,
+    QAAgent,
+    SpecialistAgent,
+)
 
-__all__ = ["Agent", "AgentTaskError", "MetaAgent"]
+__all__ = [
+    "Agent",
+    "AgentTask",
+    "AgentTaskError",
+    "ArchitectAgent",
+    "BackendAgent",
+    "CICDAgent",
+    "FrontendAgent",
+    "KnowledgeAgent",
+    "KnowledgeDocument",
+    "MetaAgent",
+    "QAAgent",
+    "SpecialistAgent",
+]

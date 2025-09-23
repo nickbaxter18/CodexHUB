@@ -47,12 +47,79 @@
       }
     },
     "Architect": {
-      "budgets": {},
-      "tests": ["schema_validation", "macro_dependency"]
+      "budgets": {
+        "blueprint_coverage": 0.9
+      },
+      "tests": ["schema_validation", "macro_dependency"],
+      "metrics": {
+        "blueprint_coverage": {
+          "comparison": "gte",
+          "remediation_steps": [
+            "Expand macro coverage across architecture, performance, and deployment domains.",
+            "Review dependency graphs for gaps and refresh the blueprint."
+          ],
+          "remediation_macros": ["::refactor-modular", "::deploysuite", "::perfprofile"],
+          "weight": 1.2
+        }
+      }
     },
     "QA": {
       "budgets": {},
       "tests": ["full_suite"]
+    },
+    "CICD": {
+      "budgets": {
+        "pipeline_success_rate": 0.95,
+        "mean_time_to_recovery_minutes": 30
+      },
+      "tests": ["gha_smoke", "deployment_rollback"],
+      "metrics": {
+        "pipeline_success_rate": {
+          "comparison": "gte",
+          "remediation_steps": [
+            "Investigate failed workflow jobs and re-run affected stages.",
+            "Apply self-healing macros to restore pipeline health."
+          ],
+          "remediation_macros": ["::cicd-monitor", "::cicd-notify"],
+          "weight": 1.4
+        },
+        "mean_time_to_recovery_minutes": {
+          "comparison": "lte",
+          "remediation_steps": [
+            "Pre-provision rollback plans and accelerate alert routing to responders.",
+            "Automate post-failure diagnostics via CI/CD observability macros."
+          ],
+          "remediation_macros": ["::cicd-rollback", "::error-rootcause"],
+          "weight": 1.3
+        }
+      }
+    },
+    "Knowledge": {
+      "budgets": {
+        "response_accuracy": 0.9,
+        "median_lookup_latency_ms": 250
+      },
+      "tests": ["knowledge_index_integrity", "governance_factcheck"],
+      "metrics": {
+        "response_accuracy": {
+          "comparison": "gte",
+          "remediation_steps": [
+            "Refresh NDJSON knowledge corpora and reconcile outdated governance entries.",
+            "Add regression questions for newly codified policies."
+          ],
+          "remediation_macros": ["::masterdev", "::docsuite"],
+          "weight": 1.1
+        },
+        "median_lookup_latency_ms": {
+          "comparison": "lte",
+          "remediation_steps": [
+            "Optimise knowledge index and cache high-frequency governance answers.",
+            "Partition large NDJSON files into topic-specific shards."
+          ],
+          "remediation_macros": ["::datasuite", "::perf-io"],
+          "weight": 1.0
+        }
+      }
     }
   },
   "macros": {
