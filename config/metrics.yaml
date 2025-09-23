@@ -1,0 +1,21 @@
+core_metrics:
+  accuracy:
+    minimum: 0.8
+  f1:
+    minimum: 0.75
+  precision:
+    minimum: 0.75
+  recall:
+    minimum: 0.75
+  roc_auc:
+    minimum: 0.8
+fairness_metrics:
+  statistical_parity_difference:
+    minimum: -0.1
+    maximum: 0.1
+  equal_opportunity_difference:
+    minimum: -0.1
+    maximum: 0.1
+  disparate_impact_ratio:
+    minimum: 0.8
+    maximum: 1.25

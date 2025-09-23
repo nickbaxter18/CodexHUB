@@ -1,56 +1,53 @@
-minimum_pre_commit_version: '3.5.0'
+minimum_pre_commit_version: 3.5.0
 repos:
-  - repo: https://github.com/psf/black
-    rev: 24.10.0
-    hooks:
-      - id: black
-        language_version: python3.11
-  - repo: https://github.com/pycqa/isort
-    rev: 5.13.2
-    hooks:
-      - id: isort
-        args: ['--profile=black']
-  - repo: https://github.com/pycqa/flake8
-    rev: 7.1.1
-    hooks:
-      - id: flake8
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.11.2
-    hooks:
-      - id: mypy
-        additional_dependencies: []
-  - repo: https://github.com/PyCQA/bandit
-    rev: 1.7.9
-    hooks:
-      - id: bandit
-        args:
-          [
-            '-q',
-            '-r',
-            'macro_system',
-            'meta_agent',
-            'qa',
-            '-x',
-            'macro_system/tests,meta_agent/tests,tests',
-          ]
-        pass_filenames: false
   - repo: local
     hooks:
+      - id: black
+        name: black
+        entry: python -m black
+        language: system
+        types:
+          - python
+      - id: isort
+        name: isort
+        entry: python -m isort --profile=black
+        language: system
+        types:
+          - python
+      - id: flake8
+        name: flake8
+        entry: python -m flake8 --max-line-length=100
+        language: system
+        types:
+          - python
+      - id: mypy
+        name: mypy
+        entry: python -m mypy
+        language: system
+        types:
+          - python
+      - id: bandit
+        name: bandit
+        entry: python -m bandit -q -r macro_system meta_agent qa -x macro_system/tests,meta_agent/tests,tests
+        language: system
+        pass_filenames: false
       - id: prettier
         name: prettier
         entry: pnpm prettier --write
         language: system
         pass_filenames: true
-        files: "\\.(js|cjs|mjs|ts|tsx|json|md|ya?ml|css|scss)$"
+        files: \.(js|cjs|mjs|ts|tsx|json|md|ya?ml|css|scss)$
       - id: lint-staged
         name: lint-staged
         entry: pnpm lint-staged
         language: system
         pass_filenames: false
-        stages: [pre-commit]
+        stages:
+          - pre-commit
       - id: commitlint
         name: commitlint
         entry: pnpm commitlint --edit
         language: system
         pass_filenames: false
-        stages: [commit-msg]
+        stages:
+          - commit-msg

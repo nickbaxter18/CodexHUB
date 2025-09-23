@@ -1,0 +1,26 @@
+training:
+  dataset:
+    path: data/sample_dataset.csv
+    target_column: label
+    feature_columns:
+      - feature_one
+      - feature_two
+    validation_split: 0.2
+    stratify: true
+    random_state: 42
+  experiment:
+    tracking_uri: ./results/mlruns
+    registry_uri: ./results/mlruns
+    experiment_name: CodexHUB-Baseline
+    run_name: initial-baseline
+  model:
+    framework: pytorch
+    hyperparameters:
+      epochs: 5
+      learning_rate: 0.001
+      batch_size: 32
+inference:
+  default_model_name: CodexHUB-Baseline
+  cache_ttl_seconds: 900
+  max_batch_size: 64
+  concurrency_limit: 32

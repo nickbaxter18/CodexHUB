@@ -64,6 +64,10 @@
     "stylelint",
     "tsconfig",
     "vite",
-    "yaml"
+    "yaml",
+    "mlruns",
+    "ndarray",
+    "proba",
+    "pyfunc"
   ]
 }
