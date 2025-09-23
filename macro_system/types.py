@@ -73,16 +73,14 @@ class PlanStep:
             agent = f" [{step.owner_agent}]" if step.owner_agent else ""
             status = f" ({step.status})" if step.status else ""
             priority = f" <{step.priority}>" if step.priority else ""
-            lines.append(
-                f"{indent}- {step.macro}{agent}{priority}{status}: {step.description}"
-            )
+            lines.append(f"{indent}- {step.macro}{agent}{priority}{status}: {step.description}")
             for child in step.children:
                 _walk(child, depth + 1)
 
         _walk(self, 0)
         return "\n".join(lines)
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> Dict[str, object]:
         """Serialise the plan hierarchy into a JSON-friendly dictionary."""
 
         return {

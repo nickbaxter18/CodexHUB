@@ -1,11 +1,16 @@
 {
+  "Architect": {
+    "responsibilities": ["System architecture", "Cross-agent planning", "Macro governance"],
+    "permissions": ["read", "write", "approve"],
+    "default_trust": 1.1
+  },
   "Frontend": {
-    "responsibilities": ["UI implementation", "Accessibility compliance"],
+    "responsibilities": ["UI implementation", "Accessibility compliance", "Motion systems"],
     "permissions": ["read", "write"],
     "default_trust": 1.0
   },
   "Backend": {
-    "responsibilities": ["API development", "Database integration"],
+    "responsibilities": ["API development", "Database integration", "Performance optimisation"],
     "permissions": ["read", "write", "deploy"],
     "default_trust": 1.0
   },
@@ -13,6 +18,16 @@
     "responsibilities": ["Test creation", "Accessibility, security, performance checks"],
     "permissions": ["read", "execute"],
     "default_trust": 1.2
+  },
+  "CICD": {
+    "responsibilities": ["Pipeline orchestration", "Deployment automation", "Incident recovery"],
+    "permissions": ["read", "execute", "deploy"],
+    "default_trust": 1.0
+  },
+  "Knowledge": {
+    "responsibilities": ["Knowledge retrieval", "Governance memory", "Style guidance"],
+    "permissions": ["read", "respond"],
+    "default_trust": 1.05
   },
   "Meta": {
     "responsibilities": ["Orchestration", "Arbitration", "Governance enforcement"],
