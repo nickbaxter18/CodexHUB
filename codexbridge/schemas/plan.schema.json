@@ -1,0 +1,202 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codexhub.dev/schemas/codexbridge/plan.schema.json",
+  "title": "CodexBridge Macro Plan",
+  "description": "Schema validating AI-generated plans that instruct CodexBridge to scaffold TypeScript macros.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "macro",
+    "description",
+    "domain",
+    "inputs",
+    "safe",
+    "requires_review"
+  ],
+  "properties": {
+    "macro": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 120,
+      "pattern": "^[A-Za-z0-9_.:-]+$",
+      "description": "Unique macro identifier. Supports namespace-style prefixes such as ::frontend.scaffold."
+    },
+    "description": {
+      "type": "string",
+      "minLength": 12,
+      "description": "Human readable explanation of what the macro will generate."
+    },
+    "domain": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 80,
+      "description": "Functional domain for routing governance (e.g. frontend, backend, analytics)."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp recording when the planner produced the plan."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^v?[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "Semantic version of the macro being proposed."
+    },
+    "inputs": {
+      "type": "array",
+      "description": "Strongly typed macro inputs exposed to downstream automation.",
+      "minItems": 0,
+      "maxItems": 32,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "type"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-zA-Z][a-zA-Z0-9_]*$",
+            "description": "Macro argument identifier exposed to TypeScript call sites."
+          },
+          "type": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 80,
+            "description": "TypeScript-friendly type descriptor (e.g. string, MacroContext)."
+          },
+          "description": {
+            "type": "string",
+            "minLength": 4,
+            "description": "Explanation describing how the argument is used."
+          },
+          "required": {
+            "type": "boolean",
+            "default": true,
+            "description": "Flag marking whether the argument must be supplied."
+          },
+          "default": {
+            "description": "Optional default value injected when an argument is omitted."
+          },
+          "example": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array",
+              "null"
+            ],
+            "description": "Representative example helping QA reason about planner output."
+          }
+        }
+      }
+    },
+    "safe": {
+      "type": "boolean",
+      "description": "Automation safety flag. Only true plans without manual review run automatically."
+    },
+    "requires_review": {
+      "type": "boolean",
+      "description": "If true the watcher must route the plan to human review."
+    },
+    "tests": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "description": "Optional automated checks that must pass after macro generation.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "unit",
+              "integration",
+              "schema",
+              "lint",
+              "custom"
+            ],
+            "description": "Classification of the proposed test."
+          },
+          "command": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Shell command or npm script executed to run the test."
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "description": "File path associated with the test for context or targeted execution."
+          },
+          "description": {
+            "type": "string",
+            "minLength": 4,
+            "description": "Narrative describing the intent of the test."
+          },
+          "timeout": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 900,
+            "description": "Optional timeout (seconds) guarding long-running checks."
+          },
+          "env": {
+            "type": "object",
+            "propertyNames": {
+              "pattern": "^[A-Z0-9_]+$"
+            },
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Map of environment variables to set before executing the test."
+          }
+        }
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9_.:-]+$"
+      },
+      "uniqueItems": true,
+      "description": "Other macros that must exist before this macro can execute."
+    },
+    "governance": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Policy metadata recorded for auditing and escalation.",
+      "properties": {
+        "policy_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 2
+          },
+          "uniqueItems": true,
+          "description": "List of policy identifiers referenced by the planner."
+        },
+        "escalation_path": {
+          "type": "string",
+          "minLength": 4,
+          "description": "Instructions for escalation when manual review is required."
+        },
+        "manual_review_reason": {
+          "type": "string",
+          "minLength": 4,
+          "description": "Explanation provided by the planner describing why human review is necessary."
+        }
+      }
+    },
+    "notes": {
+      "type": "string",
+      "description": "Free-form annotations captured for humans."
+    }
+  }
+}

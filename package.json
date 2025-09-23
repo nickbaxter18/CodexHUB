@@ -11,7 +11,8 @@
     "dev": "node src/index.js",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "test": "node test/example.test.js",
+    "test": "node --test tests",
+    "codexbridge:plans": "node codexbridge/src/plan-watcher.js",
     "prepare": "husky install",
     "release": "semantic-release",
     "editor:codex": "node editor/codex-editor.js"
@@ -21,6 +22,8 @@
     "*.{js,jsx,ts,tsx,json,md}": "prettier --write"
   },
   "dependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
     "child_process": "^1.0.2",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
