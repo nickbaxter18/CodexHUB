@@ -9,7 +9,7 @@ import fs from "fs";
 import multer from "multer";
 import { exec } from "child_process";
 import { fileURLToPath } from "url";
-import { checkApiKey } from "../backend/middleware.js";
+import { checkApiKey } from "./backend/middleware.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -168,6 +168,23 @@ export function createApp() {
     exec("git status", { cwd: ROOT_DIR }, (err, stdout, stderr) => {
       res.json({ stdout, stderr, error: err?.message });
     });
+  });
+
+  // === CURSOR CLI INTEGRATION ===
+  app.post("/cursor-agent", checkApiKey, (req, res) => {
+    const { query, options = {} } = req.body;
+    if (!query) return res.status(400).json({ error: "Missing query" });
+    
+    const command = `wsl cursor-agent "${query}"`;
+    const id = Date.now().toString();
+    const child = exec(command, { cwd: ROOT_DIR });
+    
+    tasks[id] = { status: "running", stdout: "", stderr: "" };
+    child.stdout.on("data", (d) => (tasks[id].stdout += d));
+    child.stderr.on("data", (d) => (tasks[id].stderr += d));
+    child.on("close", () => (tasks[id].status = "done"));
+    
+    res.json({ message: "Cursor Agent started", taskId: id });
   });
 
   return app;

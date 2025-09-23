@@ -63,6 +63,7 @@
         <button onclick="startTask()">⚡ Start Task</button>
         <button onclick="checkTaskStatus()">🛰 Task Status</button>
         <button onclick="gitStatus()">🌱 Git Status</button>
+        <button onclick="promptCursorAgent()">🤖 Cursor Agent</button>
         <div class="status" id="status">Idle</div>
       </header>
       <textarea id="editor"></textarea>
@@ -150,6 +151,31 @@
 
       // === File Tabs, Actions, Search, Replace, Logs, Tasks, Git ===
       // (Reuse same logic from WebsiteOS editor.html, no changes needed)
+
+      // === CURSOR AGENT INTEGRATION ===
+      async function promptCursorAgent() {
+        const query = prompt("Ask Cursor Agent:");
+        if (!query) return;
+        
+        try {
+          document.getElementById("status").textContent = "Starting Cursor Agent...";
+          
+          const res = await authFetch("/cursor-agent", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query })
+          });
+          const data = await res.json();
+          lastTaskId = data.taskId;
+          document.getElementById("status").textContent = "Cursor Agent running...";
+          
+          // Start checking task status
+          checkTaskStatus();
+        } catch (err) {
+          alert("Error: " + err.message);
+          document.getElementById("status").textContent = "Error";
+        }
+      }
 
       renderSidebar();
     </script>
