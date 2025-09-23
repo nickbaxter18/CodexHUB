@@ -5,7 +5,7 @@
   "type": "module",
   "main": "src/index.js",
   "bin": {
-    "ask": "./scripts/ask.js"
+    "ask": "scripts/ask.js"
   },
   "scripts": {
     "dev": "node src/index.js",
@@ -13,14 +13,21 @@
     "format": "prettier --write .",
     "test": "node test/example.test.js",
     "prepare": "husky install",
-    "release": "semantic-release"
+    "release": "semantic-release",
+    "editor:codex": "node editor/codex-editor.js"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": "eslint --fix",
     "*.{js,jsx,ts,tsx,json,md}": "prettier --write"
   },
   "dependencies": {
-    "openai": "^5.22.0"
+    "child_process": "^1.0.2",
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0",
+    "fs": "^0.0.1-security",
+    "multer": "^2.0.2",
+    "openai": "^5.22.0",
+    "path": "^0.12.7"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.5.0",
@@ -31,7 +38,25 @@
     "prettier": "^3.0.0",
     "semantic-release": "^24.0.0"
   },
-  "keywords": ["openai", "codex", "gpt", "cli", "nodejs"],
+  "keywords": [
+    "openai",
+    "codex",
+    "gpt",
+    "cli",
+    "nodejs"
+  ],
   "author": "Nick",
-  "license": "MIT"
+  "license": "MIT",
+  "directories": {
+    "doc": "docs",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nickbaxter18/CodexHUB.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nickbaxter18/CodexHUB/issues"
+  },
+  "homepage": "https://github.com/nickbaxter18/CodexHUB#readme"
 }

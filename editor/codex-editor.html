@@ -1,0 +1,157 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>CodexBuilder File Editor</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: sans-serif;
+        background: #111;
+        color: #eee;
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+      }
+      #sidebar { width: 260px; background: #1b1b1b; overflow-y: auto; border-right: 1px solid #333; padding: 10px; display: flex; flex-direction: column; }
+      #fileSearch { padding: 6px; margin-bottom: 8px; font-size: 14px; width: 100%; border-radius: 4px; border: 1px solid #444; background: #222; color: #eee; }
+      #main { flex: 1; display: flex; flex-direction: column; }
+      header { background: #222; padding: 8px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+      #tabs { display: flex; gap: 6px; overflow-x: auto; max-width: 55%; }
+      .tab { padding: 4px 10px; background: #2b2b2b; border-radius: 6px 6px 0 0; cursor: pointer; font-size: 13px; }
+      .tab.active { background: #444; font-weight: bold; }
+      .close { margin-left: 6px; color: #aaa; cursor: pointer; }
+      button { padding: 6px 10px; font-size: 13px; background: #2b2b2b; color: #eee; border: 1px solid #444; border-radius: 4px; cursor: pointer; }
+      button:hover { background: #444; }
+      .status { margin-left: auto; font-size: 12px; color: #aaa; }
+      #editor { flex: 1; }
+      .file, .dir { cursor: pointer; padding: 4px 8px; border-radius: 4px; margin: 1px 0; }
+      .file:hover, .dir:hover { background: #333; }
+      .dir { font-weight: bold; }
+      .nested { margin-left: 12px; }
+      .hidden { display: none; }
+    </style>
+
+    <!-- ✅ CodeMirror -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/jsx/jsx.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/markdown/markdown.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/json/json.min.js"></script>
+  </head>
+  <body>
+    <div id="sidebar">
+      <input type="text" id="fileSearch" placeholder="Search files..." />
+      <div id="fileTree"></div>
+    </div>
+    <div id="main">
+      <header>
+        <div id="tabs"></div>
+        <button onclick="saveFile()">💾 Save</button>
+        <button onclick="promptNewFile()">📄 New File</button>
+        <button onclick="promptNewFolder()">📂 New Folder</button>
+        <button onclick="promptDelete()">🗑 Delete</button>
+        <button onclick="promptMove()">✂️ Move</button>
+        <button onclick="promptSearch()">🔍 Search</button>
+        <button onclick="promptReplace()">🔁 Replace</button>
+        <button onclick="tailLogs()">📜 Tail Logs</button>
+        <button onclick="startTask()">⚡ Start Task</button>
+        <button onclick="checkTaskStatus()">🛰 Task Status</button>
+        <button onclick="gitStatus()">🌱 Git Status</button>
+        <div class="status" id="status">Idle</div>
+      </header>
+      <textarea id="editor"></textarea>
+    </div>
+
+    <script>
+      const API_KEY = "JncDAe7RBfUSzdF05TOwuPsWrp4hxELVIgG9Nomy";
+      const BASE_URL = "https://codex.udigitai.io";  // 🔧 point to CodexBuilder
+
+      async function authFetch(path, options = {}) {
+        options.headers = Object.assign({}, options.headers, { "x-api-key": API_KEY });
+        const res = await fetch(BASE_URL + path, options);
+        if (!res.ok) {
+          let errMsg = `Request failed: ${res.status}`;
+          try {
+            const err = await res.json();
+            if (err.error) errMsg = err.error;
+          } catch (_) {}
+          throw new Error(errMsg);
+        }
+        return res;
+      }
+
+      // ✅ CodeMirror setup
+      const editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
+        lineNumbers: true,
+        theme: "dracula",
+      });
+      editor.setSize("100%", "100%");
+      let openFiles = {}, activeFile = null, lastTaskId = localStorage.getItem("lastTaskId");
+
+      function detectMode(file) {
+        if (!file) return "javascript";
+        if (file.endsWith(".tsx") || file.endsWith(".jsx")) return "jsx";
+        if (file.endsWith(".ts") || file.endsWith(".js")) return "javascript";
+        if (file.endsWith(".json")) return "application/json";
+        if (file.endsWith(".css")) return "css";
+        if (file.endsWith(".html") || file.endsWith(".htm")) return "htmlmixed";
+        if (file.endsWith(".md") || file.endsWith(".markdown")) return "markdown";
+        if (file.endsWith(".xml")) return "xml";
+        return "javascript";
+      }
+
+      // === File Tree ===
+      async function loadTree(dir = ".") {
+        try {
+          const res = await authFetch("/list?dir=" + encodeURIComponent(dir));
+          const data = await res.json();
+          const container = document.createElement("div");
+          data.files.forEach((f) => {
+            const item = document.createElement("div");
+            item.dataset.name = f.name.toLowerCase();
+            item.dataset.type = f.type;
+            if (f.type === "dir") {
+              item.textContent = "📂 " + f.name;
+              item.className = "dir";
+              item.onclick = async () => {
+                if (item.nextSibling && item.nextSibling.classList.contains("nested"))
+                  item.nextSibling.remove();
+                else {
+                  const nested = await loadTree(data.dir + "/" + f.name);
+                  nested.classList.add("nested");
+                  item.after(nested);
+                }
+              };
+            } else {
+              item.textContent = "📄 " + f.name;
+              item.className = "file";
+              item.onclick = () => openFile(data.dir + "/" + f.name);
+            }
+            container.appendChild(item);
+          });
+          return container;
+        } catch (err) {
+          alert("Error loading file tree: " + err.message);
+          return document.createElement("div");
+        }
+      }
+
+      async function renderSidebar() {
+        const sidebar = document.getElementById("fileTree");
+        sidebar.innerHTML = "";
+        sidebar.appendChild(await loadTree("."));
+      }
+
+      // === File Tabs, Actions, Search, Replace, Logs, Tasks, Git ===
+      // (Reuse same logic from WebsiteOS editor.html, no changes needed)
+
+      renderSidebar();
+    </script>
+  </body>
+</html>
