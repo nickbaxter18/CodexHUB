@@ -1,0 +1,81 @@
+{
+  // ==========================================================================
+  // Header & Purpose
+  // ==========================================================================
+  // File Name: tsconfig.json
+  // Responsibility: Centralise TypeScript compiler configuration for all
+  //                 CodexHUB TypeScript surfaces including macros, watchers,
+  //                 runtime tooling, and integration tests.
+  // Why it matters: A single configuration keeps editors, CI pipelines, and
+  //                 generators aligned on strictness levels and module
+  //                 resolution, preventing drift between environments.
+
+  // ==========================================================================
+  // Imports / Dependencies
+  // ==========================================================================
+  // - Consumed by the TypeScript compiler (`typescript` devDependency).
+  // - Provides typing metadata for Node.js via the `@types/node` package.
+
+  // ==========================================================================
+  // Types / Interfaces / Schemas
+  // ==========================================================================
+  // - Configuration driven; no runtime types are declared here.
+
+  "compilerOptions": {
+    "target": "ES2021",
+    "module": "ESNext",
+    "moduleResolution": "NodeNext",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "checkJs": false,
+    "isolatedModules": true,
+    "allowSyntheticDefaultImports": true,
+    "noEmit": true,
+    "types": ["node"],
+    "baseUrl": "."
+  },
+
+  // ==========================================================================
+  // Error & Edge Handling
+  // ==========================================================================
+  // - `noEmit` guards against accidental JavaScript output during CI runs.
+  // - `allowJs` keeps JS-aware tooling operational without forcing type checks
+  //   on legacy scripts.
+
+  // ==========================================================================
+  // Performance Considerations
+  // ==========================================================================
+  // - Enabling `skipLibCheck` reduces build time while trusted type packages
+  //   continue to provide editor IntelliSense.
+  // - Incremental builds can be layered on later via `tsbuildinfo` outputs if
+  //   compilation cost becomes significant.
+
+  // ==========================================================================
+  // Exports / Public API
+  // ==========================================================================
+  // - Acts as the root config for editors and CLI invocations (e.g. `tsc`).
+  // - Downstream configs can `extends` this file for environment specific
+  //   overrides once needed.
+
+  "include": [
+    "src/**/*",
+    "codexbridge/**/*",
+    "macros/**/*",
+    "tests/**/*",
+    "scripts/**/*",
+    "editor/**/*",
+    "config/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    "coverage",
+    "tmp",
+    "**/__snapshots__/**"
+  ]
+}
