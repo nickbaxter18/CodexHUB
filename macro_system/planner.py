@@ -44,7 +44,21 @@ class MacroPlanner:
         children = [self._build_recursive(child, stack) for child in macro.calls]
         stack.pop()
 
-        return PlanStep(macro=name, description=macro.expansion, children=children)
+        return PlanStep(
+            macro=name,
+            description=macro.expansion,
+            owner_agent=macro.owner_agent,
+            outcomes=macro.outcomes,
+            acceptance_criteria=macro.acceptance_criteria,
+            qa_hooks=macro.qa_hooks,
+            phase=macro.phase,
+            priority=macro.priority,
+            status=macro.status,
+            estimated_duration=macro.estimated_duration,
+            tags=macro.tags,
+            version=macro.version,
+            children=children,
+        )
 
 
 # === Exports ===

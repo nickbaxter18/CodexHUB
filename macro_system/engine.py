@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Dict, Iterable, List, Mapping, Sequence
+from typing import Callable, Dict, Iterable, List, Mapping, Sequence
 
 from .macros import load_macros
 from .types import Macro, MacroCycleError, MacroNotFoundError
@@ -20,6 +20,8 @@ class MacroEngine:
         self._graph: Dict[str, Sequence[str]] = {
             name: tuple(macro.calls) for name, macro in self._macros.items()
         }
+        self._cache: Dict[str, str] = {}
+        self._listeners: List[Callable[[str, str], None]] = []
 
     @classmethod
     def from_json(cls, path: str | Path) -> "MacroEngine":
@@ -33,18 +35,17 @@ class MacroEngine:
         if macro_name not in self._macros:
             raise MacroNotFoundError(f"Macro '{macro_name}' is not defined.")
 
-        memo: Dict[str, str] = {}
-        return self._expand_recursive(macro_name, [], memo)
+        result = self._expand_recursive(macro_name, [], self._cache)
+        return result
 
     def expand_many(self, macro_names: Iterable[str]) -> str:
         """Expand multiple macros, reusing memoized expansions where possible."""
 
-        memo: Dict[str, str] = {}
         sections: List[str] = []
         for name in macro_names:
             if name not in self._macros:
                 raise MacroNotFoundError(f"Macro '{name}' is not defined.")
-            sections.append(self._expand_recursive(name, [], memo))
+            sections.append(self._expand_recursive(name, [], self._cache))
         return "\n\n".join(sections)
 
     def available_macros(self) -> List[str]:
@@ -119,6 +120,29 @@ class MacroEngine:
         for macro_name in self._macros:
             _dfs(macro_name)
 
+    def register_listener(self, callback: Callable[[str, str], None]) -> None:
+        """Register a callback invoked whenever a macro is freshly expanded."""
+
+        self._listeners.append(callback)
+
+    def unregister_listener(self, callback: Callable[[str, str], None]) -> None:
+        """Remove a previously registered expansion callback if present."""
+
+        try:
+            self._listeners.remove(callback)
+        except ValueError:  # pragma: no cover - defensive guard
+            pass
+
+    def invalidate_cache(self) -> None:
+        """Clear any memoised expansions."""
+
+        self._cache.clear()
+
+    def cache_size(self) -> int:
+        """Return the number of cached macro expansions."""
+
+        return len(self._cache)
+
     def _expand_recursive(self, name: str, stack: List[str], memo: Dict[str, str]) -> str:
         if name in memo:
             return memo[name]
@@ -139,7 +163,14 @@ class MacroEngine:
 
         result = "\n\n".join(sections)
         memo[name] = result
+        self._emit_event(name, result)
         return result
+
+    def _emit_event(self, name: str, expansion: str) -> None:
+        """Notify registered listeners of a newly calculated expansion."""
+
+        for callback in list(self._listeners):
+            callback(name, expansion)
 
 
 # === Performance ===
@@ -149,3 +180,4 @@ class MacroEngine:
 
 # === Exports ===
 __all__ = ["MacroEngine"]
+

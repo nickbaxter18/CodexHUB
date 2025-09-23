@@ -9,35 +9,150 @@
       "::frontendgen-motion",
       "::frontendgen-tests",
       "::frontendgen-docs"
-    ]
+    ],
+    "ownerAgent": "Frontend Agent",
+    "outcomes": [
+      "Frontend Agent delivers the ::frontendgen macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ],
+    "phase": "build",
+    "priority": "P1",
+    "status": "planned",
+    "estimatedDuration": "8h",
+    "tags": [
+      "frontend",
+      "scaffold"
+    ],
+    "version": "1.1.0"
   },
   "::frontendgen-layout": {
     "expansion": "Designs grid layouts using patterns such as cinematic Z, modular cockpit, F-pattern or gallery spotlight to organise the UI.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Frontend Agent",
+    "outcomes": [
+      "Frontend Agent delivers the ::frontendgen-layout macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::frontendgen-state": {
     "expansion": "Sets up state management (Context API or Redux) and data flow for components, ensuring unidirectional data and predictable updates.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Backend Agent",
+    "outcomes": [
+      "Backend Agent delivers the ::frontendgen-state macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::frontendgen-forms": {
     "expansion": "Creates form components with validation, error handling and user friendly UX guidelines.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Frontend Agent",
+    "outcomes": [
+      "Frontend Agent delivers the ::frontendgen-forms macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::frontendgen-access": {
     "expansion": "Performs accessibility audits including contrast ratio checks, ARIA attributes and keyboard navigation.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::frontendgen-access macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::frontendgen-motion": {
     "expansion": "Integrates Framer Motion to add subtle animations following motion grammar for natural interactions.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Frontend Agent",
+    "outcomes": [
+      "Frontend Agent delivers the ::frontendgen-motion macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::frontendgen-tests": {
     "expansion": "Generates front-end unit tests using React Testing Library with high coverage.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::frontendgen-tests macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::frontendgen-docs": {
     "expansion": "Produces UI documentation with Storybook or equivalent to showcase components and usage.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Knowledge Agent",
+    "outcomes": [
+      "Knowledge Agent delivers the ::frontendgen-docs macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::backendgen": {
     "expansion": "Creates a robust RESTful API scaffold using FastAPI (or chosen framework), including database connection, models and security primitives.",
@@ -50,39 +165,158 @@
       "::backendgen-logging",
       "::backendgen-tests",
       "::backendgen-docs"
+    ],
+    "ownerAgent": "Backend Agent",
+    "outcomes": [
+      "Backend Agent delivers the ::backendgen macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
     ]
   },
   "::backendgen-api": {
     "expansion": "Scaffolds CRUD endpoints with pagination and filtering on the chosen framework.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Backend Agent",
+    "outcomes": [
+      "Backend Agent delivers the ::backendgen-api macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::backendgen-auth": {
     "expansion": "Implements authentication and authorization mechanisms (JWT or OAuth2).",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Backend Agent",
+    "outcomes": [
+      "Backend Agent delivers the ::backendgen-auth macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::backendgen-models": {
     "expansion": "Defines ORM models and Pydantic schemas based on the database schema.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Backend Agent",
+    "outcomes": [
+      "Backend Agent delivers the ::backendgen-models macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::backendgen-security": {
     "expansion": "Adds security measures such as input sanitization, CSRF protection and rate limiting.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::backendgen-security macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::backendgen-migrations": {
     "expansion": "Creates database migration scripts to manage schema evolution (Alembic or equivalent).",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Backend Agent",
+    "outcomes": [
+      "Backend Agent delivers the ::backendgen-migrations macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::backendgen-logging": {
     "expansion": "Sets up structured logging and monitoring hooks to trace API behaviour and performance.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Backend Agent",
+    "outcomes": [
+      "Backend Agent delivers the ::backendgen-logging macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::backendgen-tests": {
     "expansion": "Generates API unit and integration tests to ensure endpoint correctness and error handling.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::backendgen-tests macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::backendgen-docs": {
     "expansion": "Auto-generates API documentation (OpenAPI/Swagger) and example usages.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Knowledge Agent",
+    "outcomes": [
+      "Knowledge Agent delivers the ::backendgen-docs macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::dbdesign": {
     "expansion": "Designs a database schema (relational or NoSQL) from business requirements.",
@@ -92,27 +326,106 @@
       "::dbdesign-index",
       "::dbdesign-seed",
       "::dbdesign-migrate"
+    ],
+    "ownerAgent": "Backend Agent",
+    "outcomes": [
+      "Backend Agent delivers the ::dbdesign macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
     ]
   },
   "::dbdesign-schema": {
     "expansion": "Produces entity–relationship diagrams and table/collection definitions with keys and constraints.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Backend Agent",
+    "outcomes": [
+      "Backend Agent delivers the ::dbdesign-schema macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::dbdesign-normalize": {
     "expansion": "Normalises the schema to third normal form while balancing denormalization for performance.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Backend Agent",
+    "outcomes": [
+      "Backend Agent delivers the ::dbdesign-normalize macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::dbdesign-index": {
     "expansion": "Suggests indexes and partitioning strategies to optimise query performance.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Frontend Agent",
+    "outcomes": [
+      "Frontend Agent delivers the ::dbdesign-index macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::dbdesign-seed": {
     "expansion": "Generates seed data aligned with schema definitions for development and testing.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::dbdesign-seed macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::dbdesign-migrate": {
     "expansion": "Writes migration scripts to evolve the database schema safely across versions.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Backend Agent",
+    "outcomes": [
+      "Backend Agent delivers the ::dbdesign-migrate macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::apidocgen": {
     "expansion": "Generates comprehensive API documentation including endpoints, request/response examples and error codes.",
@@ -121,23 +434,89 @@
       "::apidocgen-code",
       "::apidocgen-errors",
       "::apidocgen-tests"
+    ],
+    "ownerAgent": "Knowledge Agent",
+    "outcomes": [
+      "Knowledge Agent delivers the ::apidocgen macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
     ]
   },
   "::apidocgen-swagger": {
     "expansion": "Creates an OpenAPI/Swagger specification for the API.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Backend Agent",
+    "outcomes": [
+      "Backend Agent delivers the ::apidocgen-swagger macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::apidocgen-code": {
     "expansion": "Provides example code snippets (curl, Python, JS) demonstrating API usage.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Backend Agent",
+    "outcomes": [
+      "Backend Agent delivers the ::apidocgen-code macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::apidocgen-errors": {
     "expansion": "Documents standardised error codes and messages with causes and solutions.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Architect Agent",
+    "outcomes": [
+      "Architect Agent delivers the ::apidocgen-errors macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::apidocgen-tests": {
     "expansion": "Creates tests to validate that the API documentation matches the actual implementation.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::apidocgen-tests macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::testgen": {
     "expansion": "Constructs a suite of tests across units, integrations, end-to-end scenarios, coverage analysis and performance.",
@@ -148,31 +527,129 @@
       "::testgen-coverage",
       "::testgen-performance",
       "::testgen-security"
+    ],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::testgen macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
     ]
   },
   "::testgen-unit": {
     "expansion": "Generates unit tests for individual functions or modules, covering nominal and edge cases.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::testgen-unit macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::testgen-integration": {
     "expansion": "Produces integration tests to verify interactions between components and external services.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::testgen-integration macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::testgen-e2e": {
     "expansion": "Creates end-to-end tests with headless browsers or API calls to simulate real user flows.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::testgen-e2e macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::testgen-coverage": {
     "expansion": "Measures code coverage and identifies untested paths.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::testgen-coverage macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::testgen-performance": {
     "expansion": "Implements performance stress tests and benchmarks to assess throughput and latency.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::testgen-performance macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::testgen-security": {
     "expansion": "Creates security tests to check for vulnerabilities such as injection, authentication bypass and misconfigurations.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::testgen-security macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::cicdsetup": {
     "expansion": "Sets up continuous integration and deployment pipelines with linting, testing, building, deployment and monitoring stages.",
@@ -184,39 +661,160 @@
       "::cicd-monitor",
       "::cicd-notify",
       "::cicd-rollback"
+    ],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::cicdsetup macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
     ]
   },
   "::cicd-lint": {
     "expansion": "Runs linting tools (ESLint, PEP8, Prettier) and applies automatic fixes to formatting issues.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::cicd-lint macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::cicd-test": {
     "expansion": "Executes unit, integration and end-to-end tests during the pipeline.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::cicd-test macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::cicd-build": {
     "expansion": "Builds and bundles the application (e.g., Webpack/Vite bundling or Docker image creation).",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Architect Agent",
+    "outcomes": [
+      "Architect Agent delivers the ::cicd-build macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::cicd-deploy": {
     "expansion": "Deploys the application to the target environment (Docker, Render, Kubernetes) and performs environment configuration.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Architect Agent",
+    "outcomes": [
+      "Architect Agent delivers the ::cicd-deploy macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::cicd-monitor": {
     "expansion": "Monitors deployed applications with health checks and alerts to detect failures or performance degradations.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Architect Agent",
+    "outcomes": [
+      "Architect Agent delivers the ::cicd-monitor macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::cicd-notify": {
     "expansion": "Sends notifications (Slack, email) about pipeline status and deployment outcomes.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Architect Agent",
+    "outcomes": [
+      "Architect Agent delivers the ::cicd-notify macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::cicd-rollback": {
     "expansion": "Provides automated rollback procedures when deployments fail or regress.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Architect Agent",
+    "outcomes": [
+      "Architect Agent delivers the ::cicd-rollback macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::lintfix": {
     "expansion": "Applies linting and formatting rules to all project files and reports violations.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::lintfix macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::securityaudit": {
     "expansion": "Runs a comprehensive security audit, scanning source code, dependencies and configurations for vulnerabilities and ethics issues.",
@@ -228,35 +826,147 @@
       "::security-report",
       "::security-fairness",
       "::security-ethics"
+    ],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::securityaudit macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
     ]
   },
   "::security-static": {
     "expansion": "Performs static analysis (SAST) to detect vulnerabilities such as SQL injection or XSS.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::security-static macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::security-deps": {
     "expansion": "Scans dependencies for known CVEs and insecure versions.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::security-deps macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::security-injection": {
     "expansion": "Identifies injection vulnerabilities in code paths accepting external input.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::security-injection macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::security-authz": {
     "expansion": "Audits roles, permissions and secrets management for proper authorization enforcement.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::security-authz macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::security-report": {
     "expansion": "Generates a risk report with severity scores and remediation advice.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::security-report macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::security-fairness": {
     "expansion": "Assesses algorithmic bias and fairness metrics across demographic groups.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::security-fairness macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::security-ethics": {
     "expansion": "Evaluates ethical compliance including privacy, diversity and inclusion considerations.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::security-ethics macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::perfprofile": {
     "expansion": "Profiles code performance (CPU, memory, I/O, network) and recommends optimisations.",
@@ -266,27 +976,105 @@
       "::perf-io",
       "::perf-network",
       "::perf-benchmark"
+    ],
+    "ownerAgent": "Architect Agent",
+    "outcomes": [
+      "Architect Agent delivers the ::perfprofile macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
     ]
   },
   "::perf-cpu": {
     "expansion": "Measures CPU usage and identifies hot spots in the code.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Architect Agent",
+    "outcomes": [
+      "Architect Agent delivers the ::perf-cpu macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::perf-memory": {
     "expansion": "Analyzes memory allocations and detects leaks.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Architect Agent",
+    "outcomes": [
+      "Architect Agent delivers the ::perf-memory macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::perf-io": {
     "expansion": "Profiles disk and network I/O patterns to detect bottlenecks.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Architect Agent",
+    "outcomes": [
+      "Architect Agent delivers the ::perf-io macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::perf-network": {
     "expansion": "Measures network latency, throughput and concurrency for API endpoints.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Backend Agent",
+    "outcomes": [
+      "Backend Agent delivers the ::perf-network macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::perf-benchmark": {
     "expansion": "Provides comparative benchmarks across different implementations or configurations.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Architect Agent",
+    "outcomes": [
+      "Architect Agent delivers the ::perf-benchmark macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::coderefactor": {
     "expansion": "Refactors code to improve maintainability and architecture using design patterns and modularisation.",
@@ -296,27 +1084,105 @@
       "::refactor-modular",
       "::refactor-complexity",
       "::refactor-docs"
+    ],
+    "ownerAgent": "Frontend Agent",
+    "outcomes": [
+      "Frontend Agent delivers the ::coderefactor macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
     ]
   },
   "::refactor-smells": {
     "expansion": "Detects and resolves code smells such as duplication, large methods and long parameter lists.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Architect Agent",
+    "outcomes": [
+      "Architect Agent delivers the ::refactor-smells macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::refactor-patterns": {
     "expansion": "Suggests design patterns and architecture improvements to enhance flexibility and extensibility.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Frontend Agent",
+    "outcomes": [
+      "Frontend Agent delivers the ::refactor-patterns macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::refactor-modular": {
     "expansion": "Splits monoliths into modular components and services.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Architect Agent",
+    "outcomes": [
+      "Architect Agent delivers the ::refactor-modular macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::refactor-complexity": {
     "expansion": "Reduces cyclomatic complexity by simplifying logic and improving cohesion.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Architect Agent",
+    "outcomes": [
+      "Architect Agent delivers the ::refactor-complexity macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::refactor-docs": {
     "expansion": "Updates docstrings and comments to reflect refactored code structure.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Knowledge Agent",
+    "outcomes": [
+      "Knowledge Agent delivers the ::refactor-docs macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::codequality": {
     "expansion": "Evaluates code readability, maintainability, architecture and adherence to standards.",
@@ -325,23 +1191,93 @@
       "::codequality-maintain",
       "::codequality-architecture",
       "::codequality-standards"
+    ],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::codequality macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
     ]
   },
   "::codequality-read": {
     "expansion": "Assesses variable naming, code clarity and documentation quality.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::codequality-read macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::codequality-maintain": {
     "expansion": "Identifies maintainability issues such as tight coupling and poor separation of concerns.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::codequality-maintain macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::codequality-architecture": {
     "expansion": "Evaluates overall architecture coherence and alignment with best practices.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::codequality-architecture macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::codequality-standards": {
     "expansion": "Ensures adherence to organisational coding standards and style guides.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::codequality-standards macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::typegen": {
     "expansion": "Generates type definitions and schemas (Pydantic, TypeScript, JSON Schema, Protobuf, ORM models) from data samples or schemas.",
@@ -351,27 +1287,105 @@
       "::typegen-jsonschema",
       "::typegen-proto",
       "::typegen-orm"
+    ],
+    "ownerAgent": "Backend Agent",
+    "outcomes": [
+      "Backend Agent delivers the ::typegen macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
     ]
   },
   "::typegen-pydantic": {
     "expansion": "Creates Pydantic models from JSON or Python dictionaries.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Architect Agent",
+    "outcomes": [
+      "Architect Agent delivers the ::typegen-pydantic macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::typegen-ts": {
     "expansion": "Generates TypeScript interfaces from API responses or schemas.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Backend Agent",
+    "outcomes": [
+      "Backend Agent delivers the ::typegen-ts macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::typegen-jsonschema": {
     "expansion": "Produces JSON Schema definitions for data validation and documentation.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Knowledge Agent",
+    "outcomes": [
+      "Knowledge Agent delivers the ::typegen-jsonschema macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::typegen-proto": {
     "expansion": "Creates Protocol Buffer definitions for gRPC services.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Architect Agent",
+    "outcomes": [
+      "Architect Agent delivers the ::typegen-proto macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::typegen-orm": {
     "expansion": "Generates ORM models (SQLAlchemy, TypeORM) based on schema definitions.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Backend Agent",
+    "outcomes": [
+      "Backend Agent delivers the ::typegen-orm macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::mockdata": {
     "expansion": "Generates realistic test data for development, testing and demonstration purposes.",
@@ -380,23 +1394,91 @@
       "::mockdata-distrib",
       "::mockdata-edge",
       "::mockdata-sensitive"
+    ],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::mockdata macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
     ]
   },
   "::mockdata-sample": {
     "expansion": "Creates standard dummy data consistent with given types and constraints.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Architect Agent",
+    "outcomes": [
+      "Architect Agent delivers the ::mockdata-sample macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::mockdata-distrib": {
     "expansion": "Samples data from statistical distributions to mimic real-world values.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Architect Agent",
+    "outcomes": [
+      "Architect Agent delivers the ::mockdata-distrib macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::mockdata-edge": {
     "expansion": "Produces edge-case data to test boundary conditions.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::mockdata-edge macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::mockdata-sensitive": {
     "expansion": "Generates anonymised versions of sensitive data to preserve privacy while testing.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::mockdata-sensitive macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::deployscript": {
     "expansion": "Creates deployment scripts and configuration for various environments (Docker, Kubernetes, Render).",
@@ -405,23 +1487,88 @@
       "::deploy-env",
       "::deploy-scaling",
       "::deploy-monitor"
+    ],
+    "ownerAgent": "Architect Agent",
+    "outcomes": [
+      "Architect Agent delivers the ::deployscript macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
     ]
   },
   "::deploy-docker": {
     "expansion": "Generates Dockerfile and docker-compose configurations with best practices.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Architect Agent",
+    "outcomes": [
+      "Architect Agent delivers the ::deploy-docker macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::deploy-env": {
     "expansion": "Creates environment variable templates and secrets management guidelines.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Architect Agent",
+    "outcomes": [
+      "Architect Agent delivers the ::deploy-env macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::deploy-scaling": {
     "expansion": "Produces configuration for autoscaling clusters (Kubernetes, Render) with resource limits and health probes.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Architect Agent",
+    "outcomes": [
+      "Architect Agent delivers the ::deploy-scaling macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::deploy-monitor": {
     "expansion": "Integrates logging and monitoring agents for observability after deployment.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Architect Agent",
+    "outcomes": [
+      "Architect Agent delivers the ::deploy-monitor macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::uiuxaudit": {
     "expansion": "Conducts UI/UX audits covering colour harmony, typography, layout, motion and emotional resonance.",
@@ -431,27 +1578,106 @@
       "::uiux-layout",
       "::uiux-motion",
       "::uiux-emotion"
+    ],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::uiuxaudit macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
     ]
   },
   "::uiux-color": {
     "expansion": "Checks colour palettes for harmony and sufficient contrast ratios.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Architect Agent",
+    "outcomes": [
+      "Architect Agent delivers the ::uiux-color macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::uiux-typography": {
     "expansion": "Evaluates typography flow, font choices and legibility across devices.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Architect Agent",
+    "outcomes": [
+      "Architect Agent delivers the ::uiux-typography macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::uiux-layout": {
     "expansion": "Analyzes spatial rhythm, grid balance and alignment.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Architect Agent",
+    "outcomes": [
+      "Architect Agent delivers the ::uiux-layout macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::uiux-motion": {
     "expansion": "Assesses animation usage for naturalness, timing and context.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Frontend Agent",
+    "outcomes": [
+      "Frontend Agent delivers the ::uiux-motion macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::uiux-emotion": {
     "expansion": "Reviews emotional tone and resonance of the user interface.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Frontend Agent",
+    "outcomes": [
+      "Frontend Agent delivers the ::uiux-emotion macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::analyticsinject": {
     "expansion": "Inserts analytics instrumentation with probabilistic sampling for event tracking and performance metrics.",
@@ -460,23 +1686,89 @@
       "::analytics-performance",
       "::analytics-userflow",
       "::analytics-abtest"
+    ],
+    "ownerAgent": "Architect Agent",
+    "outcomes": [
+      "Architect Agent delivers the ::analyticsinject macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
     ]
   },
   "::analytics-events": {
     "expansion": "Tracks page views, clicks and custom events across the application.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Architect Agent",
+    "outcomes": [
+      "Architect Agent delivers the ::analytics-events macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::analytics-performance": {
     "expansion": "Measures load times, rendering performance and resource usage for analytics.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Architect Agent",
+    "outcomes": [
+      "Architect Agent delivers the ::analytics-performance macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::analytics-userflow": {
     "expansion": "Collects funnel and conversion metrics to understand user behaviour.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Architect Agent",
+    "outcomes": [
+      "Architect Agent delivers the ::analytics-userflow macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::analytics-abtest": {
     "expansion": "Creates instrumentation for A/B testing of variants and features.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::analytics-abtest macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::erroranalysis": {
     "expansion": "Parses logs and diagnostics to identify root causes of errors and suggest fixes.",
@@ -486,27 +1778,106 @@
       "::error-fixsuggest",
       "::error-reproduce",
       "::error-report"
+    ],
+    "ownerAgent": "Knowledge Agent",
+    "outcomes": [
+      "Knowledge Agent delivers the ::erroranalysis macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
     ]
   },
   "::error-logparser": {
     "expansion": "Parses application logs and extracts error events, stack traces and context.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Architect Agent",
+    "outcomes": [
+      "Architect Agent delivers the ::error-logparser macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::error-rootcause": {
     "expansion": "Identifies the root cause of errors by analysing call stacks and dependencies.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Architect Agent",
+    "outcomes": [
+      "Architect Agent delivers the ::error-rootcause macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::error-fixsuggest": {
     "expansion": "Suggests code changes or configuration adjustments to fix identified issues.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Architect Agent",
+    "outcomes": [
+      "Architect Agent delivers the ::error-fixsuggest macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::error-reproduce": {
     "expansion": "Generates reproducible test cases to trigger the observed error.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::error-reproduce macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::error-report": {
     "expansion": "Summarizes the error analysis in a clear report for developers and stakeholders.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Knowledge Agent",
+    "outcomes": [
+      "Knowledge Agent delivers the ::error-report macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::integrationtest": {
     "expansion": "Builds automated integration test scripts for third-party APIs and services.",
@@ -515,23 +1886,93 @@
       "::integration-call",
       "::integration-validate",
       "::integration-teardown"
+    ],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::integrationtest macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
     ]
   },
   "::integration-setup": {
     "expansion": "Sets up the testing environment and any required test data for integration tests.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::integration-setup macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::integration-call": {
     "expansion": "Sends requests to APIs and services with various payloads during integration tests.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::integration-call macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::integration-validate": {
     "expansion": "Validates responses and side effects from integration tests against expected outcomes.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::integration-validate macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::integration-teardown": {
     "expansion": "Cleans up the environment after integration tests are executed.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::integration-teardown macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::fulldeveloper": {
     "expansion": "Orchestrates the rapid creation of an end-to-end prototype by combining front-end, back-end, database, testing and deployment tasks.",
@@ -540,36 +1981,204 @@
       "::prototype-tests",
       "::prototype-deploy",
       "::prototype-docs"
+    ],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::fulldeveloper macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
     ]
   },
   "::prototype-scaffold": {
     "expansion": "Quickly builds a working UI, API and database skeleton for prototyping.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Backend Agent",
+    "outcomes": [
+      "Backend Agent delivers the ::prototype-scaffold macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::prototype-tests": {
     "expansion": "Sets up a minimal testing harness for the prototype to ensure basic functionality.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::prototype-tests macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::prototype-deploy": {
     "expansion": "Packages the prototype for deployment, creating necessary scripts and configuration.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Architect Agent",
+    "outcomes": [
+      "Architect Agent delivers the ::prototype-deploy macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::prototype-docs": {
     "expansion": "Generates basic documentation describing the prototype’s architecture and usage.",
-    "calls": []
+    "calls": [],
+    "ownerAgent": "Knowledge Agent",
+    "outcomes": [
+      "Knowledge Agent delivers the ::prototype-docs macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
+    ]
   },
   "::frontendsuite": {
-    "expansion": "Executes all front-end related macros including layout, state, forms, access, motion, tests and docs.",
+    "expansion": "Executes the front-end scaffold and coordinates QA alignment for the resulting assets.",
     "calls": [
       "::frontendgen",
-      "::frontendgen-layout",
-      "::frontendgen-state",
-      "::frontendgen-forms",
-      "::frontendgen-access",
-      "::frontendgen-motion",
-      "::frontendgen-tests",
-      "::frontendgen-docs"
-    ]
+      "::qa-agent-md-integration"
+    ],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::frontendsuite macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
+    ],
+    "phase": "qa",
+    "priority": "P0",
+    "status": "ready",
+    "estimatedDuration": "3h",
+    "tags": [
+      "frontend",
+      "qa",
+      "integration"
+    ],
+    "version": "1.0.1"
+  },
+  "::qa-agent-md-integration": {
+    "expansion": "Maps macro outcomes to QA Agent MD assertions, establishing measurable checkpoints and reporting cadence.",
+    "calls": [],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent MD receives structured checkpoints with measurable signals.",
+      "Macro outcomes align with automated QA scorecards."
+    ],
+    "acceptanceCriteria": [
+      "Every referenced outcome includes at least one measurable assertion.",
+      "QA hooks enumerate trigger identifiers for automation."
+    ],
+    "qaHooks": [
+      "qa::calibrate",
+      "qa::score",
+      "qa::report"
+    ],
+    "phase": "qa",
+    "priority": "P0",
+    "status": "in-progress",
+    "estimatedDuration": "2h",
+    "tags": [
+      "qa",
+      "integration"
+    ],
+    "version": "1.0.0"
+  },
+  "::meta-agent-orchestration": {
+    "expansion": "Defines scheduling phases, dependencies, and communication cadences for the Meta Agent to coordinate.",
+    "calls": [],
+    "ownerAgent": "Meta Agent",
+    "outcomes": [
+      "Meta Agent can generate a sequenced orchestration timeline with explicit phase markers.",
+      "Dependencies between macro deliverables are encoded for conflict avoidance."
+    ],
+    "acceptanceCriteria": [
+      "Each macro dependency includes a status gate and expected duration.",
+      "A communication cadence is documented for cross-agent sync."
+    ],
+    "qaHooks": [
+      "meta::sync",
+      "meta::timeline"
+    ],
+    "phase": "orchestration",
+    "priority": "P1",
+    "status": "planned",
+    "estimatedDuration": "90m",
+    "tags": [
+      "meta",
+      "scheduling"
+    ],
+    "version": "1.0.0"
+  },
+  "::agent-integration-suite": {
+    "expansion": "Synchronises QA Agent MD calibration with Meta Agent orchestration to provide integration-ready outputs.",
+    "calls": [
+      "::qa-agent-md-integration",
+      "::meta-agent-orchestration"
+    ],
+    "ownerAgent": "Meta Agent",
+    "outcomes": [
+      "QA and Meta agents collaborate on a single, deduplicated execution record.",
+      "Integration tasks expose metrics, owners, and dependency chains for automation."
+    ],
+    "acceptanceCriteria": [
+      "QA deliverables reference the same identifiers surfaced in the Meta manifest.",
+      "Meta Agent receives priority and status metadata from each contributing macro."
+    ],
+    "qaHooks": [
+      "meta::sync",
+      "qa::handoff"
+    ],
+    "phase": "integration",
+    "priority": "P0",
+    "status": "ready",
+    "estimatedDuration": "2h",
+    "tags": [
+      "integration",
+      "meta",
+      "qa"
+    ],
+    "version": "1.0.0"
   },
   "::backendsuite": {
     "expansion": "Runs back-end scaffolding, DB design and API documentation macros.",
@@ -577,6 +2186,19 @@
       "::backendgen",
       "::dbdesign",
       "::apidocgen"
+    ],
+    "ownerAgent": "Backend Agent",
+    "outcomes": [
+      "Backend Agent delivers the ::backendsuite macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
     ]
   },
   "::testsuite": {
@@ -585,6 +2207,20 @@
       "::testgen",
       "::integrationtest",
       "::erroranalysis"
+    ],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::testsuite macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
     ]
   },
   "::cicdsuite": {
@@ -593,12 +2229,40 @@
       "::cicdsetup",
       "::securityaudit",
       "::perfprofile"
+    ],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::cicdsuite macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
     ]
   },
   "::securesuite": {
     "expansion": "Combines security analysis, fairness and ethical review macros.",
     "calls": [
       "::securityaudit"
+    ],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::securesuite macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
     ]
   },
   "::optimizsuite": {
@@ -607,12 +2271,39 @@
       "::perfprofile",
       "::coderefactor",
       "::codequality"
+    ],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::optimizsuite macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
     ]
   },
   "::deploysuite": {
     "expansion": "Generates deployment scripts and configures scaling and monitoring.",
     "calls": [
       "::deployscript"
+    ],
+    "ownerAgent": "Architect Agent",
+    "outcomes": [
+      "Architect Agent delivers the ::deploysuite macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
     ]
   },
   "::datasuite": {
@@ -620,6 +2311,19 @@
     "calls": [
       "::typegen",
       "::mockdata"
+    ],
+    "ownerAgent": "Backend Agent",
+    "outcomes": [
+      "Backend Agent delivers the ::datasuite macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
     ]
   },
   "::uxsuite": {
@@ -627,6 +2331,19 @@
     "calls": [
       "::uiuxaudit",
       "::analyticsinject"
+    ],
+    "ownerAgent": "Frontend Agent",
+    "outcomes": [
+      "Frontend Agent delivers the ::uxsuite macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
     ]
   },
   "::fullstacksuite": {
@@ -636,7 +2353,22 @@
       "::backendsuite",
       "::testsuite",
       "::cicdsuite",
-      "::deploysuite"
+      "::deploysuite",
+      "::agent-integration-suite"
+    ],
+    "ownerAgent": "QA Agent",
+    "outcomes": [
+      "QA Agent delivers the ::fullstacksuite macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
     ]
   },
   "::masterdev": {
@@ -647,6 +2379,19 @@
       "::securesuite",
       "::optimizsuite",
       "::uxsuite"
+    ],
+    "ownerAgent": "Architect Agent",
+    "outcomes": [
+      "Architect Agent delivers the ::masterdev macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::review",
+      "qa::report"
     ]
   }
 }

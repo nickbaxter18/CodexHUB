@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 from typing import Dict, Iterable, Mapping
 
+from .schema import validate_macro_catalog
 from .types import Macro, MacroDefinitionError
 
 # === Implementation ===
@@ -18,6 +19,8 @@ def load_macros(source: Mapping[str, object] | str | Path) -> Dict[str, Macro]:
         data = _load_json(Path(source))
     else:
         data = dict(source)
+
+    validate_macro_catalog(data)
 
     macros: Dict[str, Macro] = {}
     for name, payload in data.items():
@@ -49,6 +52,16 @@ def _convert_macro(name: str, payload: object) -> Macro:
 
     expansion = payload.get("expansion")
     calls = payload.get("calls", [])
+    owner_agent = payload.get("ownerAgent")
+    outcomes = payload.get("outcomes", [])
+    acceptance_criteria = payload.get("acceptanceCriteria", [])
+    qa_hooks = payload.get("qaHooks", [])
+    phase = payload.get("phase")
+    priority = payload.get("priority")
+    status = payload.get("status")
+    estimated_duration = payload.get("estimatedDuration")
+    tags = payload.get("tags", [])
+    version = payload.get("version")
 
     if not isinstance(expansion, str) or not expansion.strip():
         raise MacroDefinitionError(f"Macro '{name}' must include a non-empty expansion string.")
@@ -56,7 +69,54 @@ def _convert_macro(name: str, payload: object) -> Macro:
     if not isinstance(calls, list) or not _all_strings(calls):
         raise MacroDefinitionError(f"Macro '{name}' calls must be a list of macro names.")
 
-    return Macro(name=name, expansion=expansion, calls=list(calls))
+    if any(not item.startswith("::") for item in calls):
+        raise MacroDefinitionError(
+            f"Macro '{name}' calls contain an entry that is not a macro name."
+        )
+
+    if owner_agent is not None and not isinstance(owner_agent, str):
+        raise MacroDefinitionError(
+            f"Macro '{name}' ownerAgent must be a string when provided."
+        )
+
+    for optional_field, value in (
+        ("phase", phase),
+        ("priority", priority),
+        ("status", status),
+        ("estimatedDuration", estimated_duration),
+        ("version", version),
+    ):
+        if value is not None and not isinstance(value, str):
+            raise MacroDefinitionError(
+                f"Macro '{name}' field '{optional_field}' must be a string when provided."
+            )
+
+    for field_name, value in (
+        ("outcomes", outcomes),
+        ("acceptanceCriteria", acceptance_criteria),
+        ("qaHooks", qa_hooks),
+        ("tags", tags),
+    ):
+        if not isinstance(value, list) or not _all_strings(value):
+            raise MacroDefinitionError(
+                f"Macro '{name}' field '{field_name}' must be a list of strings."
+            )
+
+    return Macro(
+        name=name,
+        expansion=expansion,
+        calls=list(calls),
+        owner_agent=owner_agent,
+        outcomes=list(outcomes),
+        acceptance_criteria=list(acceptance_criteria),
+        qa_hooks=list(qa_hooks),
+        phase=phase,
+        priority=priority,
+        status=status,
+        estimated_duration=estimated_duration,
+        tags=list(tags),
+        version=version,
+    )
 
 
 # === Performance ===

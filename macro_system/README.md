@@ -10,6 +10,15 @@ assembled from small reusable building blocks.
 ## Features
 - Pure JSON storage for macro definitions to guarantee auditability.
 - Recursive expansion with cycle detection and helpful diagnostics.
+- Structured agent metadata (owners, outcomes, acceptance criteria, QA hooks,
+  phases, priorities and durations) on every macro to support orchestration
+  with QA and Meta agents.
+- Built-in metadata audits plus CLI exports for QA checklists and Meta Agent
+  orchestration manifests.
+- Persistent expansion cache with optional listener hooks so automation can
+  react to newly computed expansions without recomputation overhead.
+- JSON Schema utilities for validating catalogues and sharing contracts with
+  partner tools.
 - Support for hierarchical macros covering front-end, back-end, testing,
   security, deployment, analytics and more.
 - Extensible design that allows adding or modifying macros solely by editing
@@ -47,11 +56,42 @@ python -m macro_system.cli --describe ::frontendgen
 python -m macro_system.cli --deps ::masterdev
 python -m macro_system.cli --validate ::masterdev
 python -m macro_system.cli ::frontendsuite ::backendsuite --output plan.txt
+python -m macro_system.cli --qa-checklist ::frontendgen > qa.json
+python -m macro_system.cli --meta-manifest ::masterdev > manifest.json
+python -m macro_system.cli --report
+python -m macro_system.cli --export-schema > macro-schema.json
 ```
 
 The CLI supports listing and describing macros, inspecting dependencies,
 validating the graph, exporting combined expansions directly to disk and
-rendering nested execution plans for automation.
+rendering nested execution plans for automation. The new checklist/manifest
+commands provide QA-ready tasks and orchestrator manifests for downstream
+agents, `--report` surfaces metadata gaps across the catalogue and
+`--export-schema` publishes the JSON Schema contract for the macro catalogue.
+
+### Schema and Validation
+
+The CLI exports the schema so that QA Agent MD and Meta Agent pipelines can
+validate catalogues before execution. The loader enforces the same constraints
+at runtime, guaranteeing that keys such as `phase`, `priority`, `status`,
+`estimatedDuration` and `tags` remain well-formed across macro definitions.
+
+### Caching & Observability
+
+`MacroEngine` now memoises expansions across calls and exposes listener hooks:
+
+```python
+def on_expand(name: str, expansion: str) -> None:
+    print("Expanded", name)
+
+engine = MacroEngine.from_json("macros.json")
+engine.register_listener(on_expand)
+engine.expand("::frontendsuite")  # Listener fires only for uncached macros
+```
+
+You can clear the memoised results with `engine.invalidate_cache()` or inspect
+the current cache size via `engine.cache_size()` when debugging orchestration
+traffic.
 
 ### Actionable Plans
 For agents that need structured steps rather than plain prose, the
@@ -67,6 +107,8 @@ planner = MacroPlanner(engine)
 plan = planner.build("::masterdev")
 print(plan.to_outline())  # Human readable
 json_payload = plan.to_dict()  # Structured for programmatic consumption
+qa_items = plan.to_qa_checklist()  # QA Agent MD checklist payload
+manifest = plan.to_manifest()  # Meta Agent orchestration manifest
 ```
 
 The CLI exposes the same capability:
@@ -75,6 +117,19 @@ The CLI exposes the same capability:
 python -m macro_system.cli --plan ::masterdev
 python -m macro_system.cli --plan-json ::fullstacksuite
 ```
+
+### Agent Metadata & Migration
+
+Each macro now carries agent-aware metadata. When introducing new macros or
+upgrading legacy catalogues, use the migration utility to populate the fields
+automatically:
+
+```bash
+python -m macro_system.migrations.add_agent_metadata path/to/macros.json
+```
+
+The script infers the owning agent, populates default outcomes, and injects QA
+hooks so that QA/Meta orchestration tools can consume the catalogue immediately.
 
 ## Philosophy
 The system is intentionally data-driven. Macro behaviour lives entirely in
