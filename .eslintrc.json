@@ -1,15 +1,56 @@
 {
+  "root": true,
   "env": {
     "es2021": true,
     "node": true
   },
-  "extends": ["eslint:recommended"],
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
+  "plugins": ["@typescript-eslint", "prettier"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended"
+  ],
+  "ignorePatterns": [
+    "node_modules/",
+    "dist/",
+    "build/",
+    "coverage/",
+    "tmp/",
+    "**/node_modules/",
+    "AGENTS.md/**",
+    "backend/health-test/**",
+    "bad.js",
+    "editor/**",
+    "test.js"
+  ],
   "rules": {
-    "semi": ["error", "always"],
-    "quotes": ["error", "double"]
-  }
+    "prettier/prettier": "error",
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_"
+      }
+    ],
+    "@typescript-eslint/consistent-type-imports": "warn"
+  },
+  "overrides": [
+    {
+      "files": ["**/*.ts", "**/*.tsx"],
+      "parserOptions": {
+        "project": ["./tsconfig.json"]
+      }
+    },
+    {
+      "files": ["**/*.js", "**/*.mjs", "**/*.cjs"],
+      "parserOptions": {
+        "project": null
+      }
+    }
+  ]
 }

@@ -14,18 +14,22 @@
 // ==========================================================================
 // Imports / Dependencies
 // ==========================================================================
-import { promises as fs } from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { exec } from 'child_process';
-import { promisify } from 'util';
-import crypto from 'crypto';
+import { promises as fs } from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import { exec } from "child_process";
+import { promisify } from "util";
+import crypto from "crypto";
 
+<<<<<<< HEAD
 import PlanValidator, { PlanValidationError } from './plan-validator.js';
 import {
   loadCodexBridgeConfig,
   CodexRcConfigError
 } from './codexrc-loader.js';
+=======
+import PlanValidator, { PlanValidationError } from "./plan-validator.js";
+>>>>>>> origin/codex/improve-eslint-setup-and-ci-integration
 
 // ==========================================================================
 // Types / Interfaces / Schemas (JSDoc for tooling clarity)
@@ -77,7 +81,7 @@ export class PlanProcessingError extends Error {
    */
   constructor(message, details = {}) {
     super(message);
-    this.name = 'PlanProcessingError';
+    this.name = "PlanProcessingError";
     this.details = details;
   }
 }
@@ -107,20 +111,28 @@ export class PlanWatcher {
     this.validator = options.validator ?? new PlanValidator();
     this.logger = options.logger ?? console;
 
-    this.plansDir = options.plansDir ?? path.join(repoRoot, 'plans', 'from_gpt');
-    this.processedDir = options.processedDir ?? path.join(repoRoot, 'plans', 'processed');
-    this.rejectedDir = options.rejectedDir ?? path.join(repoRoot, 'plans', 'rejected');
-    this.macrosDir = options.macrosDir ?? path.join(repoRoot, 'macros');
-    this.registryPath = options.registryPath ?? path.join(this.macrosDir, 'registry.json');
-    this.resultsDir = options.resultsDir ?? path.join(repoRoot, 'results');
-    this.macroCachePath = options.macroCachePath ?? path.join(repoRoot, 'cache', 'macro_output.json');
-    this.testCachePath = options.testCachePath ?? path.join(repoRoot, 'cache', 'test_outcomes.json');
+    this.plansDir =
+      options.plansDir ?? path.join(repoRoot, "plans", "from_gpt");
+    this.processedDir =
+      options.processedDir ?? path.join(repoRoot, "plans", "processed");
+    this.rejectedDir =
+      options.rejectedDir ?? path.join(repoRoot, "plans", "rejected");
+    this.macrosDir = options.macrosDir ?? path.join(repoRoot, "macros");
+    this.registryPath =
+      options.registryPath ?? path.join(this.macrosDir, "registry.json");
+    this.resultsDir = options.resultsDir ?? path.join(repoRoot, "results");
+    this.macroCachePath =
+      options.macroCachePath ??
+      path.join(repoRoot, "cache", "macro_output.json");
+    this.testCachePath =
+      options.testCachePath ??
+      path.join(repoRoot, "cache", "test_outcomes.json");
 
     this.macroTypesImport = options.macroTypesImport ?? null;
-    this.macroTypesSymbol = options.macroTypesSymbol ?? 'MacroContext';
-    this.macroSuffix = options.macroSuffix ?? 'Macro';
+    this.macroTypesSymbol = options.macroTypesSymbol ?? "MacroContext";
+    this.macroSuffix = options.macroSuffix ?? "Macro";
 
-    this.defaultTestCommand = options.defaultTestCommand ?? 'npm test';
+    this.defaultTestCommand = options.defaultTestCommand ?? "npm test";
     this.defaultTestTimeout = options.defaultTestTimeout ?? 600; // seconds
 
     this.runCommand = options.runCommand ?? defaultCommandRunner;
@@ -150,9 +162,9 @@ export class PlanWatcher {
   async #listPlanFiles() {
     try {
       const items = await fs.readdir(this.plansDir);
-      return items.filter((item) => item.endsWith('.json')).sort();
+      return items.filter((item) => item.endsWith(".json")).sort();
     } catch (error) {
-      if ((/** @type {NodeJS.ErrnoException} */ (error)).code === 'ENOENT') {
+      if (/** @type {NodeJS.ErrnoException} */ (error).code === "ENOENT") {
         return [];
       }
       throw error;
@@ -172,9 +184,11 @@ export class PlanWatcher {
       path.dirname(this.registryPath),
       path.dirname(this.macroCachePath),
       path.dirname(this.testCachePath),
-      this.resultsDir
+      this.resultsDir,
     ];
-    await Promise.all(directories.map((dir) => fs.mkdir(dir, { recursive: true })));
+    await Promise.all(
+      directories.map((dir) => fs.mkdir(dir, { recursive: true }))
+    );
   }
 
   /**
@@ -184,29 +198,33 @@ export class PlanWatcher {
    */
   async #handlePlanFile(filePath) {
     const filename = path.basename(filePath);
-    const rawContent = await fs.readFile(filePath, 'utf-8');
+    const rawContent = await fs.readFile(filePath, "utf-8");
     let parsedPlan;
 
     try {
       parsedPlan = JSON.parse(rawContent);
     } catch (error) {
-      const reason = 'Invalid JSON payload supplied by planner.';
+      const reason = "Invalid JSON payload supplied by planner.";
       await this.#archiveRejected({
         filename,
         originalPath: filePath,
         rawContent,
         rejectionReason: reason,
-        issues: [error instanceof Error ? error.message : 'Unknown JSON parse error']
+        issues: [
+          error instanceof Error ? error.message : "Unknown JSON parse error",
+        ],
       });
       await this.#writeResultArtifact({
         filename,
-        status: 'rejected',
+        status: "rejected",
         failureReason: reason,
         failureDetails: {
-          issues: [error instanceof Error ? error.message : 'Unknown JSON parse error']
-        }
+          issues: [
+            error instanceof Error ? error.message : "Unknown JSON parse error",
+          ],
+        },
       });
-      return { status: 'rejected', filename, reason };
+      return { status: "rejected", filename, reason };
     }
 
     try {
@@ -214,70 +232,78 @@ export class PlanWatcher {
     } catch (error) {
       const issues =
         error instanceof PlanValidationError
-          ? error.issues ?? []
-          : [error instanceof Error ? error.message : 'Unknown validation error'];
-      const reason = 'Plan failed schema validation.';
+          ? (error.issues ?? [])
+          : [
+              error instanceof Error
+                ? error.message
+                : "Unknown validation error",
+            ];
+      const reason = "Plan failed schema validation.";
       await this.#archiveRejected({
         filename,
         originalPath: filePath,
         plan: parsedPlan,
         rawContent,
         rejectionReason: reason,
-        issues
+        issues,
       });
       await this.#writeResultArtifact({
         filename,
         plan: parsedPlan,
-        status: 'rejected',
+        status: "rejected",
         failureReason: reason,
-        failureDetails: { issues }
+        failureDetails: { issues },
       });
-      return { status: 'rejected', filename, reason };
+      return { status: "rejected", filename, reason };
     }
 
     const plan = /** @type {CodexBridgePlan} */ (parsedPlan);
     const gate = this.validator.getAutomationGate(plan);
     if (!gate.autoExecutable) {
-      const reason = gate.reason ?? 'Automation disabled by policy flags.';
+      const reason = gate.reason ?? "Automation disabled by policy flags.";
       await this.#archiveRejected({
         filename,
         originalPath: filePath,
         plan,
         rawContent,
         rejectionReason: reason,
-        issues: gate.reason ? [gate.reason] : []
+        issues: gate.reason ? [gate.reason] : [],
       });
       await this.#writeResultArtifact({
         filename,
         plan,
-        status: 'rejected',
+        status: "rejected",
         failureReason: reason,
-        failureDetails: gate.reason ? { issues: [gate.reason] } : undefined
+        failureDetails: gate.reason ? { issues: [gate.reason] } : undefined,
       });
-      return { status: 'rejected', filename, reason };
+      return { status: "rejected", filename, reason };
     }
 
     const missingDependencies = await this.#findMissingDependencies(plan);
     if (missingDependencies.length > 0) {
-      const reason = `Missing dependencies: ${missingDependencies.join(', ')}`;
+      const reason = `Missing dependencies: ${missingDependencies.join(", ")}`;
       await this.#archiveRejected({
         filename,
         originalPath: filePath,
         plan,
         rawContent,
         rejectionReason: reason,
-        issues: ['All dependencies must exist in macros/registry.json before execution.']
+        issues: [
+          "All dependencies must exist in macros/registry.json before execution.",
+        ],
       });
       await this.#writeResultArtifact({
         filename,
         plan,
-        status: 'rejected',
+        status: "rejected",
         failureReason: reason,
         failureDetails: {
-          issues: ['All dependencies must exist in macros/registry.json before execution.']
-        }
+          issues: [
+            "All dependencies must exist in macros/registry.json before execution.",
+          ],
+        },
       });
-      return { status: 'rejected', filename, reason };
+      return { status: "rejected", filename, reason };
     }
 
     const macroExists = await this.#macroAlreadyRegistered(plan.macro);
@@ -289,19 +315,24 @@ export class PlanWatcher {
         plan,
         rawContent,
         rejectionReason: reason,
-        issues: ['Duplicate macros must be handled manually.']
+        issues: ["Duplicate macros must be handled manually."],
       });
       await this.#writeResultArtifact({
         filename,
         plan,
-        status: 'rejected',
+        status: "rejected",
         failureReason: reason,
-        failureDetails: { issues: ['Duplicate macros must be handled manually.'] }
+        failureDetails: {
+          issues: ["Duplicate macros must be handled manually."],
+        },
       });
-      return { status: 'rejected', filename, reason };
+      return { status: "rejected", filename, reason };
     }
 
-    const registryBefore = await this.#readJsonFile(this.registryPath, { version: 1, macros: [] });
+    const registryBefore = await this.#readJsonFile(this.registryPath, {
+      version: 1,
+      macros: [],
+    });
 
     try {
       const macroPath = await this.#generateMacroStub(plan, filename);
@@ -322,7 +353,7 @@ export class PlanWatcher {
         plan,
         macroPath,
         testResults,
-        status: 'processed'
+        status: "processed",
       });
       await this.#archiveProcessed({
         filename,
@@ -331,28 +362,28 @@ export class PlanWatcher {
         rawContent,
         macroPath,
         registryEntry,
-        testResults
+        testResults,
       });
       this.logger.info?.(`Processed plan ${filename} → ${macroPath}`);
-      return { status: 'processed', filename, macroPath };
+      return { status: "processed", filename, macroPath };
     } catch (error) {
       const reason =
         error instanceof PlanProcessingError
           ? error.message
           : error instanceof Error
             ? error.message
-            : 'Unknown plan processing failure.';
+            : "Unknown plan processing failure.";
       await this.#writeResultArtifact({
         filename,
         plan,
-        status: 'rejected',
+        status: "rejected",
         failureReason: reason,
         failureDetails:
           error instanceof PlanProcessingError
             ? error.details
             : error instanceof PlanValidationError
               ? { issues: error.issues }
-              : undefined
+              : undefined,
       });
       await this.#archiveRejected({
         filename,
@@ -363,9 +394,9 @@ export class PlanWatcher {
         issues:
           error instanceof PlanProcessingError && error.details?.issues
             ? error.details.issues
-            : []
+            : [],
       });
-      return { status: 'rejected', filename, reason };
+      return { status: "rejected", filename, reason };
     }
   }
 
@@ -378,9 +409,16 @@ export class PlanWatcher {
     if (!plan.dependencies || plan.dependencies.length === 0) {
       return [];
     }
-    const registry = await this.#readJsonFile(this.registryPath, { version: 1, macros: [] });
-    const registered = new Set(registry.macros?.map((macro) => macro.identifier) ?? []);
-    return plan.dependencies.filter((dependency) => !registered.has(dependency));
+    const registry = await this.#readJsonFile(this.registryPath, {
+      version: 1,
+      macros: [],
+    });
+    const registered = new Set(
+      registry.macros?.map((macro) => macro.identifier) ?? []
+    );
+    return plan.dependencies.filter(
+      (dependency) => !registered.has(dependency)
+    );
   }
 
   /**
@@ -389,8 +427,13 @@ export class PlanWatcher {
    * @returns {Promise<boolean>}
    */
   async #macroAlreadyRegistered(identifier) {
-    const registry = await this.#readJsonFile(this.registryPath, { version: 1, macros: [] });
-    return (registry.macros ?? []).some((macro) => macro.identifier === identifier);
+    const registry = await this.#readJsonFile(this.registryPath, {
+      version: 1,
+      macros: [],
+    });
+    return (registry.macros ?? []).some(
+      (macro) => macro.identifier === identifier
+    );
   }
 
   /**
@@ -409,14 +452,18 @@ export class PlanWatcher {
     const functionName = this.#macroIdentifierToFunctionName(plan.macro);
     const generatedAt = new Date().toISOString();
     const relativeTypes = path
-      .relative(macroDir, path.join(this.macrosDir, 'types.ts'))
-      .replace(/\\/g, '/');
+      .relative(macroDir, path.join(this.macrosDir, "types.ts"))
+      .replace(/\\/g, "/");
     const importPath =
-      this.macroTypesImport ?? this.#normaliseImportPath(relativeTypes.replace(/\.ts$/, ''));
+      this.macroTypesImport ??
+      this.#normaliseImportPath(relativeTypes.replace(/\.ts$/, ""));
     const paramDocs = plan.inputs
-      .map((input) => ` * @param {${input.type}} ${input.name} - ${input.description ?? 'Macro input.'}`)
-      .join('\n');
-    const headerComment = `/**\n * Auto-generated macro stub.\n * Macro Identifier: ${plan.macro}\n * Description: ${plan.description}\n * Domain: ${plan.domain}\n * Source Plan: ${filename}\n * Generated: ${generatedAt}\n${paramDocs ? '\n *\n' + paramDocs : ''}\n */`;
+      .map(
+        (input) =>
+          ` * @param {${input.type}} ${input.name} - ${input.description ?? "Macro input."}`
+      )
+      .join("\n");
+    const headerComment = `/**\n * Auto-generated macro stub.\n * Macro Identifier: ${plan.macro}\n * Description: ${plan.description}\n * Domain: ${plan.domain}\n * Source Plan: ${filename}\n * Generated: ${generatedAt}\n${paramDocs ? "\n *\n" + paramDocs : ""}\n */`;
 
     const content = `${headerComment}
 
@@ -432,7 +479,7 @@ export async function ${functionName}(context: ${this.macroTypesSymbol}): Promis
 export default ${functionName};
 `;
 
-    await fs.writeFile(macroPath, content, 'utf-8');
+    await fs.writeFile(macroPath, content, "utf-8");
     return macroPath;
   }
 
@@ -442,7 +489,7 @@ export default ${functionName};
    * @returns {string}
    */
   #normaliseImportPath(importPath) {
-    if (importPath.startsWith('.')) {
+    if (importPath.startsWith(".")) {
       return importPath;
     }
     return `./${importPath}`;
@@ -454,14 +501,21 @@ export default ${functionName};
    * @returns {string[]}
    */
   #macroIdentifierToSegments(identifier) {
-    const trimmed = identifier.replace(/^::/, '');
+    const trimmed = identifier.replace(/^::/, "");
     const rawSegments = trimmed.split(/[.:]/).filter(Boolean);
     if (rawSegments.length === 0) {
-      throw new PlanProcessingError('Unable to derive macro filename from identifier.', {
-        issues: ['Macro identifier must include at least one alphanumeric segment.']
-      });
+      throw new PlanProcessingError(
+        "Unable to derive macro filename from identifier.",
+        {
+          issues: [
+            "Macro identifier must include at least one alphanumeric segment.",
+          ],
+        }
+      );
     }
-    return rawSegments.map((segment) => segment.replace(/[^a-zA-Z0-9_-]/g, '-').toLowerCase());
+    return rawSegments.map((segment) =>
+      segment.replace(/[^a-zA-Z0-9_-]/g, "-").toLowerCase()
+    );
   }
 
   /**
@@ -476,9 +530,9 @@ export default ${functionName};
         .split(/[-_]/)
         .filter(Boolean)
         .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-        .join('')
+        .join("")
     );
-    return `${capitalised.join('')}${this.macroSuffix}`;
+    return `${capitalised.join("")}${this.macroSuffix}`;
   }
 
   /**
@@ -488,7 +542,10 @@ export default ${functionName};
    * @returns {Promise<object>} - Registry entry written to disk.
    */
   async #updateRegistry(plan, macroPath) {
-    const registry = await this.#readJsonFile(this.registryPath, { version: 1, macros: [] });
+    const registry = await this.#readJsonFile(this.registryPath, {
+      version: 1,
+      macros: [],
+    });
     const entry = {
       identifier: plan.macro,
       description: plan.description,
@@ -497,9 +554,9 @@ export default ${functionName};
       requires_review: plan.requires_review,
       inputs: plan.inputs,
       dependencies: plan.dependencies ?? [],
-      version: plan.version ?? '0.1.0',
+      version: plan.version ?? "0.1.0",
       macro_path: path.relative(this.repoRoot, macroPath),
-      generated_at: new Date().toISOString()
+      generated_at: new Date().toISOString(),
     };
 
     const macros = [...(registry.macros ?? []), entry];
@@ -515,7 +572,8 @@ export default ${functionName};
    * @returns {Promise<object[]>}
    */
   async #executePlanTests(plan) {
-    const tests = plan.tests && plan.tests.length > 0 ? plan.tests : [{ type: 'default' }];
+    const tests =
+      plan.tests && plan.tests.length > 0 ? plan.tests : [{ type: "default" }];
     const results = [];
     for (const test of tests) {
       const command = test.command ?? this.defaultTestCommand;
@@ -526,27 +584,28 @@ export default ${functionName};
         const { stdout, stderr } = await this.runCommand(command, {
           cwd: this.repoRoot,
           env,
-          timeout
+          timeout,
         });
         const durationMs = Date.now() - start;
         results.push({
-          status: 'passed',
-          type: test.type ?? 'custom',
+          status: "passed",
+          type: test.type ?? "custom",
           command,
           stdout,
           stderr,
-          durationMs
+          durationMs,
         });
       } catch (error) {
         const durationMs = Date.now() - start;
-        const stdout = error?.stdout ?? '';
-        const stderr = error?.stderr ?? (error instanceof Error ? error.message : '');
-        throw new PlanProcessingError('Plan tests failed.', {
-          issues: [stderr || 'Test command exited with non-zero status.'],
+        const stdout = error?.stdout ?? "";
+        const stderr =
+          error?.stderr ?? (error instanceof Error ? error.message : "");
+        throw new PlanProcessingError("Plan tests failed.", {
+          issues: [stderr || "Test command exited with non-zero status."],
           command,
           durationMs,
           stdout,
-          stderr
+          stderr,
         });
       }
     }
@@ -565,7 +624,7 @@ export default ${functionName};
     macros[plan.macro] = {
       macro_path: path.relative(this.repoRoot, macroPath),
       generated_at: new Date().toISOString(),
-      status: 'stub_created'
+      status: "stub_created",
     };
     await this.#writeJsonFile(this.macroCachePath, { ...cache, macros });
   }
@@ -581,7 +640,7 @@ export default ${functionName};
     const macros = cache.macros ?? {};
     macros[plan.macro] = {
       last_run: new Date().toISOString(),
-      results: testResults
+      results: testResults,
     };
     await this.#writeJsonFile(this.testCachePath, { ...cache, macros });
   }
@@ -599,8 +658,8 @@ export default ${functionName};
    * @returns {Promise<void>}
    */
   async #writeResultArtifact(payload) {
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const baseName = payload.filename.replace(/\.json$/, '');
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const baseName = payload.filename.replace(/\.json$/, "");
     const targetPath = path.join(
       this.resultsDir,
       `${timestamp}__${baseName}__${payload.status}.json`
@@ -608,10 +667,12 @@ export default ${functionName};
     const serialisable = {
       plan_identifier: payload.plan?.macro,
       status: payload.status,
-      macro_path: payload.macroPath ? path.relative(this.repoRoot, payload.macroPath) : undefined,
+      macro_path: payload.macroPath
+        ? path.relative(this.repoRoot, payload.macroPath)
+        : undefined,
       test_results: payload.testResults,
       failure_reason: payload.failureReason,
-      failure_details: payload.failureDetails
+      failure_details: payload.failureDetails,
     };
     await this.#writeJsonFile(targetPath, serialisable);
   }
@@ -632,13 +693,13 @@ export default ${functionName};
     const payload = {
       ...options.plan,
       codexbridge: {
-        status: 'processed',
+        status: "processed",
         processed_at: new Date().toISOString(),
         macro_path: path.relative(this.repoRoot, options.macroPath),
         registry_entry: options.registryEntry,
         tests: options.testResults,
-        plan_sha256: this.#hashContent(options.rawContent)
-      }
+        plan_sha256: this.#hashContent(options.rawContent),
+      },
     };
     const targetPath = path.join(this.processedDir, options.filename);
     await this.#writeJsonFile(targetPath, payload);
@@ -660,12 +721,14 @@ export default ${functionName};
     const payload = {
       ...(options.plan ?? {}),
       codexbridge: {
-        status: 'rejected',
+        status: "rejected",
         processed_at: new Date().toISOString(),
         reason: options.rejectionReason,
         issues: options.issues ?? [],
-        plan_sha256: options.rawContent ? this.#hashContent(options.rawContent) : undefined
-      }
+        plan_sha256: options.rawContent
+          ? this.#hashContent(options.rawContent)
+          : undefined,
+      },
     };
     if (!options.plan && options.rawContent) {
       payload.raw_plan = options.rawContent;
@@ -684,10 +747,10 @@ export default ${functionName};
    */
   async #readJsonFile(filePath, fallback) {
     try {
-      const content = await fs.readFile(filePath, 'utf-8');
+      const content = await fs.readFile(filePath, "utf-8");
       return JSON.parse(content);
     } catch (error) {
-      if ((/** @type {NodeJS.ErrnoException} */ (error)).code === 'ENOENT') {
+      if (/** @type {NodeJS.ErrnoException} */ (error).code === "ENOENT") {
         return fallback;
       }
       throw error;
@@ -703,7 +766,7 @@ export default ${functionName};
   async #writeJsonFile(filePath, data) {
     await fs.mkdir(path.dirname(filePath), { recursive: true });
     const json = JSON.stringify(data, null, 2);
-    await fs.writeFile(filePath, json, 'utf-8');
+    await fs.writeFile(filePath, json, "utf-8");
   }
 
   /**
@@ -712,7 +775,7 @@ export default ${functionName};
    * @returns {string}
    */
   #hashContent(content) {
-    return crypto.createHash('sha256').update(content).digest('hex');
+    return crypto.createHash("sha256").update(content).digest("hex");
   }
 }
 
@@ -732,6 +795,7 @@ export default PlanWatcher;
 const modulePath = fileURLToPath(import.meta.url);
 if (process.argv[1] && path.resolve(process.argv[1]) === modulePath) {
   // Module executed via `node codexbridge/src/plan-watcher.js`
+<<<<<<< HEAD
   (async () => {
     try {
       const { resolved } = await loadCodexBridgeConfig({ repoRoot: process.cwd() });
@@ -770,6 +834,21 @@ if (process.argv[1] && path.resolve(process.argv[1]) === modulePath) {
         return;
       }
       console.error('CodexBridge watcher encountered an error:', error);
+=======
+  const watcher = new PlanWatcher();
+  watcher
+    .processPendingPlans()
+    .then((outcomes) => {
+      const summary = outcomes
+        .map((outcome) => `${outcome.filename}:${outcome.status}`)
+        .join(", ");
+      console.log(
+        `CodexBridge watcher processed plans → ${summary || "no pending plans."}`
+      );
+    })
+    .catch((error) => {
+      console.error("CodexBridge watcher encountered an error:", error);
+>>>>>>> origin/codex/improve-eslint-setup-and-ci-integration
       process.exitCode = 1;
     }
   })();

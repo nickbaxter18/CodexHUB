@@ -13,10 +13,12 @@
 // ==========================================================================
 // Imports / Dependencies
 // ==========================================================================
-import { promises as fs } from 'fs';
-import path from 'path';
-import Ajv2020 from 'ajv/dist/2020.js';
-import addFormats from 'ajv-formats';
+import { promises as fs } from "fs";
+import path from "path";
+import JsonSchemaValidator, {
+  createDefaultAjv,
+  SchemaValidationError,
+} from "./validation/json-schema-validator.js";
 
 // ==========================================================================
 // Types / Interfaces / Schemas (JSDoc based for strong tooling support)
@@ -76,6 +78,7 @@ import addFormats from 'ajv-formats';
  * @typedef {Object} PlanValidatorOptions
  * @property {string} [schemaPath] - Optional override for the schema location.
  * @property {import('ajv').default} [ajv] - Pre-configured Ajv instance (mainly for testing).
+ * @property {JsonSchemaValidator} [schemaValidator] - Injected schema validator used for plan validation.
  */
 
 // ==========================================================================
@@ -91,7 +94,7 @@ export class PlanValidationError extends Error {
    */
   constructor(message, issues = []) {
     super(message);
-    this.name = 'PlanValidationError';
+    this.name = "PlanValidationError";
     this.issues = issues;
   }
 }
@@ -106,70 +109,21 @@ export class PlanValidator {
   constructor(options = {}) {
     const defaultSchemaPath = path.join(
       process.cwd(),
-      'codexbridge',
-      'schemas',
-      'plan.schema.json'
+      "codexbridge",
+      "schemas",
+      "plan.schema.json"
     );
-    this.schemaPath = options.schemaPath ?? defaultSchemaPath;
-    this.ajv = options.ajv ?? this.#createAjvInstance();
-    this.compiledValidator = null;
-    this.schema = null;
-  }
+    const schemaPath = options.schemaPath ?? defaultSchemaPath;
 
-  /**
-   * Lazily initialises an Ajv instance with the formats used in the schema.
-   * @returns {Ajv}
-   */
-  #createAjvInstance() {
-    const ajv = new Ajv2020({
-      strict: false,
-      allErrors: true,
-      allowUnionTypes: true,
-      coerceTypes: false,
-      removeAdditional: false
-    });
-    addFormats(ajv);
-    return ajv;
-  }
-
-  /**
-   * Loads the JSON schema from disk exactly once.
-   * @returns {Promise<object>}
-   */
-  async loadSchema() {
-    if (this.schema) {
-      return this.schema;
+    if (options.schemaValidator) {
+      this.schemaValidator = options.schemaValidator;
+    } else {
+      const ajvInstance = options.ajv ?? createDefaultAjv();
+      this.schemaValidator = new JsonSchemaValidator({
+        schemaPath,
+        ajv: ajvInstance,
+      });
     }
-
-    const schemaBuffer = await fs.readFile(this.schemaPath, 'utf-8');
-    try {
-      this.schema = JSON.parse(schemaBuffer);
-    } catch (error) {
-      throw new PlanValidationError('Failed to parse plan schema JSON.', [
-        error instanceof Error ? error.message : 'Unknown schema parse error'
-      ]);
-    }
-    return this.schema;
-  }
-
-  /**
-   * Compiles and caches the schema validation function.
-   * @returns {Promise<Function>}
-   */
-  async #getValidator() {
-    if (this.compiledValidator) {
-      return this.compiledValidator;
-    }
-
-    const schema = await this.loadSchema();
-    try {
-      this.compiledValidator = this.ajv.compile(schema);
-    } catch (error) {
-      throw new PlanValidationError('Unable to compile plan schema.', [
-        error instanceof Error ? error.message : 'Unknown schema compilation error'
-      ]);
-    }
-    return this.compiledValidator;
   }
 
   /**
@@ -178,14 +132,23 @@ export class PlanValidator {
    * @returns {Promise<ValidationResult>}
    */
   async validate(plan) {
-    const validator = await this.#getValidator();
-    const valid = validator(plan);
+    let validationResult;
+    try {
+      validationResult = await this.schemaValidator.validate(plan);
+    } catch (error) {
+      if (error instanceof SchemaValidationError) {
+        throw new PlanValidationError(error.message, error.issues ?? []);
+      }
+      throw error;
+    }
 
-    if (valid) {
+    if (validationResult.valid) {
       return { valid: true };
     }
 
-    const issues = (validator.errors ?? []).map((error) => this.#formatError(error));
+    const issues = (validationResult.errors ?? []).map((error) =>
+      this.#formatError(error)
+    );
     return { valid: false, errors: issues };
   }
 
@@ -195,7 +158,7 @@ export class PlanValidator {
    * @param {string} [context] - Contextual label used in error messages (e.g. filename).
    * @returns {Promise<void>}
    */
-  async assertValid(plan, context = 'plan') {
+  async assertValid(plan, context = "plan") {
     const result = await this.validate(plan);
     if (!result.valid) {
       const prefix = `Plan validation failed for ${context}`;
@@ -209,13 +172,13 @@ export class PlanValidator {
    * @returns {Promise<CodexBridgePlan>}
    */
   async validateFile(filePath) {
-    const rawContent = await fs.readFile(filePath, 'utf-8');
+    const rawContent = await fs.readFile(filePath, "utf-8");
     let payload;
     try {
       payload = JSON.parse(rawContent);
     } catch (error) {
       throw new PlanValidationError(`Unable to parse JSON plan: ${filePath}`, [
-        error instanceof Error ? error.message : 'Unknown parse error'
+        error instanceof Error ? error.message : "Unknown parse error",
       ]);
     }
 
@@ -232,14 +195,14 @@ export class PlanValidator {
     if (!plan.safe) {
       return {
         autoExecutable: false,
-        reason: 'Plan marked as unsafe by planner.'
+        reason: "Plan marked as unsafe by planner.",
       };
     }
 
     if (plan.requires_review) {
       return {
         autoExecutable: false,
-        reason: 'Plan requires manual review before execution.'
+        reason: "Plan requires manual review before execution.",
       };
     }
 
@@ -253,12 +216,15 @@ export class PlanValidator {
    */
   #formatError(error) {
     const dataPath = error.instancePath || error.schemaPath;
-    const message = error.message ?? 'Schema violation detected.';
-    if (error.keyword === 'additionalProperties' && error.params?.additionalProperty) {
+    const message = error.message ?? "Schema violation detected.";
+    if (
+      error.keyword === "additionalProperties" &&
+      error.params?.additionalProperty
+    ) {
       return `${dataPath} Unexpected property: ${error.params.additionalProperty}.`;
     }
-    if (error.keyword === 'enum') {
-      return `${dataPath} ${message}. Allowed values: ${error.params?.allowedValues?.join(', ')}`;
+    if (error.keyword === "enum") {
+      return `${dataPath} ${message}. Allowed values: ${error.params?.allowedValues?.join(", ")}`;
     }
     return `${dataPath} ${message}`;
   }
