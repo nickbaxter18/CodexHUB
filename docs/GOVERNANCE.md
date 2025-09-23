@@ -14,10 +14,11 @@ It covers both the structure and process for maintaining governance configuratio
 
 ### Files
 
-- `config/governance.json` – Arbitration priorities, trust thresholds, drift detection, fallback macros.
+- `config/governance.json` – Arbitration priorities, trust thresholds, operational drift guardrails, fallback macros.
 - `config/agents.json` – Agent responsibilities, permissions, and default trust scores.
 - `config/qa_policies.json` – Metric budgets expressed as probabilistic thresholds.
 - `config/qa_rules.json` – Detailed QA budgets, metrics, remediation macros, and macro schemas.
+- `config/drift.json` – Statistical drift reference windows and PSI/KS/KL enforcement thresholds.
 
 ### Editing Workflow
 
@@ -35,7 +36,7 @@ It covers both the structure and process for maintaining governance configuratio
 
 - [ ] Arbitration lists remain ordered by priority and cover all high-risk metrics.
 - [ ] Trust multipliers keep scores within `[0.1, 1.5]` bounds.
-- [ ] Drift detection thresholds balance sensitivity and noise.
+- [ ] Drift detection thresholds balance sensitivity and noise (PSI, KS, KL).
 - [ ] Fallback macro identifiers map to registered macros in macro registry.
 - [ ] Agents gain explicit responsibilities and permissions.
 
@@ -50,7 +51,7 @@ It covers both the structure and process for maintaining governance configuratio
 
 ### Configuration Controls
 
-- **Config Validation:** `src/common/config_loader.py` defines Pydantic schemas for all YAML configurations under `config/`. CI should load `config/default.yaml`, `config/metrics.yaml`, and `config/governance.yaml` to ensure schema compliance before merges.
+- **Config Validation:** `meta_agent/config_loader.py` validates JSON governance assets (`governance.json`, `qa_policies.json`, `qa_rules.json`, and `drift.json`) against the schemas in `config/*.schema.json`. The `scripts/validate_configs.py` helper runs these checks locally and in CI.
 - **Governance Thresholds:** Metric and fairness thresholds declared in `config/metrics.yaml` are consumed by `src/training/metrics.py` and `src/governance/fairness.py` during evaluation.
 
 ### Fairness Management

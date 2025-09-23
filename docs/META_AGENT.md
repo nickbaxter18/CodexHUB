@@ -10,7 +10,7 @@ updating trust scores, detecting drift, and orchestrating fallback macros.
 - **ConfigLoader** – Validates governance, agent, and QA policy configuration using JSON Schema.
 - **TrustEngine** – Maintains Bayesian-style trust scores with durable journalling.
 - **ArbitrationEngine** – Resolves conflicts using governance priorities and trust weights.
-- **DriftDetector** – Monitors sliding windows of QA outcomes to flag repeated failures.
+- **DriftDetector** – Computes PSI/KS/KL divergence against governance reference profiles while still tracking repeated failures.
 - **FallbackManager** – Maps metrics to fallback macros and triggers registered callbacks.
 - **Logger** – Emits structured JSON telemetry for observability.
 
@@ -19,7 +19,7 @@ updating trust scores, detecting drift, and orchestrating fallback macros.
 1. QA agents publish `qa_success` or `qa_failure` events to the `QAEventBus`.
 2. Meta Agent sanitises payloads, validates structure, and updates trust scores.
 3. Conflicts are queued per metric and resolved via `ArbitrationEngine` using trust-weighted priorities.
-4. DriftDetector analyses sliding windows; detected drift emits `qa_drift` events.
+4. DriftDetector evaluates statistical divergence (PSI/KS/KL) plus repeated-failure windows; detected drift emits `qa_drift` events with calibrated severity.
 5. FallbackManager triggers registered macros when metrics exceed governance thresholds.
 6. Structured arbitration logs are appended to `logs/arbitrations.jsonl`.
 

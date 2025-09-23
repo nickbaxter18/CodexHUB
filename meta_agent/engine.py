@@ -76,6 +76,15 @@ class MetaAgent:
         arbitration_cfg = governance.get("arbitration", {})
         trust_cfg = governance.get("trust_thresholds", {})
         drift_cfg = governance.get("drift_detection", {"window_size": 5, "failure_threshold": 3})
+        drift_payload: Dict[str, Any] = {}
+        try:
+            drift_payload = config_loader.get_drift_profiles()
+        except ValueError as exc:
+            # Propagate configuration errors with additional context for operators.
+            raise ValueError("Failed to load drift detection profiles") from exc
+        metric_profiles: Mapping[str, Mapping[str, Any]] = drift_payload.get("metrics", {})
+        window_size = int(drift_payload.get("window_size", drift_cfg.get("window_size", 5)))
+        min_samples = int(drift_payload.get("min_samples", drift_cfg.get("min_samples", 30)))
         fallbacks = governance.get("fallbacks", {})
         log_directory = log_dir or Path("logs")
         log_directory.mkdir(parents=True, exist_ok=True)
@@ -92,8 +101,10 @@ class MetaAgent:
             max_queue=int(arbitration_cfg.get("max_queue_size", 50)),
         )
         drift = DriftDetector(
-            window_size=int(drift_cfg.get("window_size", 5)),
+            window_size=window_size,
             threshold=int(drift_cfg.get("failure_threshold", 3)),
+            metric_configs=metric_profiles,
+            min_samples=min_samples,
         )
         fallback = FallbackManager(fallbacks)
         macro_manager = MacroDependencyManager()
@@ -167,7 +178,13 @@ class MetaAgent:
                 self.trust_engine.ensure_agent(agent)
             self._update_trust(agent, status)
             trust_snapshot = self.trust_engine.get_trust_scores()
-            self.drift_detector.record_event(agent, metric, status or "unknown")
+            self.drift_detector.record_event(
+                agent,
+                metric,
+                status or "unknown",
+                value=value,
+                threshold=threshold,
+            )
             if metric:
                 self.arbitration_engine.add_event(event_record)
                 conflicts = self.arbitration_engine.collect_ready_conflicts(metric)

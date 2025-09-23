@@ -33,7 +33,7 @@ def meta_stack(tmp_path: Path) -> Dict[str, object]:
 
     trust_engine = TrustEngine(trust_path)
     arbitration = ArbitrationEngine()
-    drift = DriftDetector(window_size=3, threshold=2)
+    drift = DriftDetector(window_size=3, threshold=2, metric_configs={}, min_samples=1)
     fallback = FallbackManager({"latency": latency_fallback})
     macro_manager = MacroDependencyManager()
     bus = QAEventBus()
@@ -185,7 +185,7 @@ def test_drift_detection_emits_proposal(meta_stack: Dict[str, object]) -> None:
     assert bus.wait_for_idle(timeout=1.0)
     assert drift_events
     proposal = drift_events[-1]
-    assert proposal["reason"] == "repeated test failures"
+    assert proposal["reason"] == "operational_drift"
     assert proposal["metric"] == "latency"
     assert "severity" in proposal
 

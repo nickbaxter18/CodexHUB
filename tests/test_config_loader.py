@@ -49,3 +49,13 @@ def test_validate_event_rejects_missing_fields(loader: ConfigLoader) -> None:
 
     with pytest.raises(ValueError):
         loader.validate_event({"agent": "QA"})
+
+
+def test_drift_profiles_include_metrics(loader: ConfigLoader) -> None:
+    """Drift profile configuration should expose metric thresholds."""
+
+    drift = loader.get_drift_profiles()
+    assert drift["window_size"] >= 1
+    assert "latency" in drift["metrics"]
+    latency = drift["metrics"]["latency"]
+    assert latency["psi_threshold"] > 0
