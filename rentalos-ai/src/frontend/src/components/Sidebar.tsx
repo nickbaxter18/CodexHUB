@@ -15,6 +15,21 @@ const modules = [
     roles: ['manager', 'technician'],
   },
   { key: 'esg', label: 'ESG', roles: ['sustainability'] },
+  {
+    key: 'fairness',
+    label: 'Fairness & Ethics',
+    roles: ['sustainability', 'manager', 'auditor'],
+  },
+  {
+    key: 'plugins',
+    label: 'Plugin Marketplace',
+    roles: ['manager', 'developer'],
+  },
+  {
+    key: 'resilience',
+    label: 'Resilience Center',
+    roles: ['manager', 'operator'],
+  },
 ]
 
 const Sidebar = ({ roles }: SidebarProps) => {

@@ -11,5 +11,6 @@ it('renders navbar title', () => {
 it('filters sidebar modules by role', () => {
   const { queryByText } = render(<Sidebar roles={['sustainability']} />)
   expect(queryByText('ESG')).toBeInTheDocument()
+  expect(queryByText('Fairness & Ethics')).toBeInTheDocument()
   expect(queryByText('Pricing')).toBeNull()
 })

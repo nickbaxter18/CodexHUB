@@ -12,6 +12,14 @@ class Settings(BaseSettings):
     enable_mock_data: bool = Field(
         default=True, description="Toggle for Stage 1 deterministic data"
     )
+    plugin_directory: str = Field(
+        default="plugins",
+        description="Relative path where plugin manifests are discovered",
+    )
+    plugin_signature_enforcement: bool = Field(
+        default=True,
+        description="Require plugin manifests to include a valid integrity signature",
+    )
 
     model_config = {
         "env_prefix": "rentalos_",

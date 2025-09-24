@@ -1,0 +1,11 @@
+{
+  "name": "energy-optimizer",
+  "version": "0.9.1",
+  "description": "Matches surplus energy supply with demand and tracks carbon offsets across the portfolio.",
+  "permissions": ["carbon:report", "energy:trade"],
+  "webhooks": [],
+  "entrypoint": "plugins.energy_optimizer.main",
+  "categories": ["sustainability", "marketplace"],
+  "enabled": false,
+  "signature": "16d4db099b091a7ef96b04526fada7c17ef0953a60711dd6e84d66ea0721b58e"
+}
