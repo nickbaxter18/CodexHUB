@@ -8,6 +8,8 @@ SECTION 1: Header & Purpose
 from .inference import (
     CachedModel,
     InferenceError,
+    InferenceMetricsCollector,
+    InferenceMetricsSnapshot,
     InferenceService,
     PredictionRequest,
     PredictionResponse,
@@ -29,6 +31,8 @@ from .inference import (
 __all__ = [
     "CachedModel",
     "InferenceError",
+    "InferenceMetricsCollector",
+    "InferenceMetricsSnapshot",
     "InferenceService",
     "PredictionRequest",
     "PredictionResponse",

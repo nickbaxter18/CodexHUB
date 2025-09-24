@@ -2066,6 +2066,33 @@
       "qa::report"
     ]
   },
+  "::docsuite": {
+    "expansion": "Aggregates documentation macros to produce architecture, API, QA and compliance handbooks.",
+    "calls": [
+      "::frontendgen-docs",
+      "::backendgen-docs",
+      "::apidocgen",
+      "::prototype-docs"
+    ],
+    "ownerAgent": "Knowledge Agent",
+    "outcomes": [
+      "Knowledge Agent delivers the ::docsuite macro with actionable guidance.",
+      "Outputs are structured for downstream agent consumption."
+    ],
+    "acceptanceCriteria": [
+      "All dependencies expand without errors and metadata fields are populated.",
+      "QA Agent MD can identify the accountable owner for this macro step."
+    ],
+    "qaHooks": [
+      "qa::execute",
+      "qa::review",
+      "qa::report"
+    ],
+    "phase": "qa",
+    "priority": "P0",
+    "status": "active",
+    "version": "1.0.0"
+  },
   "::frontendsuite": {
     "expansion": "Executes the front-end scaffold and coordinates QA alignment for the resulting assets.",
     "calls": [
