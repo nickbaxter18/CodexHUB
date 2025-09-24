@@ -64,120 +64,708 @@
         <button onclick="checkTaskStatus()">🛰 Task Status</button>
         <button onclick="gitStatus()">🌱 Git Status</button>
         <button onclick="promptCursorAgent()">🤖 Cursor Agent</button>
+        <button onclick="configureConnection()">⚙️ Connection</button>
         <div class="status" id="status">Idle</div>
       </header>
       <textarea id="editor"></textarea>
     </div>
 
     <script>
-      const API_KEY = "JncDAe7RBfUSzdF05TOwuPsWrp4hxELVIgG9Nomy";
-      const BASE_URL = "https://codex.udigitai.io";  // 🔧 point to CodexBuilder
+      (() => {
+        const statusEl = document.getElementById("status");
+        const tabsEl = document.getElementById("tabs");
+        const fileTreeEl = document.getElementById("fileTree");
+        const fileSearchInput = document.getElementById("fileSearch");
 
-      async function authFetch(path, options = {}) {
-        options.headers = Object.assign({}, options.headers, { "x-api-key": API_KEY });
-        const res = await fetch(BASE_URL + path, options);
-        if (!res.ok) {
-          let errMsg = `Request failed: ${res.status}`;
-          try {
-            const err = await res.json();
-            if (err.error) errMsg = err.error;
-          } catch (_) {}
-          throw new Error(errMsg);
+        const DEFAULT_BASE_URL = window.location.origin.replace(/\/$/, "");
+        let baseUrl = (localStorage.getItem("codexBaseUrl") || DEFAULT_BASE_URL).replace(/\/$/, "");
+        let apiKey = (localStorage.getItem("codexApiKey") || "").trim();
+        const state = {
+          openFiles: new Map(),
+          activeFile: null,
+          lastTaskId: localStorage.getItem("codexLastTaskId"),
+        };
+        let suppressEditorChange = false;
+
+        const editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
+          lineNumbers: true,
+          theme: "dracula",
+        });
+        editor.setSize("100%", "100%");
+
+        function setStatus(message) {
+          statusEl.textContent = message;
         }
-        return res;
-      }
 
-      // ✅ CodeMirror setup
-      const editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
-        lineNumbers: true,
-        theme: "dracula",
-      });
-      editor.setSize("100%", "100%");
-      let openFiles = {}, activeFile = null, lastTaskId = localStorage.getItem("lastTaskId");
+        function hasValidConnection() {
+          return Boolean(baseUrl && apiKey);
+        }
 
-      function detectMode(file) {
-        if (!file) return "javascript";
-        if (file.endsWith(".tsx") || file.endsWith(".jsx")) return "jsx";
-        if (file.endsWith(".ts") || file.endsWith(".js")) return "javascript";
-        if (file.endsWith(".json")) return "application/json";
-        if (file.endsWith(".css")) return "css";
-        if (file.endsWith(".html") || file.endsWith(".htm")) return "htmlmixed";
-        if (file.endsWith(".md") || file.endsWith(".markdown")) return "markdown";
-        if (file.endsWith(".xml")) return "xml";
-        return "javascript";
-      }
+        function normalizeWorkspacePath(value) {
+          const trimmed = (value || "").trim();
+          if (!trimmed || trimmed === ".") {
+            return ".";
+          }
+          return trimmed
+            .replace(/\\\\/g, "/")
+            .replace(/^\.\/+/, "")
+            .replace(/\/+/g, "/");
+        }
 
-      // === File Tree ===
-      async function loadTree(dir = ".") {
-        try {
-          const res = await authFetch("/list?dir=" + encodeURIComponent(dir));
-          const data = await res.json();
-          const container = document.createElement("div");
-          data.files.forEach((f) => {
-            const item = document.createElement("div");
-            item.dataset.name = f.name.toLowerCase();
-            item.dataset.type = f.type;
-            if (f.type === "dir") {
-              item.textContent = "📂 " + f.name;
-              item.className = "dir";
-              item.onclick = async () => {
-                if (item.nextSibling && item.nextSibling.classList.contains("nested"))
-                  item.nextSibling.remove();
-                else {
-                  const nested = await loadTree(data.dir + "/" + f.name);
+        function joinPaths(parent, child) {
+          const left = normalizeWorkspacePath(parent);
+          const right = normalizeWorkspacePath(child);
+          if (!left || left === ".") return right;
+          if (!right || right === ".") return left;
+          return `${left.replace(/\/$/, "")}/${right}`;
+        }
+
+        function dirname(p) {
+          const normalized = normalizeWorkspacePath(p);
+          if (!normalized || normalized === ".") return ".";
+          const idx = normalized.lastIndexOf("/");
+          if (idx === -1) return ".";
+          return normalized.slice(0, idx) || ".";
+        }
+
+        function basename(p) {
+          const normalized = normalizeWorkspacePath(p);
+          if (normalized === ".") return ".";
+          const parts = normalized.split("/");
+          return parts[parts.length - 1];
+        }
+
+        function configureConnection(initial = false) {
+          const newBase = prompt(
+            "Enter Codex Editor API base URL",
+            baseUrl || DEFAULT_BASE_URL
+          );
+          if (newBase) {
+            baseUrl = newBase.replace(/\/$/, "");
+            localStorage.setItem("codexBaseUrl", baseUrl);
+          } else if (!baseUrl) {
+            baseUrl = DEFAULT_BASE_URL;
+          }
+
+          const newKey = prompt("Enter Codex Editor API key", apiKey || "");
+          if (newKey) {
+            apiKey = newKey.trim();
+            localStorage.setItem("codexApiKey", apiKey);
+          }
+
+          if (!hasValidConnection()) {
+            if (!initial) {
+              alert("An API key is required to communicate with the Codex Editor backend.");
+            }
+            setStatus("API key required for authenticated requests.");
+          } else {
+            setStatus("Connection settings updated.");
+          }
+
+          return hasValidConnection();
+        }
+
+        function ensureConnection(interactive = true) {
+          if (hasValidConnection()) {
+            return true;
+          }
+          if (!interactive) {
+            return false;
+          }
+          configureConnection(true);
+          return hasValidConnection();
+        }
+
+        async function authFetch(path, options = {}) {
+          if (!ensureConnection(true)) {
+            throw new Error("Missing API key configuration");
+          }
+
+          const { _retried, ...fetchOptions } = options;
+          const headers = new Headers(fetchOptions.headers || {});
+          if (!headers.has("x-api-key")) {
+            headers.set("x-api-key", apiKey);
+          }
+
+          if (
+            fetchOptions.body &&
+            typeof fetchOptions.body === "object" &&
+            !(fetchOptions.body instanceof FormData)
+          ) {
+            if (!headers.has("Content-Type")) {
+              headers.set("Content-Type", "application/json");
+            }
+            fetchOptions.body = JSON.stringify(fetchOptions.body);
+          }
+
+          fetchOptions.headers = headers;
+          const response = await fetch(`${baseUrl}${path}`, fetchOptions);
+
+          if ((response.status === 401 || response.status === 403) && !_retried) {
+            localStorage.removeItem("codexApiKey");
+            apiKey = "";
+            if (configureConnection()) {
+              return authFetch(path, { ...options, _retried: true });
+            }
+          }
+
+          if (!response.ok) {
+            let message = `Request failed: ${response.status}`;
+            try {
+              const err = await response.json();
+              if (err?.error) {
+                message = err.error;
+              }
+            } catch (error) {
+              // Ignore JSON parse failures
+            }
+            throw new Error(message);
+          }
+
+          return response;
+        }
+
+        function detectMode(file) {
+          if (!file) return "javascript";
+          if (file.endsWith(".tsx") || file.endsWith(".jsx")) return "jsx";
+          if (file.endsWith(".ts") || file.endsWith(".js")) return "javascript";
+          if (file.endsWith(".json")) return "application/json";
+          if (file.endsWith(".css")) return "css";
+          if (file.endsWith(".html") || file.endsWith(".htm")) return "htmlmixed";
+          if (file.endsWith(".md") || file.endsWith(".markdown")) return "markdown";
+          if (file.endsWith(".xml")) return "xml";
+          return "javascript";
+        }
+
+        function renderTabs() {
+          tabsEl.innerHTML = "";
+          state.openFiles.forEach((fileState, filePath) => {
+            const tab = document.createElement("div");
+            tab.className = `tab${state.activeFile === filePath ? " active" : ""}`;
+            tab.title = filePath;
+            tab.onclick = () => setActiveFile(filePath);
+
+            const label = document.createElement("span");
+            label.textContent = `${basename(filePath)}${fileState.dirty ? "*" : ""}`;
+            tab.appendChild(label);
+
+            const closeBtn = document.createElement("span");
+            closeBtn.className = "close";
+            closeBtn.textContent = "×";
+            closeBtn.onclick = (event) => {
+              event.stopPropagation();
+              closeFile(filePath);
+            };
+            tab.appendChild(closeBtn);
+
+            tabsEl.appendChild(tab);
+          });
+        }
+
+        function updateEditorFromState(filePath) {
+          const fileState = state.openFiles.get(filePath);
+          if (!fileState) {
+            return;
+          }
+          suppressEditorChange = true;
+          editor.setValue(fileState.content);
+          editor.setOption("mode", detectMode(filePath));
+          editor.setCursor({ line: 0, ch: 0 });
+          editor.focus();
+          suppressEditorChange = false;
+        }
+
+        function setActiveFile(filePath) {
+          const normalized = normalizeWorkspacePath(filePath);
+          if (!state.openFiles.has(normalized)) {
+            return;
+          }
+          state.activeFile = normalized;
+          updateEditorFromState(normalized);
+          renderTabs();
+          const fileState = state.openFiles.get(normalized);
+          setStatus(
+            `Editing ${normalized}${fileState?.dirty ? " (unsaved changes)" : ""}`
+          );
+        }
+
+        function closeFile(filePath, force = false) {
+          const normalized = normalizeWorkspacePath(filePath);
+          const fileState = state.openFiles.get(normalized);
+          if (!fileState) {
+            return;
+          }
+
+          if (!force && fileState.dirty) {
+            const confirmClose = confirm(
+              `Discard unsaved changes in ${normalized}?`
+            );
+            if (!confirmClose) {
+              return;
+            }
+          }
+
+          const wasActive = state.activeFile === normalized;
+          state.openFiles.delete(normalized);
+
+          if (wasActive) {
+            const remaining = Array.from(state.openFiles.keys());
+            state.activeFile = null;
+            if (remaining.length > 0) {
+              setActiveFile(remaining[remaining.length - 1]);
+            } else {
+              suppressEditorChange = true;
+              editor.setValue("");
+              suppressEditorChange = false;
+              setStatus("Idle");
+            }
+          }
+
+          renderTabs();
+        }
+
+        async function openFile(filePath) {
+          const normalized = normalizeWorkspacePath(filePath);
+          if (!normalized || normalized === ".") {
+            return;
+          }
+
+          if (state.openFiles.has(normalized)) {
+            setActiveFile(normalized);
+            return;
+          }
+
+          try {
+            setStatus(`Opening ${normalized}...`);
+            const response = await authFetch(
+              `/file?path=${encodeURIComponent(normalized)}`
+            );
+            const data = await response.json();
+            state.openFiles.set(normalized, {
+              content: data.content,
+              savedContent: data.content,
+              dirty: false,
+            });
+            setActiveFile(normalized);
+            renderTabs();
+            setStatus(`Opened ${normalized}`);
+          } catch (error) {
+            alert(`Failed to open file: ${error.message}`);
+            setStatus("Idle");
+          }
+        }
+
+        async function saveFile() {
+          if (!state.activeFile) {
+            alert("No active file to save.");
+            return;
+          }
+
+          const fileState = state.openFiles.get(state.activeFile);
+          if (!fileState) {
+            return;
+          }
+
+          try {
+            setStatus(`Saving ${state.activeFile}...`);
+            await authFetch("/file", {
+              method: "POST",
+              body: {
+                path: state.activeFile,
+                content: fileState.content,
+              },
+            });
+            fileState.savedContent = fileState.content;
+            fileState.dirty = false;
+            renderTabs();
+            setStatus(`Saved ${state.activeFile}`);
+          } catch (error) {
+            alert(`Failed to save file: ${error.message}`);
+            setStatus("Error while saving file");
+          }
+        }
+
+        async function promptNewFile() {
+          const defaultPath = joinPaths(dirname(state.activeFile || "."), "new-file.txt");
+          const target = prompt("Enter relative path for new file", defaultPath);
+          if (!target) {
+            return;
+          }
+          const normalized = normalizeWorkspacePath(target);
+          try {
+            await authFetch("/create/file", {
+              method: "POST",
+              body: { path: normalized },
+            });
+            setStatus(`Created file ${normalized}`);
+            await openFile(normalized);
+            await renderSidebar();
+          } catch (error) {
+            alert(`Failed to create file: ${error.message}`);
+            setStatus("Error while creating file");
+          }
+        }
+
+        async function promptNewFolder() {
+          const defaultPath = joinPaths(dirname(state.activeFile || "."), "new-folder");
+          const target = prompt("Enter relative path for new folder", defaultPath);
+          if (!target) {
+            return;
+          }
+          const normalized = normalizeWorkspacePath(target);
+          try {
+            await authFetch("/create/folder", {
+              method: "POST",
+              body: { path: normalized },
+            });
+            setStatus(`Created folder ${normalized}`);
+            await renderSidebar();
+          } catch (error) {
+            alert(`Failed to create folder: ${error.message}`);
+            setStatus("Error while creating folder");
+          }
+        }
+
+        async function promptDelete() {
+          const target = prompt(
+            "Enter relative path to delete",
+            state.activeFile || ""
+          );
+          if (!target) {
+            return;
+          }
+          const normalized = normalizeWorkspacePath(target);
+          const recursive = confirm(
+            "Delete recursively? (Choose OK for directories)"
+          );
+          try {
+            await authFetch("/delete", {
+              method: "POST",
+              body: { path: normalized, recursive },
+            });
+            closeFile(normalized, true);
+            await renderSidebar();
+            setStatus(`Deleted ${normalized}`);
+          } catch (error) {
+            alert(`Failed to delete: ${error.message}`);
+            setStatus("Error while deleting");
+          }
+        }
+
+        async function promptMove() {
+          const source = prompt(
+            "Enter current path",
+            state.activeFile || ""
+          );
+          if (!source) {
+            return;
+          }
+          const destination = prompt("Enter new path", source);
+          if (!destination) {
+            return;
+          }
+
+          const normalizedSource = normalizeWorkspacePath(source);
+          const normalizedDest = normalizeWorkspacePath(destination);
+
+          try {
+            await authFetch("/move", {
+              method: "POST",
+              body: { src: normalizedSource, dest: normalizedDest },
+            });
+            const fileState = state.openFiles.get(normalizedSource);
+            if (fileState) {
+              state.openFiles.delete(normalizedSource);
+              state.openFiles.set(normalizedDest, fileState);
+              if (state.activeFile === normalizedSource) {
+                state.activeFile = normalizedDest;
+                setActiveFile(normalizedDest);
+              }
+            }
+            await renderSidebar();
+            setStatus(`Moved to ${normalizedDest}`);
+          } catch (error) {
+            alert(`Failed to move: ${error.message}`);
+            setStatus("Error while moving");
+          }
+        }
+
+        async function promptSearch() {
+          const query = prompt("Search for text:");
+          if (!query) {
+            return;
+          }
+
+          try {
+            const response = await authFetch(
+              `/search?query=${encodeURIComponent(query)}`
+            );
+            const data = await response.json();
+            if (!data.matches.length) {
+              alert("No matches found.");
+              return;
+            }
+            const preview = data.matches
+              .slice(0, 20)
+              .map((match) => `${match.path}:${match.line} — ${match.text.trim()}`)
+              .join("\n");
+            alert(
+              `${data.matches.length} matches found. Showing first 20 entries:\n\n${preview}`
+            );
+            const first = data.matches[0];
+            if (
+              first &&
+              confirm(
+                `Open first match at ${first.path}:${first.line}?`
+              )
+            ) {
+              await openFile(first.path);
+              editor.setCursor({ line: first.line - 1, ch: 0 });
+              editor.focus();
+            }
+          } catch (error) {
+            alert(`Search failed: ${error.message}`);
+            setStatus("Error while searching");
+          }
+        }
+
+        async function promptReplace() {
+          const query = prompt("Find text to replace:");
+          if (!query) {
+            return;
+          }
+          const replacement = prompt("Replace with:", "");
+          if (replacement === null) {
+            return;
+          }
+
+          if (
+            !confirm(
+              `This will replace occurrences of "${query}" across the entire workspace. Continue?`
+            )
+          ) {
+            return;
+          }
+
+          try {
+            const response = await authFetch("/replace", {
+              method: "POST",
+              body: { query, replace: replacement },
+            });
+            const data = await response.json();
+            alert(data.message);
+            await renderSidebar();
+            setStatus("Replace operation completed");
+          } catch (error) {
+            alert(`Replace failed: ${error.message}`);
+            setStatus("Error while replacing");
+          }
+        }
+
+        async function tailLogs() {
+          const logPath = prompt("Enter log file path to tail:");
+          if (!logPath) {
+            return;
+          }
+          const lineCount = prompt("How many lines?", "50");
+          try {
+            const response = await authFetch(
+              `/logs/tail?path=${encodeURIComponent(logPath)}&lines=${encodeURIComponent(
+                lineCount || "50"
+              )}`
+            );
+            const data = await response.json();
+            alert(data.content || "No log output available.");
+          } catch (error) {
+            alert(`Failed to read log: ${error.message}`);
+            setStatus("Error while reading log");
+          }
+        }
+
+        async function startTask() {
+          const command = prompt("Enter command to execute:");
+          if (!command) {
+            return;
+          }
+
+          try {
+            const response = await authFetch("/task/start", {
+              method: "POST",
+              body: { command },
+            });
+            const data = await response.json();
+            state.lastTaskId = data.taskId;
+            localStorage.setItem("codexLastTaskId", state.lastTaskId);
+            setStatus(`Task ${data.taskId} started`);
+          } catch (error) {
+            alert(`Failed to start task: ${error.message}`);
+            setStatus("Error while starting task");
+          }
+        }
+
+        async function checkTaskStatus() {
+          const taskId = state.lastTaskId || prompt("Enter task ID:");
+          if (!taskId) {
+            return;
+          }
+
+          try {
+            const response = await authFetch(
+              `/task/status?taskId=${encodeURIComponent(taskId)}`
+            );
+            const data = await response.json();
+            alert(
+              `Status: ${data.status}\n\nSTDOUT:\n${data.stdout}\n\nSTDERR:\n${data.stderr}`
+            );
+            setStatus(`Task ${taskId} is ${data.status}`);
+          } catch (error) {
+            alert(`Failed to check task: ${error.message}`);
+            setStatus("Error while checking task status");
+          }
+        }
+
+        async function gitStatus() {
+          try {
+            const response = await authFetch("/git/status");
+            const data = await response.json();
+            alert(
+              `Git Status:\n${data.stdout || ""}\n\nErrors:\n${data.stderr || data.error || "None"}`
+            );
+            setStatus("Git status retrieved");
+          } catch (error) {
+            alert(`Failed to get git status: ${error.message}`);
+            setStatus("Error while retrieving git status");
+          }
+        }
+
+        async function promptCursorAgent() {
+          const query = prompt("Ask Cursor Agent:");
+          if (!query) {
+            return;
+          }
+
+          try {
+            setStatus("Starting Cursor Agent...");
+            const response = await authFetch("/cursor-agent", {
+              method: "POST",
+              body: { query },
+            });
+            const data = await response.json();
+            state.lastTaskId = data.taskId;
+            localStorage.setItem("codexLastTaskId", state.lastTaskId);
+            setStatus("Cursor Agent started. Track progress via Task Status.");
+          } catch (error) {
+            alert(`Cursor Agent failed: ${error.message}`);
+            setStatus("Error while starting Cursor Agent");
+          }
+        }
+
+        async function loadTree(dir = ".") {
+          try {
+            const response = await authFetch(
+              `/list?dir=${encodeURIComponent(dir)}`
+            );
+            const data = await response.json();
+            const container = document.createElement("div");
+            container.dataset.path = data.dir;
+
+            const files = [...data.files].sort((a, b) => {
+              if (a.type === b.type) {
+                return a.name.localeCompare(b.name);
+              }
+              return a.type === "dir" ? -1 : 1;
+            });
+
+            files.forEach((file) => {
+              const item = document.createElement("div");
+              item.dataset.name = file.name.toLowerCase();
+              item.dataset.type = file.type;
+
+              if (file.type === "dir") {
+                item.textContent = `📂 ${file.name}`;
+                item.className = "dir";
+                item.onclick = async () => {
+                  if (
+                    item.nextSibling &&
+                    item.nextSibling.classList.contains("nested")
+                  ) {
+                    item.nextSibling.remove();
+                    return;
+                  }
+                  const nextDir = joinPaths(data.dir, file.name);
+                  const nested = await loadTree(nextDir);
                   nested.classList.add("nested");
                   item.after(nested);
-                }
-              };
-            } else {
-              item.textContent = "📄 " + f.name;
-              item.className = "file";
-              item.onclick = () => openFile(data.dir + "/" + f.name);
-            }
-            container.appendChild(item);
-          });
-          return container;
-        } catch (err) {
-          alert("Error loading file tree: " + err.message);
-          return document.createElement("div");
+                };
+              } else {
+                item.textContent = `📄 ${file.name}`;
+                item.className = "file";
+                item.onclick = () => openFile(joinPaths(data.dir, file.name));
+              }
+
+              container.appendChild(item);
+            });
+
+            return container;
+          } catch (error) {
+            alert(`Failed to load directory: ${error.message}`);
+            setStatus("Error while loading file tree");
+            return document.createElement("div");
+          }
         }
-      }
 
-      async function renderSidebar() {
-        const sidebar = document.getElementById("fileTree");
-        sidebar.innerHTML = "";
-        sidebar.appendChild(await loadTree("."));
-      }
-
-      // === File Tabs, Actions, Search, Replace, Logs, Tasks, Git ===
-      // (Reuse same logic from WebsiteOS editor.html, no changes needed)
-
-      // === CURSOR AGENT INTEGRATION ===
-      async function promptCursorAgent() {
-        const query = prompt("Ask Cursor Agent:");
-        if (!query) return;
-        
-        try {
-          document.getElementById("status").textContent = "Starting Cursor Agent...";
-          
-          const res = await authFetch("/cursor-agent", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ query })
-          });
-          const data = await res.json();
-          lastTaskId = data.taskId;
-          document.getElementById("status").textContent = "Cursor Agent running...";
-          
-          // Start checking task status
-          checkTaskStatus();
-        } catch (err) {
-          alert("Error: " + err.message);
-          document.getElementById("status").textContent = "Error";
+        async function renderSidebar() {
+          fileTreeEl.innerHTML = "";
+          const tree = await loadTree(".");
+          fileTreeEl.appendChild(tree);
         }
-      }
 
-      renderSidebar();
+        editor.on("change", () => {
+          if (suppressEditorChange || !state.activeFile) {
+            return;
+          }
+          const fileState = state.openFiles.get(state.activeFile);
+          if (!fileState) {
+            return;
+          }
+          fileState.content = editor.getValue();
+          fileState.dirty = fileState.content !== fileState.savedContent;
+          renderTabs();
+          setStatus(
+            `Editing ${state.activeFile}${fileState.dirty ? " (unsaved changes)" : ""}`
+          );
+        });
+
+        fileSearchInput.addEventListener("input", () => {
+          const query = fileSearchInput.value.trim().toLowerCase();
+          const items = fileTreeEl.querySelectorAll(".file, .dir");
+          items.forEach((item) => {
+            const matches =
+              !query || item.dataset.name?.includes(query.toLowerCase());
+            item.classList.toggle("hidden", !matches);
+          });
+        });
+
+        // Expose actions to global scope for button handlers
+        window.saveFile = saveFile;
+        window.promptNewFile = promptNewFile;
+        window.promptNewFolder = promptNewFolder;
+        window.promptDelete = promptDelete;
+        window.promptMove = promptMove;
+        window.promptSearch = promptSearch;
+        window.promptReplace = promptReplace;
+        window.tailLogs = tailLogs;
+        window.startTask = startTask;
+        window.checkTaskStatus = checkTaskStatus;
+        window.gitStatus = gitStatus;
+        window.promptCursorAgent = promptCursorAgent;
+        window.configureConnection = () => configureConnection(false);
+
+        // Initial render
+        ensureConnection(false);
+        renderSidebar();
+        setStatus("Ready");
+      })();
     </script>
   </body>
 </html>

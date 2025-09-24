@@ -36,6 +36,7 @@
     "commitlint": "commitlint",
     "coverage": "c8 node --test tests/codexbridge/codexrc-loader.test.js tests/codexbridge/json-schema-validator.test.js tests/codexbridge/plan-validator.test.js tests/macros/registry-integrity.test.js",
     "dev": "node src/index.js",
+    "editor:generate-key": "node editor/generate-api-key.js",
     "editor:codex": "node editor/codex-editor.js",
     "format": "prettier --write \"**/*.{js,ts,tsx,json,md,yaml,yml,css,scss}\"",
     "lint": "eslint .",
