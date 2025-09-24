@@ -56,7 +56,9 @@ test("Codex editor backend supports core workspace operations", async (t) => {
   assert.strictEqual(folderResp.status, 200);
 
   const filePath = `${testFolder}/sample.txt`;
-  const initialContent = "hello world from test";
+  const contentMarker = `editor-marker-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  const initialContent = `${contentMarker}-original`;
+  const replacedContent = `${contentMarker}-updated`;
   const saveResp = await fetch(`${baseUrl}/file`, {
     method: "POST",
     headers: defaultHeaders,
@@ -72,7 +74,7 @@ test("Codex editor backend supports core workspace operations", async (t) => {
   assert.strictEqual(fileData.content, initialContent);
 
   const searchResp = await fetch(
-    `${baseUrl}/search?query=${encodeURIComponent("hello world from test")}`,
+    `${baseUrl}/search?query=${encodeURIComponent(contentMarker)}`,
     {
       headers: { "x-api-key": API_KEY },
     },
@@ -84,7 +86,7 @@ test("Codex editor backend supports core workspace operations", async (t) => {
   const replaceResp = await fetch(`${baseUrl}/replace`, {
     method: "POST",
     headers: defaultHeaders,
-    body: JSON.stringify({ query: "hello", replace: "hi" }),
+    body: JSON.stringify({ query: contentMarker, replace: replacedContent }),
   });
   assert.strictEqual(replaceResp.status, 200);
 
@@ -92,7 +94,8 @@ test("Codex editor backend supports core workspace operations", async (t) => {
     headers: { "x-api-key": API_KEY },
   });
   const replacedFile = await replacedFileResp.json();
-  assert.ok(replacedFile.content.includes("hi world from test"));
+  assert.ok(replacedFile.content.includes(replacedContent));
+  assert.ok(!replacedFile.content.includes(initialContent));
 
   const movedPath = `${testFolder}/renamed.txt`;
   const moveResp = await fetch(`${baseUrl}/move`, {

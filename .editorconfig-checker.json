@@ -1,0 +1,30 @@
+{
+  "Exclude": [
+    "^AGENTS\\.md/",
+    "^AGENTS_.*\\.md$",
+    "^Block.*\\.md$",
+    "^CODEX_.*\\.md$",
+    "^CURSOR_.*\\.md$",
+    "^AUDIT_REPORT.*\\.md$",
+    "^.*_INSTRUCTIONS.*\\.md$",
+    "^.*_SUMMARY.*\\.md$",
+    "^Brain docs cleansed \\.ndjson/",
+    "^Brain docs cleansed \\.ndjson$",
+    "^Bundle cleansed \\.ndjson/",
+    "^\\.github/workflows/agents-md-check\\.yml$",
+    "^Makefile$",
+    "^backend/health-test/",
+    "^backend/health-test\\.js$",
+    "^bad\\.js$",
+    "^commitmsg\\.txt$",
+    "^cursor-install\\.sh$",
+    "^editor/",
+    "^meta_agent/docs/",
+    "^push_script\\.bat$",
+    "^qa/",
+    "^scripts/setup_cursor_integration\\.py$",
+    "^tests/",
+    "^agents/",
+    "^TROUBLESHOOTING_SETUP\\.md$"
+  ]
+}

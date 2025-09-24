@@ -4,3 +4,11 @@ logs/
 .env
 dist/
 __pycache__/
+coverage/
+.pytest_cache/
+results/
+Brain docs cleansed .ndjson/
+Bundle cleansed .ndjson/
+pnpm-debug.log
+mlruns/
+.coverage

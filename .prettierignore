@@ -1,10 +1,20 @@
 node_modules
-coverage
+.pnpm-store/
+logs/
+.env
 dist
 tmp
 AGENTS.md/**
+AGENTS_*.md
+Block*.md
+CODEX_*.md
+CURSOR_*.md
+*_INSTRUCTIONS*.md
+*_SUMMARY*.md
+AUDIT_REPORT*.md
+Brain docs cleansed .ndjson/
+Bundle cleansed .ndjson/
 bad.js
-codexbridge/src/plan-watcher.js
 .github/PULL_REQUEST_TEMPLATE.md
 .github/workflows/agents-md-check.yml
 backend/**
@@ -18,7 +28,12 @@ macro_system/**
 meta_agent/**
 pnpm-lock.yaml
 qa/**
+results/
 src/index.js
 test.js
 tests/**
 tsconfig.json
+coverage/
+.pytest_cache/
+.DS_Store
+pnpm-debug.log

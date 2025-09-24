@@ -11,14 +11,34 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v3
 
-      - name: Validate AGENTS.md is present and follows spec
+      - name: Locate AGENTS instructions manifest
+        id: resolve-agents
         run: |
-          if [ ! -f AGENTS.md ]; then
-            echo "❌ AGENTS.md missing!" && exit 1
+          set -euo pipefail
+
+          if [ -f AGENTS.md ]; then
+            path="AGENTS.md"
+          else
+            path="$(find . -maxdepth 2 -type f -name AGENTS.md | head -n1 || true)"
           fi
-          grep -q "## Codex Instructions" AGENTS.md || echo "⚠️ No Codex section found."
+
+          if [ -z "$path" ]; then
+            echo "❌ AGENTS instructions missing!" >&2
+            exit 1
+          fi
+
+          clean_path="${path#./}"
+          echo "path=$clean_path" >>"$GITHUB_OUTPUT"
+          echo "AGENTS_FILE=$clean_path" >>"$GITHUB_ENV"
+
+      - name: Validate AGENTS.md content
+        run: |
+          set -euo pipefail
+          grep -q "## Codex Instructions" "$AGENTS_FILE" || echo "⚠️ No Codex section found."
 
       - name: Display AGENTS.md summary
         run: |
           echo "----- AGENTS.md HEADERS -----"
-          grep '^##' AGENTS.md || echo "No headers found"
+          if ! grep '^##' "$AGENTS_FILE"; then
+            echo "No headers found"
+          fi
