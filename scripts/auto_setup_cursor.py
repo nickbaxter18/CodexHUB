@@ -174,7 +174,8 @@ python scripts/auto_setup_cursor.py
 ## CRITICAL: This must be run at the start of every new task!
 """
 
-    instructions_path = Path("CURSOR_AUTO_START_INSTRUCTIONS.md")
+    instructions_path = Path("cursor") / "CURSOR_AUTO_START_INSTRUCTIONS.md"
+    instructions_path.parent.mkdir(parents=True, exist_ok=True)
     with open(instructions_path, "w") as f:
         f.write(instructions_content)
 
