@@ -67,7 +67,6 @@
       "budgets": {},
       "tests": ["full_suite"]
     },
-<<<<<<< HEAD
     "CICD": {
       "budgets": {
         "pipeline_success_rate": 0.95,
@@ -95,31 +94,6 @@
         }
       }
     },
-    "Knowledge": {
-      "budgets": {
-        "response_accuracy": 0.9,
-        "median_lookup_latency_ms": 250
-      },
-      "tests": ["knowledge_index_integrity", "governance_factcheck"],
-      "metrics": {
-        "response_accuracy": {
-          "comparison": "gte",
-          "remediation_steps": [
-            "Refresh NDJSON knowledge corpora and reconcile outdated governance entries.",
-            "Add regression questions for newly codified policies."
-          ],
-          "remediation_macros": ["::masterdev", "::docsuite"],
-          "weight": 1.1
-        },
-        "median_lookup_latency_ms": {
-          "comparison": "lte",
-          "remediation_steps": [
-            "Optimise knowledge index and cache high-frequency governance answers.",
-            "Partition large NDJSON files into topic-specific shards."
-          ],
-          "remediation_macros": ["::datasuite", "::perf-io"],
-          "weight": 1.0
-=======
     "Knowledge": {
       "budgets": {
         "results_found": 1,
@@ -154,7 +128,6 @@
           ],
           "remediation_macros": [],
           "weight": 0.8
->>>>>>> origin/codex/establish-repository-audit-process
         }
       }
     }
