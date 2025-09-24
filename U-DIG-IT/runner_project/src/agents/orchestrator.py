@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
@@ -57,6 +58,7 @@ class Orchestrator:
         self.observer.register_check("knowledge", self._health_check_knowledge)
         self.observer.register_check("plugins", self._health_check_plugins)
         self.observer.register_check("tasks", self._health_check_tasks)
+        self.observer.register_remediation("tasks", self._remediate_task_queue)
 
     async def schedule_command(self, request: CommandRequest) -> TaskCreation:
         LOGGER.info("Scheduling command task")
@@ -256,6 +258,13 @@ class Orchestrator:
 
     async def health_report(self) -> HealthReport:
         return await self.observer.run_checks()
+
+    async def _remediate_task_queue(self) -> None:
+        """Attempt to restore the task manager after repeated failures."""
+
+        LOGGER.warning("Initiating task manager remediation after repeated failures")
+        await asyncio.to_thread(self.task_manager.restart)
+        self.observer.record_success("tasks")
 
     def _health_check_knowledge(self) -> Dict[str, str]:
         try:
