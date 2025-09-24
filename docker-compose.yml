@@ -2,8 +2,10 @@ version: '3'
 services:
   app:
     build: .
-    command: npm start
+    command: pnpm start
+    environment:
+      - PORT=4000
     volumes:
       - .:/app
     ports:
-      - "3000:3000"
+      - "4000:4000"

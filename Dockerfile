@@ -1,4 +1,4 @@
-FROM node:18-slim AS node-deps
+FROM node:20-slim AS node-deps
 
 WORKDIR /app
 
@@ -13,13 +13,11 @@ FROM python:3.11-slim AS python-wheels
 WORKDIR /deps
 
 COPY requirements.txt requirements.txt
-COPY requirements-dev.txt requirements-dev.txt
 
 RUN pip install --upgrade pip \
-    && pip wheel --no-cache-dir --wheel-dir /wheelhouse -r requirements.txt \
-    && pip wheel --no-cache-dir --wheel-dir /wheelhouse -r requirements-dev.txt
+    && pip wheel --no-cache-dir --wheel-dir /wheelhouse -r requirements.txt
 
-FROM node:18-slim AS runtime
+FROM node:20-slim AS runtime
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -33,12 +31,10 @@ RUN apt-get update \
 
 COPY --from=python-wheels /wheelhouse /tmp/wheels
 COPY requirements.txt ./requirements.txt
-COPY requirements-dev.txt ./requirements-dev.txt
 
 RUN python3 -m venv /opt/venv \
     && /opt/venv/bin/pip install --upgrade pip \
     && /opt/venv/bin/pip install --no-index --find-links=/tmp/wheels -r requirements.txt \
-    && /opt/venv/bin/pip install --no-index --find-links=/tmp/wheels -r requirements-dev.txt \
     && rm -rf /tmp/wheels
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./

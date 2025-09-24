@@ -565,7 +565,7 @@ CURSOR_RETRY_DELAY=1.0
 
 ```dockerfile
 # Dockerfile
-FROM node:18-alpine
+FROM node:20-alpine
 
 WORKDIR /app
 COPY package*.json ./
