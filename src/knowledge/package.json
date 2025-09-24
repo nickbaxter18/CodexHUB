@@ -1,0 +1,31 @@
+{
+  "name": "@codexhub/knowledge-integration",
+  "version": "1.0.0",
+  "description": "Knowledge integration for CodexHUB",
+  "type": "module",
+  "main": "auto_loader.py",
+  "scripts": {
+    "start": "python auto_loader.py",
+    "test": "python -m pytest tests/",
+    "setup": "python ../../scripts/bootstrap_knowledge.py",
+    "validate": "python ../../scripts/validate_cursor_integration.py"
+  },
+  "dependencies": {
+    "aiohttp": "^3.9.0",
+    "watchdog": "^3.0.0",
+    "pydantic": "^2.5.0"
+  },
+  "devDependencies": {
+    "pytest": "^7.4.0",
+    "pytest-asyncio": "^0.21.0"
+  },
+  "keywords": [
+    "knowledge",
+    "ndjson",
+    "integration",
+    "codex",
+    "ai"
+  ],
+  "author": "CodexHUB",
+  "license": "MIT"
+}

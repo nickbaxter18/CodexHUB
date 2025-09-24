@@ -1,0 +1,31 @@
+{
+  "name": "@codexhub/cursor-integration",
+  "version": "1.0.0",
+  "description": "Cursor IDE integration for CodexHUB",
+  "type": "module",
+  "main": "cursor_client.py",
+  "scripts": {
+    "start": "python cursor_client.py",
+    "test": "python -m pytest tests/",
+    "setup": "python ../../scripts/setup_cursor_integration.py",
+    "validate": "python ../../scripts/validate_cursor_integration.py"
+  },
+  "dependencies": {
+    "aiohttp": "^3.9.0",
+    "watchdog": "^3.0.0",
+    "pydantic": "^2.5.0"
+  },
+  "devDependencies": {
+    "pytest": "^7.4.0",
+    "pytest-asyncio": "^0.21.0"
+  },
+  "keywords": [
+    "cursor",
+    "ide",
+    "integration",
+    "codex",
+    "ai"
+  ],
+  "author": "CodexHUB",
+  "license": "MIT"
+}

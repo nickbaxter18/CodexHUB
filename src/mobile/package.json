@@ -1,0 +1,31 @@
+{
+  "name": "@codexhub/mobile-integration",
+  "version": "1.0.0",
+  "description": "Mobile control integration for CodexHUB",
+  "type": "module",
+  "main": "mobile_app.py",
+  "scripts": {
+    "start": "python mobile_app.py",
+    "test": "python -m pytest tests/",
+    "setup": "python ../../scripts/start_cursor_integration.py",
+    "validate": "python ../../scripts/validate_cursor_integration.py"
+  },
+  "dependencies": {
+    "aiohttp": "^3.9.0",
+    "watchdog": "^3.0.0",
+    "pydantic": "^2.5.0"
+  },
+  "devDependencies": {
+    "pytest": "^7.4.0",
+    "pytest-asyncio": "^0.21.0"
+  },
+  "keywords": [
+    "mobile",
+    "control",
+    "integration",
+    "codex",
+    "ai"
+  ],
+  "author": "CodexHUB",
+  "license": "MIT"
+}

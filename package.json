@@ -51,7 +51,16 @@
     "spellcheck": "cspell \"**/*.{js,ts,tsx,py,md}\"",
     "test": "node --test tests",
     "test:watch": "vitest watch",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "cursor:setup": "python scripts/setup_cursor_integration.py",
+    "cursor:start": "python scripts/start_cursor_integration.py",
+    "cursor:validate": "python scripts/validate_cursor_integration.py",
+    "cursor:test": "python scripts/test_cursor_integration.py",
+    "cursor:enforce": "python scripts/enforce_cursor_usage.py",
+    "cursor:auto": "python scripts/auto_setup_cursor.py",
+    "cursor:bootstrap": "python scripts/bootstrap_integration.py",
+    "cursor:knowledge": "python scripts/bootstrap_knowledge.py",
+    "cursor:integration": "python scripts/bootstrap_cursor_integration.py"
   },
   "dependencies": {
     "ajv": "^8.17.1",
@@ -62,7 +71,10 @@
     "fs": "^0.0.1-security",
     "multer": "^2.0.2",
     "openai": "^5.22.0",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "aiohttp": "^3.9.0",
+    "watchdog": "^3.0.0",
+    "pydantic": "^2.5.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.5.0",
