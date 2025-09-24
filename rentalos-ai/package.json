@@ -1,0 +1,14 @@
+{
+  "name": "rentalos-ai",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "install:frontend": "npm install --prefix src/frontend",
+    "dev": "npm run dev --prefix src/frontend",
+    "build": "npm run build --prefix src/frontend",
+    "preview": "npm run preview --prefix src/frontend",
+    "lint": "npm run lint --prefix src/frontend",
+    "format": "npm run format --prefix src/frontend",
+    "test": "npm test --prefix src/frontend"
+  }
+}

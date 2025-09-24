@@ -30,6 +30,8 @@ repos:
       - id: codespell
         additional_dependencies:
           - tomli
+        args:
+          - --skip=**/package-lock.json
   - repo: local
     hooks:
       - id: markdownlint
