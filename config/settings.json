@@ -1,0 +1,13 @@
+{
+  "cursor": {
+    "autoInvocationMode": "manual",
+    "enforcementEnabled": false,
+    "api": {
+      "baseUrl": "https://api.cursor.sh",
+      "requireKey": false
+    }
+  },
+  "performance": {
+    "resultsDirectory": "results/performance"
+  }
+}

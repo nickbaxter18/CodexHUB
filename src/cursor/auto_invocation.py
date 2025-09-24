@@ -17,8 +17,9 @@ from typing import Any, Dict, List, Optional
 from .cursor_client import AgentType, CursorClient
 
 # Setup logging
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+if not logger.handlers:
+    logger.addHandler(logging.NullHandler())
 
 
 @dataclass
@@ -44,6 +45,9 @@ class CursorAutoInvoker:
         self.watch_paths: List[Path] = []
         self._watch_task: Optional[asyncio.Task[None]] = None
         self.mode = self._resolve_mode()
+        if not self.cursor_client.enabled and self.mode != "manual":
+            logger.info("Cursor client disabled; forcing auto-invocation manual mode")
+            self.mode = "manual"
         self.poll_interval = self._resolve_poll_interval()
         self.ignored_directories = {
             ".git",
@@ -288,6 +292,13 @@ class CursorAutoInvoker:
 
             # Get the appropriate agent
             agent = self.cursor_client.get_agent(rule.agent_type)
+            if agent is None:
+                logger.debug(
+                    "Skipping rule %s for %s; Cursor client disabled",
+                    rule.action,
+                    rule.agent_type.value,
+                )
+                return
 
             # Prepare context for the agent
             context = {
@@ -504,6 +515,9 @@ async def start_cursor_auto_invocation(watch_paths: List[Path]) -> None:
         return
 
     auto_invoker = get_auto_invoker()
+    if not auto_invoker.cursor_client.enabled:
+        logger.info("Cursor client disabled; skipping auto-invocation startup")
+        return
     await auto_invoker.start_auto_invocation(watch_paths)
 
 

@@ -16,14 +16,17 @@ const { URL } = require('url');
  */
 class CursorClient {
   constructor(config = {}) {
-    this.apiBaseUrl = config.apiBaseUrl || process.env.CURSOR_API_URL;
-    this.apiKey = config.apiKey || process.env.CURSOR_API_KEY;
+    this.apiBaseUrl = config.apiBaseUrl || process.env.CURSOR_API_URL || 'https://api.cursor.sh';
+    this.apiKey = (config.apiKey || process.env.CURSOR_API_KEY || '').trim();
     this.timeout = config.timeout || 30000;
     this.maxRetries = config.maxRetries || 3;
     this.retryDelay = config.retryDelay || 1000;
 
+    this.agents = {};
     this.validateConfig();
-    this.initializeAgentMethods();
+    if (this.enabled) {
+      this.initializeAgentMethods();
+    }
   }
 
   /**
@@ -31,10 +34,14 @@ class CursorClient {
    */
   validateConfig() {
     if (!this.apiBaseUrl) {
-      throw new Error('CURSOR_API_URL is required');
+      this.apiBaseUrl = 'https://api.cursor.sh';
     }
-    if (!this.apiKey) {
-      throw new Error('CURSOR_API_KEY is required');
+
+    this.apiBaseUrl = this.apiBaseUrl.replace(/\/+$/, '');
+    this.enabled = this.apiKey.length > 0;
+
+    if (!this.enabled) {
+      console.warn('CURSOR_API_KEY not configured; CursorClient disabled.');
     }
   }
 
@@ -57,6 +64,10 @@ class CursorClient {
    * Core API request method with retry logic
    */
   async makeRequest(endpoint, method = 'POST', data = null) {
+    if (!this.enabled) {
+      throw new Error('Cursor client disabled; set CURSOR_API_KEY to enable API access.');
+    }
+
     const url = new URL(`${this.apiBaseUrl}${endpoint}`);
 
     const options = {
@@ -285,6 +296,10 @@ class CursorClient {
    * Get agent-specific methods
    */
   getAgent(agentName) {
+    if (!this.enabled) {
+      return null;
+    }
+
     return this.agents[agentName] || null;
   }
 

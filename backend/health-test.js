@@ -2,7 +2,7 @@ import expressModule from "express";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { exec } from "child_process";
+import { spawn } from "child_process";
 
 import dotenv from "dotenv";
 
@@ -24,6 +24,59 @@ const cursorAgentCwd = path.resolve(
 );
 
 const tasks = new Map();
+
+const tokenizeCommand = (value) => {
+  const tokens = [];
+  let current = "";
+  let quote = null;
+  let escape = false;
+
+  for (const char of value.trim()) {
+    if (escape) {
+      current += char;
+      escape = false;
+      continue;
+    }
+
+    if (char === "\\") {
+      escape = true;
+      continue;
+    }
+
+    if (quote) {
+      if (char === quote) {
+        quote = null;
+      } else {
+        current += char;
+      }
+      continue;
+    }
+
+    if (char === "\"" || char === "'") {
+      quote = char;
+      continue;
+    }
+
+    if (char === " " || char === "\t") {
+      if (current) {
+        tokens.push(current);
+        current = "";
+      }
+      continue;
+    }
+
+    current += char;
+  }
+
+  if (current) {
+    tokens.push(current);
+  }
+
+  return tokens;
+};
+
+const commandParts = tokenizeCommand(cursorAgentCommand);
+const [commandBinary, ...defaultArgs] = commandParts;
 
 const resolveEditorPath = () => {
   const configuredPath = process.env.EDITOR_STATIC_DIR;
@@ -91,13 +144,17 @@ app.post("/cursor-agent", (req, res) => {
     return;
   }
 
-  const sanitizedQuery = String(query).replace(/"/g, '\\"');
-  const command = `${cursorAgentCommand} "${sanitizedQuery}"`;
-  const taskId = Date.now().toString();
+  if (!commandBinary) {
+    res.status(500).json({ error: "Cursor agent command is not configured." });
+    return;
+  }
 
-  const child = exec(command, {
+  const taskId = Date.now().toString();
+  const args = [...defaultArgs, String(query)];
+
+  const child = spawn(commandBinary, args, {
     cwd: cursorAgentCwd,
-    shell: true,
+    stdio: ["ignore", "pipe", "pipe"],
   });
 
   tasks.set(taskId, { status: "running", stdout: "", stderr: "" });
@@ -113,6 +170,15 @@ app.post("/cursor-agent", (req, res) => {
     const task = tasks.get(taskId);
     if (task) {
       task.stderr += chunk;
+    }
+  });
+
+  child.on("error", (error) => {
+    const task = tasks.get(taskId);
+    if (task) {
+      task.status = "error";
+      task.stderr += `${error.message}\n`;
+      task.exitCode = task.exitCode ?? 1;
     }
   });
 

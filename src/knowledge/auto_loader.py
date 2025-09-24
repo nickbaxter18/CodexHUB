@@ -20,9 +20,9 @@ from agents.specialist_agents import KnowledgeAgent  # noqa: E402
 from qa.qa_engine import QAEngine, QARules  # noqa: E402
 from qa.qa_event_bus import QAEventBus  # noqa: E402
 
-# Setup logging
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+if not logger.handlers:
+    logger.addHandler(logging.NullHandler())
 
 
 @dataclass

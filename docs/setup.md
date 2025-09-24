@@ -4,7 +4,7 @@ This guide explains how to bootstrap a development environment for CodexHUB with
 
 ## 1. Install system dependencies
 
-- **Node.js** 18 or newer (LTS recommended).
+- **Node.js** 20 or newer (matches the version required in `README.md` and the workspace `engines` constraint).
 - **pnpm** 8 or newer. If you use Corepack, run `corepack enable pnpm` to activate the bundled version.
 - **Python** 3.11 (matches the versions configured in `pyproject.toml`).
 - **Docker** 24+ (optional) for containerized deployments.
