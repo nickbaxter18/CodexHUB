@@ -36,6 +36,9 @@ def test_evaluate_fairness_within_thresholds() -> None:
     results = evaluate_fairness(y_true, y_pred, sensitive, metrics_config, fairness_config)
     assert all(isinstance(result, FairnessMetricResult) for result in results.values())
     assert all(result.passed for result in results.values())
+    sample = results["statistical_parity_difference"].to_dict()
+    assert sample["name"] == "statistical_parity_difference"
+    assert isinstance(sample["details"], dict)
 
 
 def test_evaluate_fairness_insufficient_samples() -> None:

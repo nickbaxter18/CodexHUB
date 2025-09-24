@@ -11,6 +11,8 @@ from typing import Any, Callable, Mapping, Optional
 
 import mlflow
 from mlflow.client import MlflowClient
+from mlflow.entities import Experiment
+from mlflow.tracking.fluent import ActiveRun
 
 from src.common.config_loader import ExperimentConfig
 
@@ -44,12 +46,18 @@ class MLflowRegistry:
         self._experiment_id = self._ensure_experiment(experiment_config.experiment_name)
 
     def _ensure_experiment(self, name: str) -> str:
-        existing = self._client.get_experiment_by_name(name)
-        if existing:
-            return existing.experiment_id
-        return self._client.create_experiment(name)
+        existing: Experiment | None = self._client.get_experiment_by_name(name)
+        if existing is not None:
+            experiment_id = existing.experiment_id
+            if experiment_id is None:
+                raise RegistryError(f"Experiment '{name}' is missing an identifier")
+            return str(experiment_id)
+        experiment_id = self._client.create_experiment(name)
+        return str(experiment_id)
 
-    def start_run(self, run_name: str | None = None, tags: Optional[Mapping[str, str]] = None):
+    def start_run(
+        self, run_name: str | None = None, tags: Optional[Mapping[str, str]] = None
+    ) -> ActiveRun:
         return mlflow.start_run(experiment_id=self._experiment_id, run_name=run_name, tags=tags)
 
     def log_metrics(self, run_id: str, metrics: Mapping[str, float]) -> None:

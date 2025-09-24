@@ -1,20 +1,24 @@
 """
 SECTION 1: Header & Purpose
-- Provides fairness metrics such as statistical parity difference and equal opportunity gap.
-- Applies governance thresholds to flag bias issues before deployment.
+    - Provides fairness metrics such as statistical parity difference and equal opportunity gap.
+    - Applies governance thresholds to flag bias issues before deployment.
 """
 
 from __future__ import annotations
 
 # SECTION 2: Imports / Dependencies
 from dataclasses import dataclass
-from typing import Dict, Iterable, Mapping
+from typing import Any, Dict, Iterable, Mapping
 
 import numpy as np
+import numpy.typing as npt
 
 from src.common.config_loader import FairnessGovernanceConfig, MetricsConfig, MetricThreshold
 
 # SECTION 3: Types / Interfaces / Schemas
+
+ArrayAny = npt.NDArray[Any]
+BoolArray = npt.NDArray[np.bool_]
 
 
 @dataclass(frozen=True)
@@ -26,6 +30,17 @@ class FairnessMetricResult:
     passed: bool
     threshold: MetricThreshold | None
     details: Dict[str, float]
+
+    def to_dict(self) -> Dict[str, object]:
+        """Serialise the fairness metric result for reporting and governance exports."""
+
+        return {
+            "name": self.name,
+            "value": self.value,
+            "passed": self.passed,
+            "threshold": self.threshold.model_dump() if self.threshold else None,
+            "details": dict(self.details),
+        }
 
 
 # SECTION 4: Core Logic / Implementation
@@ -40,9 +55,9 @@ def evaluate_fairness(
 ) -> Dict[str, FairnessMetricResult]:
     """Compute fairness metrics and evaluate them against configured thresholds."""
 
-    y_true_arr = np.asarray(list(y_true))
-    y_pred_arr = np.asarray(list(y_pred))
-    sensitive_arr = np.asarray(list(sensitive_attribute))
+    y_true_arr: ArrayAny = np.asarray(list(y_true))
+    y_pred_arr: ArrayAny = np.asarray(list(y_pred))
+    sensitive_arr: ArrayAny = np.asarray(list(sensitive_attribute))
     _validate_input_lengths(y_true_arr, y_pred_arr, sensitive_arr)
 
     group_mask = _group_masks(sensitive_arr)
@@ -53,7 +68,7 @@ def evaluate_fairness(
     }
     if not filtered_masks:
         raise ValueError("No groups satisfy min_samples_per_group requirement")
-    group_positive_rates = {
+    group_positive_rates: Dict[str | int, float] = {
         group: float(y_pred_arr[mask].mean()) for group, mask in filtered_masks.items()
     }
     group_true_positive_rates = _true_positive_rates(y_true_arr, y_pred_arr, filtered_masks)
@@ -109,24 +124,24 @@ def evaluate_fairness(
 __all__ = ["FairnessMetricResult", "evaluate_fairness"]
 
 
-def _validate_input_lengths(y_true: np.ndarray, y_pred: np.ndarray, sensitive: np.ndarray) -> None:
+def _validate_input_lengths(y_true: ArrayAny, y_pred: ArrayAny, sensitive: ArrayAny) -> None:
     """Ensure all inputs share identical lengths."""
 
     if not (len(y_true) == len(y_pred) == len(sensitive)):
         raise ValueError("y_true, y_pred, and sensitive_attribute must be the same length")
 
 
-def _group_masks(sensitive: np.ndarray) -> Dict[str | int, np.ndarray]:
+def _group_masks(sensitive: ArrayAny) -> Dict[str | int, BoolArray]:
     """Generate boolean masks for each sensitive attribute value."""
 
-    masks: Dict[str | int, np.ndarray] = {}
+    masks: Dict[str | int, BoolArray] = {}
     for group in np.unique(sensitive):
-        masks[group] = sensitive == group
+        masks[group] = np.asarray(sensitive == group, dtype=bool)
     return masks
 
 
 def _true_positive_rates(
-    y_true: np.ndarray, y_pred: np.ndarray, masks: Mapping[str | int, np.ndarray]
+    y_true: ArrayAny, y_pred: ArrayAny, masks: Mapping[str | int, BoolArray]
 ) -> Dict[str | int, float]:
     """Calculate true positive rates for each group."""
 
