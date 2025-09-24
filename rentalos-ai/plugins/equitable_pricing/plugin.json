@@ -1,0 +1,11 @@
+{
+  "name": "equitable-pricing",
+  "version": "1.2.0",
+  "description": "Applies fairness-aware adjustments and provides transparency reports for pricing decisions.",
+  "permissions": ["fairness:review", "pricing:read"],
+  "webhooks": ["https://fairness.example.com/hook"],
+  "entrypoint": "plugins.equitable_pricing.main",
+  "categories": ["analytics", "fairness"],
+  "enabled": true,
+  "signature": "6e581a119df3160c226b633cf97f38b0a5491ccc44464a3cbc2d829479633a96"
+}

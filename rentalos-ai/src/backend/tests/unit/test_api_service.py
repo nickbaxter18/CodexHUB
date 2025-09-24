@@ -1,3 +1,7 @@
+import hashlib
+import json
+from pathlib import Path
+
 from src.backend.services import api_service
 
 
@@ -24,3 +28,72 @@ def test_registry_enable_disable_cycle():
     assert api_service.list_plugins()["payments"]["enabled"] is False
     api_service.registry.enable("payments")
     assert api_service.list_plugins()["payments"]["enabled"] is True
+
+
+def _signature(manifest: dict) -> str:
+    payload = json.dumps(
+        {
+            "name": manifest["name"],
+            "version": manifest["version"],
+            "permissions": manifest.get("permissions", []),
+            "webhooks": manifest.get("webhooks", []),
+        },
+        sort_keys=True,
+    )
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def test_load_plugins_from_directory(tmp_path: Path):
+    manifest = {
+        "name": "test-plugin",
+        "version": "0.1.0",
+        "permissions": ["example:read"],
+        "webhooks": [],
+        "description": "Test plugin",
+    }
+    manifest["signature"] = _signature(manifest)
+    plugin_dir = tmp_path / "sample" / "plugin.json"
+    plugin_dir.parent.mkdir(parents=True)
+    plugin_dir.write_text(json.dumps(manifest), encoding="utf-8")
+
+    loaded, errors = api_service.load_plugins_from_directory(tmp_path)
+    assert not errors
+    assert len(loaded) == 1
+    assert api_service.list_plugins()["test-plugin"]["version"] == "0.1.0"
+
+
+def test_load_plugins_reports_signature_error(tmp_path: Path):
+    manifest = {
+        "name": "bad-plugin",
+        "version": "0.0.1",
+        "permissions": [],
+        "webhooks": [],
+        "signature": "not-valid",
+    }
+    plugin_dir = tmp_path / "sample" / "plugin.json"
+    plugin_dir.parent.mkdir(parents=True)
+    plugin_dir.write_text(json.dumps(manifest), encoding="utf-8")
+
+    loaded, errors = api_service.load_plugins_from_directory(tmp_path)
+    assert loaded == []
+    assert errors and "Signature mismatch" in errors[0]
+
+
+def test_enable_disable_helpers_return_payload(tmp_path: Path):
+    manifest = {
+        "name": "toggle-plugin",
+        "version": "2.0.0",
+        "permissions": [],
+        "webhooks": [],
+    }
+    manifest["signature"] = _signature(manifest)
+    plugin_dir = tmp_path / "toggle" / "plugin.json"
+    plugin_dir.parent.mkdir(parents=True)
+    plugin_dir.write_text(json.dumps(manifest), encoding="utf-8")
+
+    api_service.load_plugins_from_directory(tmp_path)
+    assert api_service.get_plugin("toggle-plugin")["enabled"] is True
+    payload = api_service.disable_plugin("toggle-plugin")
+    assert payload["enabled"] is False
+    payload = api_service.enable_plugin("toggle-plugin")
+    assert payload["enabled"] is True

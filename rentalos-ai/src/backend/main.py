@@ -9,9 +9,11 @@ from .controllers import (
     community_router,
     energy_router,
     esg_router,
+    health_router,
     lease_router,
     maintenance_router,
     payments_router,
+    plugin_router,
     pricing_router,
     scheduling_router,
     screening_router,
@@ -42,6 +44,8 @@ def create_app() -> FastAPI:
     app.include_router(scheduling_router, prefix="/api")
     app.include_router(alert_router, prefix="/api")
     app.include_router(energy_router, prefix="/api")
+    app.include_router(plugin_router, prefix="/api")
+    app.include_router(health_router)
     return app
 
 

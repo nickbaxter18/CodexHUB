@@ -25,7 +25,9 @@ SQLAlchemy models describe relational entities while Pydantic schemas ensure str
 The Stage 2 knowledge base upgrade retains an in-memory implementation but now tracks per-entity metric
 series, providing weighted averages, rolling confidence calculations, and snapshots for tests.
 Future stages will integrate PostgreSQL, Redis caching, and a Neo4j knowledge graph. For now we provide
-in-memory mock data that mimic those interfaces for deterministic tests.
+in-memory mock data that mimic those interfaces for deterministic tests. Stage 3 layers on proactive
+observability: the health service aggregates plugin readiness, analytics latency, and event stream
+heartbeats for `/health` and `/ready` endpoints that external orchestrators can poll.
 
 ## Observability & Security
 
@@ -39,4 +41,7 @@ deterministic agent responses but feeds them with richer pre-processing: pricing
 weighted historical rates, demand indexes, and sustainability modifiers before delegating to the agent
 layer, while maintenance agents receive severity hints derived from anomaly scores. The API service now
 hosts a plugin registry so third parties can register, enable, and disable integrations without altering
-core code paths.
+core code paths. In Stage 3 the registry evolves into a manifest-driven loader: signed JSON descriptors in
+`plugins/` are scanned, validated, and registered at runtime so sandboxed integrations can be toggled
+without code changes. The frontend mirrors this by surfacing fairness telemetry, plugin lifecycle status,
+and resilience summaries across dashboard widgets.

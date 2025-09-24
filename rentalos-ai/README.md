@@ -4,7 +4,9 @@ RentalOS-AI is an intelligent operating system for the rental economy. Stage 1 e
 core backend services, a modular frontend foundation, and documentation that defines the architectural vision.
 Stage 2 evolves those foundations with data-informed pricing, predictive maintenance anomaly
 detection, and a programmable plugin marketplace that paves the way for third-party
-extensions.
+extensions. Stage 3 adds a resilience and fairness layer: signed plugin manifests are
+discovered dynamically, new health/readiness endpoints provide observability hooks, and the
+frontend now surfaces ethics telemetry alongside plugin marketplace controls.
 
 ## Getting Started
 
@@ -40,3 +42,13 @@ experimentation.
   into the generated schedule.
 - API service maintains an in-memory plugin registry that simulates marketplace workflows
   and supports enable/disable lifecycle testing.
+
+## Stage 3 Highlights
+
+- Plugin manifests are loaded from the `plugins/` directory with SHA-256 signatures that
+  guard against tampering. API endpoints support reloads and enable/disable lifecycle
+  management.
+- `/health` and `/ready` endpoints expose holistic telemetry so load balancers and
+  dashboards can track readiness, plugin saturation, and analytics heartbeat.
+- The React dashboard showcases fairness metrics, plugin status, and resilience insights,
+  while the plugin marketplace page surfaces sandboxed integrations for review.
