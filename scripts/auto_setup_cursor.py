@@ -8,15 +8,19 @@ This script runs automatically to ensure Cursor is always used.
 import asyncio
 import os
 import sys
-import time
 from pathlib import Path
-from typing import Dict, Any
 
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 
-def check_cursor_environment():
+def _is_feature_enabled(value: str | None, default: bool = True) -> bool:
+    if value is None:
+        return default
+    return value.lower() not in {"0", "false", "off"}
+
+
+def check_cursor_environment() -> bool:
     """Check if Cursor environment is properly configured."""
 
     print("🔍 Checking Cursor Environment...")
@@ -38,7 +42,7 @@ def check_cursor_environment():
     return True
 
 
-async def auto_start_cursor_integration():
+async def auto_start_cursor_integration() -> bool:
     """Automatically start Cursor integration for any new task."""
 
     print("🚀 AUTO-SETTING UP CURSOR INTEGRATION")
@@ -47,6 +51,10 @@ async def auto_start_cursor_integration():
     print()
 
     try:
+        if not _is_feature_enabled(os.getenv("CURSOR_AUTO_SETUP_ENABLED"), True):
+            print("ℹ️ Cursor auto-setup disabled via CURSOR_AUTO_SETUP_ENABLED")
+            return False
+
         # 1. Check environment
         if not check_cursor_environment():
             print("❌ Cursor environment not configured properly")
@@ -55,35 +63,44 @@ async def auto_start_cursor_integration():
         # 2. Import and start Cursor components
         print("📦 Importing Cursor components...")
         from src.cursor import (
-            start_cursor_auto_invocation,
             get_auto_invoker,
+            start_cursor_auto_invocation,
             validate_cursor_compliance,
         )
         from src.knowledge.auto_loader import start_knowledge_auto_loading
-        from src.mobile.mobile_app import start_mobile_app
         from src.knowledge.brain_blocks_integration import start_brain_blocks_integration
+        from src.mobile.mobile_app import start_mobile_app
 
         print("✅ Cursor components imported successfully")
 
         # 3. Start Cursor auto-invocation
         print("🔄 Starting Cursor auto-invocation...")
         await start_cursor_auto_invocation([Path(".")])
-        print("✅ Cursor auto-invocation active")
+        print("✅ Cursor auto-invocation request processed")
 
         # 4. Start knowledge integration
-        print("📚 Starting knowledge integration...")
-        await start_knowledge_auto_loading()
-        print("✅ Knowledge integration active")
+        if _is_feature_enabled(os.getenv("KNOWLEDGE_AUTO_LOAD"), True):
+            print("📚 Starting knowledge integration...")
+            await start_knowledge_auto_loading()
+            print("✅ Knowledge integration active")
+        else:
+            print("ℹ️ Knowledge auto-loading disabled")
 
         # 5. Start mobile control
-        print("📱 Starting mobile control...")
-        await start_mobile_app()
-        print("✅ Mobile control active")
+        if _is_feature_enabled(os.getenv("MOBILE_CONTROL_ENABLED"), False):
+            print("📱 Starting mobile control...")
+            await start_mobile_app()
+            print("✅ Mobile control active")
+        else:
+            print("ℹ️ Mobile control disabled")
 
         # 6. Start brain blocks integration
-        print("🧠 Starting brain blocks integration...")
-        await start_brain_blocks_integration()
-        print("✅ Brain blocks integration active")
+        if _is_feature_enabled(os.getenv("BRAIN_BLOCKS_AUTO_LOAD"), True):
+            print("🧠 Starting brain blocks integration...")
+            await start_brain_blocks_integration()
+            print("✅ Brain blocks integration active")
+        else:
+            print("ℹ️ Brain blocks integration disabled")
 
         # 7. Validate compliance
         print("✅ Validating Cursor compliance...")
@@ -97,7 +114,12 @@ async def auto_start_cursor_integration():
         print("📊 Getting auto-invoker status...")
         auto_invoker = get_auto_invoker()
         stats = auto_invoker.get_rule_stats()
-        print(f"✅ Auto-invoker: {stats['total_rules']} rules, {stats['enabled_rules']} enabled")
+        mode_value = getattr(auto_invoker, "mode", "full")
+        summary_message = (
+            f"✅ Auto-invoker: {stats['total_rules']} rules ({stats['enabled_rules']} enabled)"
+            f" | mode={mode_value}"
+        )
+        print(summary_message)
 
         print("\n🎉 CURSOR INTEGRATION AUTO-SETUP COMPLETE!")
         print("✅ Cursor IDE is now active and will be used for all coding tasks")
@@ -114,7 +136,7 @@ async def auto_start_cursor_integration():
         return False
 
 
-def create_cursor_startup_hook():
+def create_cursor_startup_hook() -> None:
     """Create a startup hook that automatically runs Cursor integration."""
 
     hook_content = '''#!/usr/bin/env python3
@@ -144,7 +166,7 @@ if __name__ == "__main__":
     print(f"✅ Created startup hook: {hook_path}")
 
 
-def create_cursor_instructions():
+def create_cursor_instructions() -> None:
     """Create instructions that ensure Cursor is used from the start."""
 
     instructions_content = """# CURSOR INTEGRATION AUTO-START
@@ -182,7 +204,7 @@ python scripts/auto_setup_cursor.py
     print(f"✅ Created auto-start instructions: {instructions_path}")
 
 
-async def main():
+async def main() -> None:
     """Main auto-setup function."""
 
     print("🎯 CURSOR INTEGRATION AUTO-SETUP")
@@ -211,8 +233,6 @@ async def main():
         print("\n❌ CURSOR INTEGRATION SETUP FAILED!")
         print("💡 Please check your environment configuration")
         print("💡 Ensure CURSOR_API_KEY is set in Codex environment")
-
-    return success
 
 
 if __name__ == "__main__":

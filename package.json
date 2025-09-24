@@ -61,7 +61,8 @@
     "cursor:auto": "python scripts/auto_setup_cursor.py",
     "cursor:bootstrap": "python scripts/bootstrap_integration.py",
     "cursor:knowledge": "python scripts/bootstrap_knowledge.py",
-    "cursor:integration": "python scripts/bootstrap_cursor_integration.py"
+    "cursor:integration": "python scripts/bootstrap_cursor_integration.py",
+    "codex:status": "python scripts/codex_status.py"
   },
   "dependencies": {
     "ajv": "^8.17.1",

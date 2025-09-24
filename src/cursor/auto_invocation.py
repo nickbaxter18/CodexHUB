@@ -42,7 +42,8 @@ class CursorAutoInvoker:
         self.rules: List[AutoInvocationRule] = []
         self.is_running = False
         self.watch_paths: List[Path] = []
-        self._watch_task: Optional[asyncio.Task] = None
+        self._watch_task: Optional[asyncio.Task[None]] = None
+        self.mode = self._resolve_mode()
         self.poll_interval = self._resolve_poll_interval()
         self.ignored_directories = {
             ".git",
@@ -55,6 +56,10 @@ class CursorAutoInvoker:
         # Setup default rules
         self._setup_default_rules()
         self.file_patterns = self._resolve_file_patterns()
+
+        if self.mode == "manual":
+            logger.info("Cursor auto-invoker configured for manual mode; file watching disabled")
+            self.poll_interval = None
 
     def _setup_default_rules(self) -> None:
         """Setup default auto-invocation rules."""
@@ -140,6 +145,25 @@ class CursorAutoInvoker:
             ),
         ]
 
+        if self.mode == "minimal":
+            minimal_patterns = {
+                "**/*.py",
+                "**/*.ts",
+                "**/*.tsx",
+                "**/*.js",
+            }
+            default_rules = [
+                rule for rule in default_rules if rule.trigger_pattern in minimal_patterns
+            ]
+            logger.info(
+                "Cursor auto-invoker running in minimal mode; %s rules enabled",
+                len(default_rules),
+            )
+        elif self.mode == "manual":
+            for rule in default_rules:
+                rule.enabled = False
+            logger.info("Cursor auto-invoker rules loaded in manual mode (all disabled)")
+
         self.rules.extend(default_rules)
         logger.info(f"Setup {len(default_rules)} default auto-invocation rules")
 
@@ -151,9 +175,14 @@ class CursorAutoInvoker:
             return
 
         self.watch_paths = watch_paths
-        self.is_running = True
 
         logger.info(f"Starting auto-invocation for {len(watch_paths)} paths")
+
+        if self.mode == "manual":
+            logger.info("Manual mode active; skipping file watcher start")
+            return
+
+        self.is_running = True
 
         await self._prime_file_snapshot()
 
@@ -280,7 +309,7 @@ class CursorAutoInvoker:
         except Exception as e:
             logger.error(f"Error executing rule {rule.agent_type.value}: {e}")
 
-    async def _execute_agent_action(self, agent, action: str, context: Dict[str, Any]) -> Any:
+    async def _execute_agent_action(self, agent: Any, action: str, context: Dict[str, Any]) -> Any:
         """Execute a specific agent action."""
 
         if action == "generate_components":
@@ -402,9 +431,29 @@ class CursorAutoInvoker:
     def _resolve_file_patterns(self) -> List[str]:
         env_patterns = os.getenv("CURSOR_FILE_PATTERNS")
         if env_patterns:
-            return [pattern.strip() for pattern in env_patterns.split(",") if pattern.strip()]
+            patterns = [pattern.strip() for pattern in env_patterns.split(",") if pattern.strip()]
+            if self.mode == "minimal":
+                patterns = [
+                    pattern
+                    for pattern in patterns
+                    if any(ext in pattern for ext in (".py", ".ts", ".tsx", ".js"))
+                ]
+            return patterns
 
-        return sorted({rule.trigger_pattern for rule in self.rules})
+        if self.mode == "manual":
+            return []
+
+        return sorted({rule.trigger_pattern for rule in self.rules if rule.enabled})
+
+    def _resolve_mode(self) -> str:
+        raw_value = os.getenv("CURSOR_AUTO_INVOCATION_MODE", "full").strip().lower()
+        if raw_value not in {"full", "minimal", "manual"}:
+            logger.warning(
+                "Unknown CURSOR_AUTO_INVOCATION_MODE '%s'; defaulting to 'full'",
+                raw_value,
+            )
+            return "full"
+        return raw_value
 
     def _resolve_poll_interval(self) -> Optional[int]:
         raw_value = os.getenv("CURSOR_MONITOR_INTERVAL")

@@ -5,14 +5,14 @@ Tracks build times, test coverage, agent response times, and system performance.
 
 from __future__ import annotations
 
-import time
 import json
 import logging
-from dataclasses import dataclass, asdict
-from pathlib import Path
-from typing import Dict, List, Optional, Any
+import time
+from dataclasses import asdict, dataclass
 from datetime import datetime
+from pathlib import Path
 from threading import Lock
+from typing import Any, Callable, Dict, List, Optional, Tuple, TypeVar, cast
 
 
 @dataclass
@@ -24,7 +24,7 @@ class PerformanceMetric:
     unit: str
     timestamp: float
     category: str
-    metadata: Dict[str, Any] = None
+    metadata: Optional[Dict[str, Any]] = None
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for JSON serialization."""
@@ -104,43 +104,62 @@ class PerformanceCollector:
     def record_build_metrics(self, metrics: BuildMetrics) -> None:
         """Record build performance metrics."""
 
+        metric_queue: List[Tuple[str, float, str, str, Optional[Dict[str, Any]]]] = [
+            ("build_time", float(metrics.build_time_seconds), "seconds", "build", None),
+            ("test_time", float(metrics.test_time_seconds), "seconds", "build", None),
+            ("lint_time", float(metrics.lint_time_seconds), "seconds", "build", None),
+            ("cache_hit_rate", float(metrics.cache_hit_rate), "percent", "build", None),
+            ("parallel_tasks", float(metrics.parallel_tasks), "count", "build", None),
+        ]
+
+        failure_metadata: Optional[Dict[str, Any]] = None
+        if not metrics.success:
+            failure_metadata = {"error": metrics.error_message} if metrics.error_message else {}
+            metric_queue.append(("build_failure", 1.0, "count", "build", failure_metadata))
+
         with self._lock:
             self._build_history.append(metrics)
 
-            # Record individual metrics
-            self.record_metric("build_time", metrics.build_time_seconds, "seconds", "build")
-            self.record_metric("test_time", metrics.test_time_seconds, "seconds", "build")
-            self.record_metric("lint_time", metrics.lint_time_seconds, "seconds", "build")
-            self.record_metric("cache_hit_rate", metrics.cache_hit_rate, "percent", "build")
-            self.record_metric("parallel_tasks", metrics.parallel_tasks, "count", "build")
-
-            if not metrics.success:
-                self.record_metric(
-                    "build_failure", 1, "count", "build", {"error": metrics.error_message}
-                )
+        for name, value, unit, category, metadata in metric_queue:
+            self.record_metric(name, value, unit, category, metadata)
 
     def record_agent_metrics(self, metrics: AgentMetrics) -> None:
         """Record agent performance metrics."""
 
+        metric_queue: List[Tuple[str, float, str, str, Optional[Dict[str, Any]]]] = [
+            (
+                f"{metrics.agent_name}_response_time",
+                float(metrics.response_time_seconds),
+                "seconds",
+                "agent",
+                None,
+            ),
+            (f"{metrics.agent_name}_qa_score", float(metrics.qa_score), "score", "agent", None),
+            (
+                f"{metrics.agent_name}_trust_score",
+                float(metrics.trust_score),
+                "score",
+                "agent",
+                None,
+            ),
+        ]
+
+        if not metrics.task_success:
+            metric_queue.append(
+                (
+                    f"{metrics.agent_name}_errors",
+                    float(metrics.error_count),
+                    "count",
+                    "agent",
+                    None,
+                )
+            )
+
         with self._lock:
             self._agent_history.append(metrics)
 
-            # Record individual metrics
-            self.record_metric(
-                f"{metrics.agent_name}_response_time",
-                metrics.response_time_seconds,
-                "seconds",
-                "agent",
-            )
-            self.record_metric(f"{metrics.agent_name}_qa_score", metrics.qa_score, "score", "agent")
-            self.record_metric(
-                f"{metrics.agent_name}_trust_score", metrics.trust_score, "score", "agent"
-            )
-
-            if not metrics.task_success:
-                self.record_metric(
-                    f"{metrics.agent_name}_errors", metrics.error_count, "count", "agent"
-                )
+        for name, value, unit, category, metadata in metric_queue:
+            self.record_metric(name, value, unit, category, metadata)
 
     def get_summary(self) -> Dict[str, Any]:
         """Get performance summary statistics."""
@@ -150,13 +169,13 @@ class PerformanceCollector:
                 return {"message": "No metrics recorded yet"}
 
             # Calculate summary statistics
-            categories = {}
+            categories: Dict[str, List[float]] = {}
             for metric in self._metrics:
                 if metric.category not in categories:
                     categories[metric.category] = []
                 categories[metric.category].append(metric.value)
 
-            summary = {
+            summary: Dict[str, Any] = {
                 "total_metrics": len(self._metrics),
                 "categories": {},
                 "build_history": len(self._build_history),
@@ -165,7 +184,7 @@ class PerformanceCollector:
             }
 
             for category, values in categories.items():
-                summary["categories"][category] = {
+                summary.setdefault("categories", {})[category] = {
                     "count": len(values),
                     "avg": sum(values) / len(values),
                     "min": min(values),
@@ -219,18 +238,24 @@ def get_performance_collector() -> PerformanceCollector:
     return _global_collector
 
 
-def record_build_time(func):
+F = TypeVar("F", bound=Callable[..., Any])
+
+
+def record_build_time(func: F) -> F:
     """Decorator to record build time for functions."""
 
-    def wrapper(*args, **kwargs):
+    def wrapper(*args: Any, **kwargs: Any) -> Any:
         start_time = time.time()
+        result: Any = None
+        success = False
+        error_msg: Optional[str] = None
+
         try:
             result = func(*args, **kwargs)
             success = True
-            error_msg = None
-        except Exception as e:
-            success = False
-            error_msg = str(e)
+            return result
+        except Exception as exc:
+            error_msg = str(exc)
             raise
         finally:
             end_time = time.time()
@@ -240,19 +265,17 @@ def record_build_time(func):
             collector.record_build_metrics(
                 BuildMetrics(
                     build_time_seconds=duration,
-                    test_time_seconds=0,  # Would be measured separately
-                    lint_time_seconds=0,  # Would be measured separately
+                    test_time_seconds=0.0,  # Would be measured separately
+                    lint_time_seconds=0.0,  # Would be measured separately
                     total_time_seconds=duration,
-                    cache_hit_rate=0,  # Would be calculated from cache stats
+                    cache_hit_rate=0.0,  # Would be calculated from cache stats
                     parallel_tasks=1,
                     success=success,
                     error_message=error_msg,
                 )
             )
 
-        return result
-
-    return wrapper
+    return cast(F, wrapper)
 
 
 # Export the main classes

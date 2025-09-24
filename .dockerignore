@@ -1,0 +1,28 @@
+node_modules
+pnpm-store
+.pnpm-store
+.venv
+.envrc
+.git
+.gitignore
+.github
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+*.pytest_cache
+.mypy_cache
+coverage
+dist
+build
+results
+cache
+docs/**/*.md~
+Brain docs cleansed .ndjson
+Bundle cleansed .ndjson
+.DS_Store
+.env
+.env.*
+*.log
+tests/__pycache__
+*.egg-info
