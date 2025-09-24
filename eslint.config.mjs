@@ -28,7 +28,7 @@ const ignores = [
   'coverage/',
   'tmp/',
   '**/node_modules/',
-  'AGENTS.md/**',
+  'apps/editor/**',
   'backend/health-test/**',
   'bad.js',
   'editor/**',

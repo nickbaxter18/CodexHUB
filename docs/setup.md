@@ -16,42 +16,40 @@ git clone https://github.com/nickbaxter18/CodexHUB.git
 cd CodexHUB
 ```
 
-## 3. Install Node dependencies with pnpm
+## 3. Bootstrap dependencies
+
+Run the unified bootstrap script to install Node packages, create a virtual environment, and install Python dependencies:
 
 ```bash
-pnpm install
+pnpm run setup
 ```
 
-Using pnpm ensures lockfile fidelity and matches the workspace tooling configured in `package.json` and `pnpm-workspace.yaml`.
+Additional flags let you tailor the bootstrap process:
 
-## 4. Create a Python virtual environment
+- `--skip-node` – reuse existing `node_modules` without invoking pnpm.
+- `--skip-python` – skip virtual environment creation and Python dependency installation.
+- `--no-dev-extras` – install only runtime Python dependencies.
+- `--venv path/to/.venv` – override the default virtual environment location.
 
-```bash
-python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-pip install -r requirements-dev.txt
-```
-
-The `requirements-dev.txt` file includes linters, type checkers, and QA utilities referenced by the governance tooling.
+If you want to hydrate optional pnpm workspaces (for example the Next.js editor) run a filtered install afterwards, e.g. `pnpm install --filter apps/editor...`.
 
 ## 5. Configure environment variables
 
 Create a `.env` file (or export variables in your shell) with the following keys:
 
-| Variable                         | Description                                                                                             |
-| -------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `EDITOR_API_KEY`                 | Required for the editor health-test endpoints. Generate securely and never commit it to source control. |
-| `EDITOR_STATIC_DIR`              | Optional override pointing to the compiled editor assets. Defaults to `editor/` inside the repository.  |
-| `EDITOR_PORT`                    | Overrides the listening port for `backend/health-test.js` (default `5000`).                             |
-| `CURSOR_AGENT_COMMAND`           | Optional command used by the health-test bridge to launch the Cursor CLI. Defaults to `cursor-agent`.   |
-| `CURSOR_AGENT_CWD`               | Working directory used when spawning the Cursor CLI. Defaults to the repository root.                   |
-| `KNOWLEDGE_AUTO_LOAD`            | Set to `false` to disable automatic knowledge ingestion.                                                |
-| `KNOWLEDGE_NDJSON_PATHS`         | Comma-separated list of NDJSON files or directories to ingest.                                          |
-| `KNOWLEDGE_WATCH_INTERVAL`       | Polling interval (seconds) for reloading knowledge sources. Set to `0` to disable the watcher.          |
-| `CURSOR_AUTO_INVOCATION_ENABLED` | Disable Cursor auto-invocation when set to `false`.                                                     |
-| `CURSOR_FILE_PATTERNS`           | Comma-separated glob patterns limiting the files monitored for auto-invocation.                         |
-| `CURSOR_MONITOR_INTERVAL`        | Polling interval (seconds) for auto-invocation file checks. Set to `0` to disable the watcher.          |
+| Variable                         | Description                                                                                                     |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `EDITOR_API_KEY`                 | Required for the editor health-test endpoints. Generate securely and never commit it to source control.         |
+| `EDITOR_STATIC_DIR`              | Optional override pointing to the compiled editor assets. Defaults to `editor/` inside the repository.          |
+| `EDITOR_PORT`                    | Overrides the listening port for `backend/health-test.js` (default `5000`).                                     |
+| `CURSOR_AGENT_COMMAND`           | Optional command used by the health-test bridge to launch the Cursor CLI. Defaults to `cursor-agent`.           |
+| `CURSOR_AGENT_CWD`               | Working directory used when spawning the Cursor CLI. Defaults to the repository root.                           |
+| `KNOWLEDGE_AUTO_LOAD`            | Set to `false` to disable automatic knowledge ingestion.                                                        |
+| `KNOWLEDGE_NDJSON_PATHS`         | Comma-separated list of NDJSON files or directories to ingest.                                                  |
+| `KNOWLEDGE_WATCH_INTERVAL`       | Polling interval (seconds) for reloading knowledge sources. Leave blank (or set to `0`) to disable the watcher. |
+| `CURSOR_AUTO_INVOCATION_ENABLED` | Disable Cursor auto-invocation when set to `false`.                                                             |
+| `CURSOR_FILE_PATTERNS`           | Comma-separated glob patterns limiting the files monitored for auto-invocation.                                 |
+| `CURSOR_MONITOR_INTERVAL`        | Polling interval (seconds) for auto-invocation file checks. Set to `0` to disable the watcher.                  |
 
 You can manage secrets locally with tools such as `direnv`, `doppler`, or the secret manager used by your deployment platform.
 

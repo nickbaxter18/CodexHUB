@@ -29,6 +29,7 @@
     "test": "tests"
   },
   "scripts": {
+    "setup": "python scripts/bootstrap_dev.py",
     "audit:js": "pnpm audit --audit-level=high",
     "audit:py": "python -m pip_audit",
     "check-format": "prettier --check \"**/*.{js,ts,tsx,json,md,yaml,yml,css,scss}\"",
@@ -54,10 +55,11 @@
     "test:watch": "vitest watch",
     "typecheck": "tsc --noEmit",
     "cursor:setup": "python scripts/setup_cursor_integration.py",
-    "cursor:start": "python scripts/start_cursor_integration.py",
-    "cursor:validate": "python scripts/validate_cursor_integration.py",
+    "cursor:cli": "python -m src.cursor.cli",
+    "cursor:start": "python -m src.cursor.cli start --with-knowledge",
+    "cursor:validate": "python -m src.cursor.cli validate",
     "cursor:test": "python scripts/test_cursor_integration.py",
-    "cursor:enforce": "python scripts/enforce_cursor_usage.py",
+    "cursor:enforce": "python -m src.cursor.cli status",
     "cursor:auto": "python scripts/auto_setup_cursor.py",
     "cursor:bootstrap": "python scripts/bootstrap_integration.py",
     "cursor:knowledge": "python scripts/bootstrap_knowledge.py",

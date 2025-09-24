@@ -18,19 +18,18 @@ warn_unused_configs = true
 ignore_missing_imports = true
 pretty = true
 strict = true
-follow_imports = "skip"
+follow_imports = "normal"
 exclude = "^tests/"
-files = [
-    "src/cursor/auto_invocation.py",
-    "src/knowledge",
-    "src/performance",
-]
+files = ["src", "packages/automation"]
 
 [[tool.mypy.overrides]]
 module = [
     "macro_system.*",
     "meta_agent.*",
     "qa_engine.*",
+    "packages.automation.macro_system.*",
+    "packages.automation.meta_agent.*",
+    "packages.automation.qa_engine.*",
 ]
 ignore_errors = true
 
@@ -45,7 +44,11 @@ ignore_errors = true
 
 [tool.pytest.ini_options]
 addopts = "-ra --showlocals"
-testpaths = ["tests", "meta_agent/tests", "macro_system/tests"]
+testpaths = [
+    "tests",
+    "packages/automation/meta_agent/tests",
+    "packages/automation/macro_system/tests",
+]
 
 [tool.bandit]
 targets = ["macro_system", "meta_agent", "qa"]

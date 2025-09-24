@@ -1,6 +1,7 @@
 # Macro System for AI Prompt Generation
 
 ## Overview
+
 The Macro System for AI Prompt Generation provides a modular way to turn concise
 macro invocations (for example `::frontendgen`) into fully fledged sets of
 instructions for building production-grade software. Each macro can expand into
@@ -8,6 +9,7 @@ text as well as invoke additional macros, allowing complex scaffolds to be
 assembled from small reusable building blocks.
 
 ## Features
+
 - Pure JSON storage for macro definitions to guarantee auditability.
 - Recursive expansion with cycle detection and helpful diagnostics.
 - Structured agent metadata (owners, outcomes, acceptance criteria, QA hooks,
@@ -25,6 +27,7 @@ assembled from small reusable building blocks.
   `macros.json`—no code changes required.
 
 ## Usage
+
 ```python
 from macro_system import MacroEngine
 
@@ -34,6 +37,7 @@ print(engine.expand("::masterdev"))
 ```
 
 ### Introspection Helpers
+
 The engine now exposes convenience utilities for advanced tooling:
 
 - `available_macros()` – returns a sorted list of macro names for discovery.
@@ -48,6 +52,7 @@ These helpers make it straightforward to embed the macro system into custom
 developer tooling, dashboards or prompt authoring assistants.
 
 ### Command-Line Interface
+
 A lightweight CLI is provided for rapid experimentation:
 
 ```bash
@@ -94,6 +99,7 @@ the current cache size via `engine.cache_size()` when debugging orchestration
 traffic.
 
 ### Actionable Plans
+
 For agents that need structured steps rather than plain prose, the
 `MacroPlanner` converts macros into hierarchical plans. These plans can be
 serialised as outlines or JSON to feed downstream tooling or orchestrators.
@@ -132,12 +138,14 @@ The script infers the owning agent, populates default outcomes, and injects QA
 hooks so that QA/Meta orchestration tools can consume the catalogue immediately.
 
 ## Philosophy
+
 The system is intentionally data-driven. Macro behaviour lives entirely in
 `macros.json`, while the Python engine focuses on reliable loading, validation
 and expansion. This separation allows teams to evolve their macro catalogue
 without redeploying code.
 
 ## Project Structure
+
 - `macros.json` – Plain JSON macro definitions.
 - `types.py` – Dataclasses and custom exceptions.
 - `macros.py` – Loading and validation logic for JSON macros.
@@ -146,9 +154,9 @@ without redeploying code.
   cycle detection.
 
 ## Testing
+
 Run the unit tests with:
 
 ```bash
 python -m pytest macro_system/tests
 ```
-

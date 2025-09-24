@@ -12,12 +12,16 @@ import os
 import time
 from functools import wraps
 from pathlib import Path
-from typing import Any, Callable, Dict, List
+from types import FrameType
+from typing import Any, Callable, Dict, List, Optional, TypeVar, cast
 
 # Setup logging
 logger = logging.getLogger(__name__)
 if not logger.handlers:
     logger.addHandler(logging.NullHandler())
+
+
+F = TypeVar("F", bound=Callable[..., Any])
 
 
 class CursorEnforcementError(Exception):
@@ -29,10 +33,10 @@ class CursorEnforcementError(Exception):
 class CursorEnforcement:
     """Enforces Cursor IDE integration compliance."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.cursor_usage_log: List[Dict[str, Any]] = []
         self.enforcement_active = self._resolve_enforcement_state()
-        self.required_agents = {
+        self.required_agents: Dict[str, str] = {
             ".tsx": "FRONTEND",
             ".jsx": "FRONTEND",
             ".py": "BACKEND",
@@ -43,7 +47,7 @@ class CursorEnforcement:
             ".ndjson": "KNOWLEDGE",
         }
 
-    def log_cursor_usage(self, agent_type: str, action: str, file_path: str, success: bool):
+    def log_cursor_usage(self, agent_type: str, action: str, file_path: str, success: bool) -> None:
         """Log Cursor usage for compliance tracking."""
 
         self.cursor_usage_log.append(
@@ -116,7 +120,7 @@ class CursorEnforcement:
 
         total_usage = len(self.cursor_usage_log)
         successful_usage = len([log for log in self.cursor_usage_log if log["success"]])
-        agent_usage = {}
+        agent_usage: Dict[str, int] = {}
 
         for log in self.cursor_usage_log:
             agent = log["agent_type"]
@@ -135,12 +139,12 @@ class CursorEnforcement:
 _global_enforcement = CursorEnforcement()
 
 
-def enforce_cursor_integration(agent_type: str, action: str):
+def enforce_cursor_integration(agent_type: str, action: str) -> Callable[[F], F]:
     """Decorator to enforce Cursor integration for functions."""
 
-    def decorator(func: Callable) -> Callable:
+    def decorator(func: F) -> F:
         @wraps(func)
-        async def async_wrapper(*args, **kwargs):
+        async def async_wrapper(*args: Any, **kwargs: Any) -> Any:
             # Get file path from function context
             file_path = _get_file_path_from_context()
 
@@ -162,7 +166,7 @@ def enforce_cursor_integration(agent_type: str, action: str):
                 raise
 
         @wraps(func)
-        def sync_wrapper(*args, **kwargs):
+        def sync_wrapper(*args: Any, **kwargs: Any) -> Any:
             # Get file path from function context
             file_path = _get_file_path_from_context()
 
@@ -185,9 +189,8 @@ def enforce_cursor_integration(agent_type: str, action: str):
 
         # Return appropriate wrapper
         if asyncio.iscoroutinefunction(func):
-            return async_wrapper
-        else:
-            return sync_wrapper
+            return cast(F, async_wrapper)
+        return cast(F, sync_wrapper)
 
     return decorator
 
@@ -196,13 +199,15 @@ def _get_file_path_from_context() -> str:
     """Get file path from current execution context."""
 
     # Try to get from frame
-    frame = inspect.currentframe()
+    frame: Optional[FrameType] = inspect.currentframe()
     try:
         # Walk up the call stack to find file path
         while frame:
             filename = frame.f_code.co_filename
             if filename and not filename.startswith("<"):
                 return filename
+            if frame is None:
+                break
             frame = frame.f_back
     finally:
         del frame
@@ -210,12 +215,12 @@ def _get_file_path_from_context() -> str:
     return "unknown_file"
 
 
-def require_cursor_agent(agent_type: str):
+def require_cursor_agent(agent_type: str) -> Callable[[F], F]:
     """Require specific Cursor agent for function execution."""
 
-    def decorator(func: Callable) -> Callable:
+    def decorator(func: F) -> F:
         @wraps(func)
-        async def async_wrapper(*args, **kwargs):
+        async def async_wrapper(*args: Any, **kwargs: Any) -> Any:
             # Validate agent type
             file_path = _get_file_path_from_context()
             _global_enforcement.validate_cursor_usage(file_path, agent_type)
@@ -224,7 +229,7 @@ def require_cursor_agent(agent_type: str):
             return await _execute_with_cursor_agent(func, agent_type, *args, **kwargs)
 
         @wraps(func)
-        def sync_wrapper(*args, **kwargs):
+        def sync_wrapper(*args: Any, **kwargs: Any) -> Any:
             # Validate agent type
             file_path = _get_file_path_from_context()
             _global_enforcement.validate_cursor_usage(file_path, agent_type)
@@ -233,14 +238,15 @@ def require_cursor_agent(agent_type: str):
             return _execute_with_cursor_agent_sync(func, agent_type, *args, **kwargs)
 
         if asyncio.iscoroutinefunction(func):
-            return async_wrapper
-        else:
-            return sync_wrapper
+            return cast(F, async_wrapper)
+        return cast(F, sync_wrapper)
 
     return decorator
 
 
-async def _execute_with_cursor_agent(func: Callable, agent_type: str, *args, **kwargs):
+async def _execute_with_cursor_agent(
+    func: Callable[..., Any], agent_type: str, *args: Any, **kwargs: Any
+) -> Any:
     """Execute function with Cursor agent integration."""
 
     try:
@@ -278,7 +284,9 @@ async def _execute_with_cursor_agent(func: Callable, agent_type: str, *args, **k
         raise CursorEnforcementError(f"Cursor agent execution failed: {e}")
 
 
-def _execute_with_cursor_agent_sync(func: Callable, agent_type: str, *args, **kwargs):
+def _execute_with_cursor_agent_sync(
+    func: Callable[..., Any], agent_type: str, *args: Any, **kwargs: Any
+) -> Any:
     """Execute function with Cursor agent integration (sync version)."""
 
     try:

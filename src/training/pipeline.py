@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
-import contextlib
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable, Dict, Iterable, Mapping, Optional
+from typing import Any, Callable, Dict, Iterable, Mapping, Optional
 
 import numpy as np
+from numpy.typing import NDArray
 from sklearn.linear_model import LogisticRegression
 
 from src.common.config_loader import GovernanceConfig, MetricsConfig, PipelineConfig, load_config
@@ -17,6 +17,8 @@ from src.performance.metrics_collector import PerformanceCollector, get_performa
 from src.registry.registry import MLflowRegistry
 from src.training.data_loader import DatasetSplits, load_dataset, split_dataset
 from src.training.metrics import MetricResult, compute_classification_metrics, evaluate_thresholds
+
+NDArrayAny = NDArray[Any]
 
 
 @dataclass(frozen=True)
@@ -33,7 +35,7 @@ class TrainingOutcome:
 class _EvaluationResult:
     metrics: Dict[str, float]
     metric_results: Dict[str, MetricResult]
-    predictions: np.ndarray
+    predictions: NDArrayAny
 
 
 class TrainingPipeline:
@@ -126,8 +128,10 @@ class TrainingPipeline:
 
         hyperparams = config.training.model.hyperparameters
         classifier = LogisticRegression(
-            max_iter=hyperparams.epochs,
-            solver="lbfgs",
+            max_iter=hyperparams.max_iterations,
+            solver=hyperparams.solver,
+            penalty=hyperparams.penalty,
+            C=hyperparams.regularization_strength,
         )
         classifier.fit(splits.x_train, np.asarray(splits.y_train))
         return classifier
@@ -158,7 +162,7 @@ class TrainingPipeline:
     def _evaluate_fairness(
         self,
         splits: DatasetSplits,
-        predictions: np.ndarray,
+        predictions: NDArrayAny,
         metrics_cfg: MetricsConfig,
         governance_cfg: GovernanceConfig,
     ) -> Dict[str, FairnessMetricResult]:
@@ -194,21 +198,21 @@ class TrainingPipeline:
         fairness_metrics = {
             f"fairness_{name}": result.value for name, result in fairness_results.items()
         }
+        hyperparams = config.training.model.hyperparameters
         params = {
             "model_class": type(model).__name__,
             "framework": config.training.model.framework,
-            "epochs": config.training.model.hyperparameters.epochs,
-            "learning_rate": config.training.model.hyperparameters.learning_rate,
-            "batch_size": config.training.model.hyperparameters.batch_size,
+            "max_iterations": hyperparams.max_iterations,
+            "solver": hyperparams.solver,
+            "penalty": hyperparams.penalty,
+            "regularization_strength": hyperparams.regularization_strength,
         }
 
-        with contextlib.ExitStack() as stack:
-            run = stack.enter_context(
-                registry.start_run(run_name=config.training.experiment.run_name)
-            )
-            registry.log_params(run.info.run_id, params)
-            registry.log_metrics(run.info.run_id, {**metrics, **fairness_metrics})
-            return run.info.run_id
+        with registry.start_run(run_name=config.training.experiment.run_name) as run:
+            run_id = str(run.info.run_id)
+            registry.log_params(run_id, params)
+            registry.log_metrics(run_id, {**metrics, **fairness_metrics})
+        return run_id
 
 
 def main(argv: Iterable[str] | None = None) -> int:

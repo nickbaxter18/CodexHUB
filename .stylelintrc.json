@@ -1,7 +1,7 @@
 {
   "extends": ["stylelint-config-standard"],
   "plugins": ["stylelint-prettier"],
-  "ignoreFiles": ["**/node_modules/**", "AGENTS.md/**"],
+  "ignoreFiles": ["**/node_modules/**", "apps/editor/**"],
   "rules": {
     "prettier/prettier": true
   }

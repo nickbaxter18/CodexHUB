@@ -1,46 +1,12 @@
-"""Convenience exports for CodexHUB agent implementations."""
+"""Compatibility layer for legacy agents imports.
 
-from .agent_base import Agent, AgentTaskError
-from .knowledge_agent import (
-    KnowledgeAgent as RetrievalKnowledgeAgent,
-    KnowledgeRecord,
-    KnowledgeSearchResult,
-    KnowledgeStore,
-)
-from .meta_agent import MetaAgent
-from .specialist_agents import (
-    AgentTask,
-    ArchitectAgent,
-    BackendAgent,
-    CICDAgent,
-    FrontendAgent,
-    KnowledgeAgent as SpecialistKnowledgeAgent,
-    KnowledgeDocument,
-    QAAgent,
-    SpecialistAgent,
-)
+This module re-exports the automation agents that now live under
+``packages.automation.agents`` so existing import paths continue to work
+while the codebase adopts the normalized packages/ layout.
+"""
 
-# Maintain backwards compatibility for callers expecting the specialist knowledge agent
-KnowledgeAgent = SpecialistKnowledgeAgent
+# Re-export the documented public API for introspection tools.
+from packages.automation.agents import *  # noqa: F401,F403
+from packages.automation.agents import __all__ as _ALL
 
-# Expose the retrieval-focused implementation with an explicit alias
-KnowledgeRetrievalAgent = RetrievalKnowledgeAgent
-
-__all__ = [
-    "Agent",
-    "AgentTask",
-    "AgentTaskError",
-    "ArchitectAgent",
-    "BackendAgent",
-    "CICDAgent",
-    "FrontendAgent",
-    "KnowledgeAgent",
-    "KnowledgeDocument",
-    "KnowledgeRecord",
-    "KnowledgeRetrievalAgent",
-    "KnowledgeSearchResult",
-    "KnowledgeStore",
-    "MetaAgent",
-    "QAAgent",
-    "SpecialistAgent",
-]
+__all__ = list(_ALL)

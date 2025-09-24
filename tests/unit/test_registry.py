@@ -38,7 +38,15 @@ def test_registry_logs_and_registers(tmp_path: Path) -> None:
 
     with registry.start_run(run_name=config.run_name) as run:
         registry.log_metrics(run.info.run_id, {"accuracy": 0.9})
-        registry.log_params(run.info.run_id, {"epochs": 5})
+        registry.log_params(
+            run.info.run_id,
+            {
+                "max_iterations": 200,
+                "solver": "lbfgs",
+                "penalty": "l2",
+                "regularization_strength": 1.0,
+            },
+        )
         mlflow.pyfunc.log_model("model", python_model=_ConstantModel())
 
     version = registry.register_model(run.info.run_id, "model", "TestModel")

@@ -2,8 +2,8 @@ extends: default
 ignore: |
   node_modules/
   .pnpm-store/
-  AGENTS.md/
-  AGENTS.md/**
+  apps/editor/
+  apps/editor/**
   .github/workflows/agents-md-check.yml
   pnpm-lock.yaml
 rules:

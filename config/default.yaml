@@ -15,11 +15,12 @@ training:
     experiment_name: CodexHUB-Baseline
     run_name: initial-baseline
   model:
-    framework: pytorch
+    framework: sklearn-logistic-regression
     hyperparameters:
-      epochs: 5
-      learning_rate: 0.001
-      batch_size: 32
+      max_iterations: 200
+      solver: lbfgs
+      penalty: l2
+      regularization_strength: 1.0
 inference:
   default_model_name: CodexHUB-Baseline
   cache_ttl_seconds: 900
