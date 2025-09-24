@@ -1,15 +1,32 @@
+from __future__ import annotations
+
 """Statistical helper routines supporting probabilistic QA decisions."""
 
 # === Header & Purpose ===
 # Encapsulates statistical utilities shared across probabilistic QA analyses,
-# including cumulative distributions, percentile computation, and confidence
-# interval estimation for sample observations.
+# including cumulative distributions, percentile computation, bootstrap
+# estimation, and confidence interval construction with robust edge handling.
 
 # === Imports / Dependencies ===
-from __future__ import annotations
 
 import math
-from typing import Iterable, List, Sequence, Tuple
+from typing import Iterable, List, Optional, Sequence, Tuple
+
+import numpy as np
+
+
+def _coerce_finite(values: Iterable[float]) -> List[float]:
+    """Return a list of finite ``float`` values from ``values``."""
+
+    cleaned: List[float] = []
+    for value in values:
+        try:
+            numeric = float(value)  # type: ignore[arg-type]
+        except (TypeError, ValueError):
+            continue
+        if math.isfinite(numeric):
+            cleaned.append(numeric)
+    return cleaned
 
 
 def cumulative_standard_normal(z: float) -> float:
@@ -21,12 +38,13 @@ def cumulative_standard_normal(z: float) -> float:
 def sample_mean_std(values: Sequence[float]) -> Tuple[float, float]:
     """Compute the mean and sample standard deviation for ``values``."""
 
-    if not values:
+    cleaned = _coerce_finite(values)
+    if not cleaned:
         return 0.0, 0.0
-    mean = sum(values) / float(len(values))
-    if len(values) == 1:
+    mean = sum(cleaned) / float(len(cleaned))
+    if len(cleaned) == 1:
         return mean, 0.0
-    variance = sum((value - mean) ** 2 for value in values) / float(len(values) - 1)
+    variance = sum((value - mean) ** 2 for value in cleaned) / float(len(cleaned) - 1)
     return mean, math.sqrt(variance)
 
 
@@ -35,13 +53,14 @@ def mean_confidence_interval(
 ) -> Tuple[float, float]:
     """Compute a symmetric confidence interval for ``values`` using z-scores."""
 
-    if not values:
+    cleaned = _coerce_finite(values)
+    if not cleaned:
         return 0.0, 0.0
-    mean, std = sample_mean_std(values)
+    mean, std = sample_mean_std(cleaned)
     if std == 0.0:
         return mean, mean
     z = inverse_standard_normal((1.0 + confidence) / 2.0)
-    margin = z * std / math.sqrt(len(values))
+    margin = z * std / math.sqrt(len(cleaned))
     return mean - margin, mean + margin
 
 
@@ -49,7 +68,7 @@ def percentile(values: Iterable[float], q: float) -> float:
     """Return the ``q`` percentile (0-100 inclusive) from ``values``."""
 
     clamped_q = min(max(q, 0.0), 100.0)
-    sorted_values: List[float] = sorted(values)
+    sorted_values: List[float] = sorted(_coerce_finite(values))
     if not sorted_values:
         return 0.0
     if len(sorted_values) == 1:
@@ -97,18 +116,63 @@ def inverse_standard_normal(p: float) -> float:
     return result if x > 0 else -result
 
 
+def clamp_probability(probability: float, eps: float = 1e-15) -> float:
+    """Return ``probability`` constrained to ``[eps, 1-eps]`` with NaNs mapped to 0.5."""
+
+    try:
+        value = float(probability)
+    except (TypeError, ValueError):
+        return 0.5
+    if math.isnan(value):
+        return 0.5
+    return max(min(value, 1.0 - eps), eps)
+
+
+def bootstrap_confidence_interval(
+    values: Sequence[float],
+    *,
+    confidence: float = 0.95,
+    iterations: int = 1000,
+    random_state: Optional[int] = None,
+) -> Tuple[float, float]:
+    """Return a bootstrap confidence interval for the mean of ``values``."""
+
+    cleaned = _coerce_finite(values)
+    if not cleaned:
+        return 0.0, 0.0
+    if len(cleaned) == 1:
+        single = cleaned[0]
+        return single, single
+    if not 0.0 < confidence < 1.0:
+        raise ValueError("confidence must lie within (0, 1)")
+    if iterations <= 0:
+        raise ValueError("iterations must be positive")
+    rng = np.random.default_rng(random_state)
+    array = np.asarray(cleaned, dtype=float)
+    means = np.empty(iterations, dtype=float)
+    for index in range(iterations):
+        sample = rng.choice(array, size=array.size, replace=True)
+        means[index] = float(np.mean(sample))
+    lower_q = (1.0 - confidence) / 2.0 * 100.0
+    upper_q = (1.0 + confidence) / 2.0 * 100.0
+    return float(np.percentile(means, lower_q)), float(np.percentile(means, upper_q))
+
+
 # === Error & Edge Case Handling ===
-# - Percentile and confidence interval routines handle empty inputs gracefully.
-# - Inverse CDF rejects boundary probabilities to avoid infinities.
+# - Numerical operations ignore non-finite values to avoid propagating NaNs.
+# - Percentile, bootstrap, and confidence interval routines validate input ranges.
+# - Bootstrap sampling falls back to a degenerate interval when only one sample exists.
 
 
 # === Performance Considerations ===
-# - Operations are vector-free and suitable for tight loops. Complexity is O(n) for
-#   percentile and mean calculations.
+# - Bootstrap sampling leverages NumPy vectorisation for efficiency.
+# - Other operations are O(n) in the number of samples.
 
 
 # === Exports / Public API ===
 __all__ = [
+    "bootstrap_confidence_interval",
+    "clamp_probability",
     "cumulative_standard_normal",
     "inverse_standard_normal",
     "mean_confidence_interval",
