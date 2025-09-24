@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Dict, List
 
 from pydantic import BaseModel, Field
@@ -39,7 +39,7 @@ def create_event(asset_id: int, title: str, minutes_from_now: int, capacity: int
         id=len(events) + 1,
         asset_id=asset_id,
         title=title,
-        scheduled_for=add_minutes(datetime.utcnow(), minutes_from_now),
+        scheduled_for=add_minutes(datetime.now(UTC), minutes_from_now),
         capacity=capacity,
     )
     events.append(event)
@@ -68,7 +68,7 @@ def create_post(asset_id: int, author: str, content: str) -> CommunityPost:
         asset_id=asset_id,
         author=author,
         content=content,
-        created_at=datetime.utcnow(),
+        created_at=datetime.now(UTC),
     )
     posts.append(post)
     return post

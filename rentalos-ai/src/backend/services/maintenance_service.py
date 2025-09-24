@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from statistics import fmean, pstdev
 from typing import Dict, List, Sequence
 
@@ -65,7 +65,7 @@ async def generate_schedule(
 
     sensor_windows = sensor_windows or []
     anomaly_scores = detect_anomalies(sensor_windows)
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
     severity = "medium" if anomaly_scores else "low"
     payload = {
         "asset_id": asset_id,
@@ -117,7 +117,7 @@ def schedule_drone_inspection(asset_id: int) -> MaintenanceTask:
 
     return MaintenanceTask(
         asset_id=asset_id,
-        scheduled_for=datetime.utcnow() + timedelta(days=2),
+        scheduled_for=datetime.now(UTC) + timedelta(days=2),
         description="Drone roof scan",
         severity="medium",
     )

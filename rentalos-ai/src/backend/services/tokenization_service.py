@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import List
 
 from pydantic import BaseModel
@@ -28,7 +28,7 @@ def tokenize_asset(asset_id: int, holder: str, shares: float) -> TokenizationRec
         asset_id=asset_id,
         holder=holder,
         shares=shares,
-        issued_at=datetime.utcnow(),
+        issued_at=datetime.now(UTC),
     )
     _TOKENS.append(record)
     logger.info("Tokenized asset", extra={"asset_id": asset_id, "holder": holder})

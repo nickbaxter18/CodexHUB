@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import List
 
 from pydantic import BaseModel
@@ -36,7 +36,7 @@ def record_energy_trade(
         direction=direction,
         price_per_kwh=price_per_kwh,
         carbon_impact=carbon,
-        executed_at=datetime.utcnow(),
+        executed_at=datetime.now(UTC),
     )
     _ENERGY_TRADES.append(trade)
     logger.info("Recorded energy trade", extra={"asset_id": asset_id, "direction": direction})

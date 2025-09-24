@@ -2,12 +2,18 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import UTC, datetime
 
 from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, Numeric, String, Table
 from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
+
+
+def utcnow() -> datetime:
+    """Return a timezone-aware UTC timestamp for ORM defaults."""
+
+    return datetime.now(UTC)
 
 
 class User(Base):
@@ -16,7 +22,7 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     email = Column(String, unique=True, nullable=False)
     role = Column(String, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=utcnow)
 
     assets = relationship("Asset", back_populates="owner")
 
@@ -64,7 +70,7 @@ class SensorReading(Base):
     asset_id = Column(Integer, ForeignKey("assets.id"))
     sensor_type = Column(String, nullable=False)
     value = Column(Float, nullable=False)
-    recorded_at = Column(DateTime, default=datetime.utcnow)
+    recorded_at = Column(DateTime, default=utcnow)
 
 
 class ESGRecord(Base):
@@ -75,7 +81,7 @@ class ESGRecord(Base):
     carbon_kg = Column(Float, nullable=False)
     water_liters = Column(Float, nullable=False)
     waste_kg = Column(Float, nullable=False)
-    recorded_at = Column(DateTime, default=datetime.utcnow)
+    recorded_at = Column(DateTime, default=utcnow)
 
 
 class Token(Base):
@@ -85,7 +91,7 @@ class Token(Base):
     asset_id = Column(Integer, ForeignKey("assets.id"))
     holder = Column(String, nullable=False)
     shares = Column(Float, nullable=False)
-    issued_at = Column(DateTime, default=datetime.utcnow)
+    issued_at = Column(DateTime, default=utcnow)
 
 
 class Community(Base):

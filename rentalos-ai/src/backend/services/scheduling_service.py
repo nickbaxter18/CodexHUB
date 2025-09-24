@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Iterable, List
 
 from pydantic import BaseModel
@@ -25,7 +25,7 @@ async def build_schedule(items: Iterable[dict]) -> List[ScheduleEntry]:
     payload_items = list(items)
     agent_result = await dispatcher.dispatch("scheduling", {"items": payload_items})
     ordered = agent_result["data"]["ordered"]
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
     entries = []
     for idx, item in enumerate(ordered, start=1):
         entries.append(
