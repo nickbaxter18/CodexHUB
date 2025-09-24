@@ -10,15 +10,8 @@
     "setup": "python ../../scripts/bootstrap_knowledge.py",
     "validate": "python ../../scripts/validate_cursor_integration.py"
   },
-  "dependencies": {
-    "aiohttp": "^3.9.0",
-    "watchdog": "^3.0.0",
-    "pydantic": "^2.5.0"
-  },
-  "devDependencies": {
-    "pytest": "^7.4.0",
-    "pytest-asyncio": "^0.21.0"
-  },
+  "dependencies": {},
+  "devDependencies": {},
   "keywords": [
     "knowledge",
     "ndjson",

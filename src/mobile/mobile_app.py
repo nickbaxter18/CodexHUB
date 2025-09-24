@@ -489,11 +489,11 @@ async def create_goal(title: str, description: str, priority: str = "medium") ->
     )
     
     return {
-        "id": goal.id,
+        "id": goal.goal_id,
         "title": goal.title,
         "description": goal.description,
         "priority": goal.priority.value,
-        "status": goal.status.value,
+        "status": goal.approval_status.value,
         "created_at": goal.created_at.isoformat()
     }
 
@@ -506,11 +506,11 @@ async def get_goals(status_filter: Optional[str] = None) -> List[Dict[str, Any]]
     
     return [
         {
-            "id": goal.id,
+            "id": goal.goal_id,
             "title": goal.title,
             "description": goal.description,
             "priority": goal.priority.value,
-            "status": goal.status.value,
+            "status": goal.approval_status.value,
             "created_at": goal.created_at.isoformat()
         }
         for goal in goals

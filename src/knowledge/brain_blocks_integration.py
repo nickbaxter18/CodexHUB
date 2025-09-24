@@ -356,7 +356,10 @@ async def query_brain_blocks(query: str = "", limit: int = 10) -> List[Dict[str,
     """Query brain blocks and return results."""
     
     integration = get_brain_blocks_integration()
-    results = await integration.query_brain_blocks(query, limit)
+    # Create a BrainBlockQuery object
+    from .brain_blocks_integration import BrainBlockQuery
+    query_obj = BrainBlockQuery(query=query, limit=limit)
+    results = await integration.query_brain_blocks(query_obj)
     
     return [
         {

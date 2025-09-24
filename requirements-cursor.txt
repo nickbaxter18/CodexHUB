@@ -1,0 +1,15 @@
+# Cursor Integration Python Dependencies
+# These are the Python packages needed for Cursor IDE integration
+
+# Async HTTP client for Cursor API
+aiohttp>=3.9.0
+
+# File watching for auto-invocation
+watchdog>=3.0.0
+
+# Data validation for Cursor requests
+pydantic>=2.5.0
+
+# Testing dependencies
+pytest>=7.4.0
+pytest-asyncio>=0.21.0

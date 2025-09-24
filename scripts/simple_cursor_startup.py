@@ -84,6 +84,29 @@ def check_agents_instructions():
     
     return True
 
+def check_python_dependencies():
+    """Check if Python dependencies are available."""
+    
+    print("🐍 Checking Python Dependencies...")
+    
+    required_packages = ['aiohttp', 'watchdog', 'pydantic']
+    missing_packages = []
+    
+    for package in required_packages:
+        try:
+            __import__(package)
+            print(f"✅ {package}")
+        except ImportError:
+            missing_packages.append(package)
+            print(f"❌ {package}")
+    
+    if missing_packages:
+        print(f"\n⚠️ Missing Python packages: {', '.join(missing_packages)}")
+        print("💡 Install with: pip install -r requirements-cursor.txt")
+        return False
+    
+    return True
+
 def main():
     """Main startup function."""
     
@@ -104,14 +127,19 @@ def main():
     agents_ok = check_agents_instructions()
     print()
     
+    # Check Python dependencies
+    deps_ok = check_python_dependencies()
+    print()
+    
     # Final summary
     print("🎉 CURSOR STARTUP CHECK COMPLETE!")
     print("=" * 50)
     
-    if env_ok and files_ok and agents_ok:
+    if env_ok and files_ok and agents_ok and deps_ok:
         print("✅ Cursor environment is properly configured")
         print("✅ All required files are present")
         print("✅ Agent instructions are available")
+        print("✅ Python dependencies are installed")
         print("🚀 Ready to use Cursor IDE!")
         print("\n💡 Next steps:")
         print("   1. Ensure CURSOR_API_KEY is set in your Codex environment")
@@ -126,6 +154,8 @@ def main():
             print("   - Some required files are missing")
         if not agents_ok:
             print("   - Agent instructions may be missing")
+        if not deps_ok:
+            print("   - Python dependencies need installation")
         print("\n💡 Please address these issues before proceeding")
         return False
 
