@@ -19,32 +19,32 @@ from src.knowledge.brain_blocks_integration import start_brain_blocks_integratio
 
 async def start_all_integrations():
     """Start all integration components."""
-    
+
     print("🚀 Starting Cursor Integration System...")
-    
+
     try:
         # Start Cursor auto-invocation
         print("Starting Cursor auto-invocation...")
         await start_cursor_auto_invocation([Path(".")])
         print("✅ Cursor auto-invocation started")
-        
+
         # Start knowledge auto-loading
         print("Starting knowledge auto-loading...")
         await start_knowledge_auto_loading()
         print("✅ Knowledge auto-loading started")
-        
+
         # Start mobile app
         print("Starting mobile app...")
         await start_mobile_app()
         print("✅ Mobile app started")
-        
+
         # Start brain blocks integration
         print("Starting brain blocks integration...")
         await start_brain_blocks_integration()
         print("✅ Brain blocks integration started")
-        
+
         print("🎉 All Cursor integration components started successfully!")
-        
+
     except Exception as e:
         print(f"❌ Error starting integrations: {e}")
         raise

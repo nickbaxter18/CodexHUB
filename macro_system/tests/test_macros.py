@@ -47,9 +47,7 @@ def test_macro_metadata_is_loaded():
 
 
 def test_missing_macro_reference_raises():
-    macros = {
-        "::root": Macro(name="::root", expansion="root", calls=["::missing"])
-    }
+    macros = {"::root": Macro(name="::root", expansion="root", calls=["::missing"])}
     engine = MacroEngine(macros)
     with pytest.raises(MacroNotFoundError):
         engine.expand("::root")
@@ -115,13 +113,9 @@ def test_cli_exports_meta_manifest(capsys):
     captured = capsys.readouterr()
     payload = json.loads(captured.out)
     assert payload["root"] == "::frontendgen"
-    tests_entry = next(
-        item for item in payload["tasks"] if item["macro"] == "::frontendgen-tests"
-    )
+    tests_entry = next(item for item in payload["tasks"] if item["macro"] == "::frontendgen-tests")
     assert tests_entry["dependsOn"] == ["::frontendgen"]
-    root_task = next(
-        item for item in payload["tasks"] if item["macro"] == "::frontendgen"
-    )
+    root_task = next(item for item in payload["tasks"] if item["macro"] == "::frontendgen")
     assert root_task["priority"] == "P1"
     assert root_task["status"] == "planned"
 

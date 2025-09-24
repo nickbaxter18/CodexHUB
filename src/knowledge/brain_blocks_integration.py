@@ -354,13 +354,14 @@ async def start_brain_blocks_integration() -> None:
 
 async def query_brain_blocks(query: str = "", limit: int = 10) -> List[Dict[str, Any]]:
     """Query brain blocks and return results."""
-    
+
     integration = get_brain_blocks_integration()
     # Create a BrainBlockQuery object
     from .brain_blocks_integration import BrainBlockQuery
+
     query_obj = BrainBlockQuery(query=query, limit=limit)
     results = await integration.query_brain_blocks(query_obj)
-    
+
     return [
         {
             "doc_id": block.doc_id,
@@ -368,7 +369,7 @@ async def query_brain_blocks(query: str = "", limit: int = 10) -> List[Dict[str,
             "content": block.content,
             "section": block.section,
             "tags": block.tags,
-            "updated_at": block.updated_at
+            "updated_at": block.updated_at,
         }
         for block in results
     ]

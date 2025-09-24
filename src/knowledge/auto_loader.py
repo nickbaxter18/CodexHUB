@@ -301,21 +301,23 @@ async def start_knowledge_auto_loading() -> None:
 
 async def get_knowledge_entries() -> List[Dict[str, Any]]:
     """Get all knowledge entries from the auto-loader."""
-    
+
     auto_loader = get_auto_loader()
     stats = auto_loader.get_source_stats()
-    
+
     # Return knowledge entries in a format that can be used
     entries = []
     for source in auto_loader.sources:
         if source.enabled and source.document_count > 0:
-            entries.append({
-                "name": source.name,
-                "path": str(source.path),
-                "document_count": source.document_count,
-                "last_loaded": source.last_loaded.isoformat() if source.last_loaded else None
-            })
-    
+            entries.append(
+                {
+                    "name": source.name,
+                    "path": str(source.path),
+                    "document_count": source.document_count,
+                    "last_loaded": source.last_loaded.isoformat() if source.last_loaded else None,
+                }
+            )
+
     return entries
 
 

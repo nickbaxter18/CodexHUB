@@ -5,6 +5,7 @@ SECTION: Header & Purpose
 SECTION: Imports / Dependencies
     - Relies on ``pathlib`` and ``sys`` from the standard library.
 """
+
 from __future__ import annotations
 
 import sys

@@ -139,25 +139,15 @@ def _build_recommendations(coverage: AgentCoverage, gaps: MetadataGaps) -> List[
     actions: List[str] = []
 
     if gaps.unassigned:
-        actions.append(
-            "Assign owner agents to all macros so Meta Agent can orchestrate hand-offs."
-        )
+        actions.append("Assign owner agents to all macros so Meta Agent can orchestrate hand-offs.")
     if gaps.missing_outcomes:
-        actions.append(
-            "Author macro-specific outcomes describing measurable deliverables."
-        )
+        actions.append("Author macro-specific outcomes describing measurable deliverables.")
     if gaps.missing_acceptance:
-        actions.append(
-            "Provide acceptance criteria so QA Agent MD can score each macro."
-        )
+        actions.append("Provide acceptance criteria so QA Agent MD can score each macro.")
     if gaps.missing_qa_hooks:
-        actions.append(
-            "Attach qaHooks for every macro to wire automation entry points."
-        )
+        actions.append("Attach qaHooks for every macro to wire automation entry points.")
     if gaps.default_outcomes:
-        actions.append(
-            "Replace default migration outcomes with detailed, agent-owned results."
-        )
+        actions.append("Replace default migration outcomes with detailed, agent-owned results.")
     if not actions:
         actions.append("Metadata coverage complete — proceed with QA/Meta integration.")
 

@@ -115,7 +115,9 @@ def infer_owner(name: str, expansion: str) -> str:
     """Infer an owner agent using heuristic keyword matching."""
 
     normalised_name = name.lower()
-    if any(token in normalised_name for token in ("::qa", "qa", "test", "access", "audit", "security")):
+    if any(
+        token in normalised_name for token in ("::qa", "qa", "test", "access", "audit", "security")
+    ):
         return "QA Agent"
 
     haystack = f"{name} {expansion}".lower()
@@ -132,10 +134,13 @@ def infer_owner(name: str, expansion: str) -> str:
                     score += 1
             elif keyword in haystack:
                 score += 1
-        if score and (score > best_score or (
-            score == best_score
-            and _AGENT_PRIORITY.get(agent, 99) < _AGENT_PRIORITY.get(best_agent, 99)
-        )):
+        if score and (
+            score > best_score
+            or (
+                score == best_score
+                and _AGENT_PRIORITY.get(agent, 99) < _AGENT_PRIORITY.get(best_agent, 99)
+            )
+        ):
             best_agent = agent
             best_score = score
 
@@ -195,7 +200,6 @@ def ensure_metadata(payload: MutableMapping[str, object]) -> None:
         hooks.insert(0, "qa::execute")
 
     payload["qaHooks"] = hooks
-
 
 
 def reorder_payload(payload: MutableMapping[str, object]) -> Dict[str, object]:

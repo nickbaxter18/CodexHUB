@@ -8,13 +8,26 @@ SECTION: Header & Purpose
 SECTION: Imports / Dependencies
     - Relies only on the Python standard library for portability (json, pathlib, dataclasses, typing, logging).
 """
+
 from __future__ import annotations
 
 import json
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, MutableMapping, Optional, Sequence, Set, Tuple, Literal, cast
+from typing import (
+    Any,
+    Dict,
+    Iterable,
+    List,
+    MutableMapping,
+    Optional,
+    Sequence,
+    Set,
+    Tuple,
+    Literal,
+    cast,
+)
 
 
 class QARulesError(Exception):
@@ -206,7 +219,9 @@ class QARules:
         return QARules(version=str(data.get("version", "0.0.0")), agents=agents, macros=macros)
 
 
-def _validate_against_embedded_schema(data: MutableMapping[str, Any], schema: MutableMapping[str, Any]) -> None:
+def _validate_against_embedded_schema(
+    data: MutableMapping[str, Any], schema: MutableMapping[str, Any]
+) -> None:
     """Perform a focused validation that mirrors the bundled schema requirements."""
 
     def _expect(condition: bool, message: str) -> None:
@@ -237,7 +252,9 @@ def _validate_against_embedded_schema(data: MutableMapping[str, Any], schema: Mu
     allowed_agent_keys = set(agent_properties.keys()) or {"budgets", "tests"}
 
     for agent_name, agent_cfg in agents.items():
-        _expect(isinstance(agent_cfg, dict), f"agent '{agent_name}' configuration must be an object")
+        _expect(
+            isinstance(agent_cfg, dict), f"agent '{agent_name}' configuration must be an object"
+        )
         extra_keys = set(agent_cfg) - allowed_agent_keys
         _expect(not extra_keys, f"agent '{agent_name}' has unknown keys: {sorted(extra_keys)}")
         _expect("budgets" in agent_cfg, f"agent '{agent_name}' missing 'budgets'")
@@ -254,16 +271,26 @@ def _validate_against_embedded_schema(data: MutableMapping[str, Any], schema: Mu
 
         tests = agent_cfg["tests"]
         _expect(isinstance(tests, list), f"agent '{agent_name}' tests must be an array")
-        _expect(all(isinstance(test_name, str) for test_name in tests), f"agent '{agent_name}' test entries must be strings")
+        _expect(
+            all(isinstance(test_name, str) for test_name in tests),
+            f"agent '{agent_name}' test entries must be strings",
+        )
         for test_name in tests:
-            _expect(isinstance(test_name, str), f"agent '{agent_name}' test entries must be strings")
+            _expect(
+                isinstance(test_name, str), f"agent '{agent_name}' test entries must be strings"
+            )
 
         metrics_cfg = agent_cfg.get("metrics")
         if metrics_cfg is not None:
-            _expect(isinstance(metrics_cfg, dict), f"agent '{agent_name}' metrics must be an object")
+            _expect(
+                isinstance(metrics_cfg, dict), f"agent '{agent_name}' metrics must be an object"
+            )
             for metric_name, policy_cfg in metrics_cfg.items():
                 _expect(isinstance(metric_name, str), "metric keys must be strings")
-                _expect(isinstance(policy_cfg, dict), f"agent '{agent_name}' metric '{metric_name}' policy must be an object")
+                _expect(
+                    isinstance(policy_cfg, dict),
+                    f"agent '{agent_name}' metric '{metric_name}' policy must be an object",
+                )
                 comparison = policy_cfg.get("comparison", "auto")
                 _expect(
                     comparison in {"auto", "lte", "gte", "eq"},
@@ -308,7 +335,10 @@ def _validate_against_embedded_schema(data: MutableMapping[str, Any], schema: Mu
     _expect(isinstance(default_context, list), "'default_context' must be an array")
     for ctx in default_context:
         _expect(isinstance(ctx, str), "each default context entry must be a string")
-    _expect(len(set(default_context)) == len(default_context), "'default_context' entries must be unique")
+    _expect(
+        len(set(default_context)) == len(default_context),
+        "'default_context' entries must be unique",
+    )
 
 
 def _coerce_string_list(value: Any, error_context: str) -> List[str]:
@@ -393,7 +423,14 @@ class QAEngine:
     FAILURE_FLOOR: float = 0.1
     SUCCESS_BOOST: float = 0.05
     SUCCESS_CEILING: float = 1.5
-    NUMERIC_UPPER_BOUND_HINTS: tuple[str, ...] = ("latency", "duration", "time", "error", "p95", "p99")
+    NUMERIC_UPPER_BOUND_HINTS: tuple[str, ...] = (
+        "latency",
+        "duration",
+        "time",
+        "error",
+        "p95",
+        "p99",
+    )
 
     def __init__(
         self,
@@ -420,9 +457,7 @@ class QAEngine:
 
         return self._rules_source
 
-    def attach_rules_source(
-        self, rules_path: Path, schema_path: Optional[Path] = None
-    ) -> None:
+    def attach_rules_source(self, rules_path: Path, schema_path: Optional[Path] = None) -> None:
         """Associate on-disk rule locations for future refresh operations."""
 
         self._rules_source = (rules_path, schema_path)
@@ -501,13 +536,9 @@ class QAEngine:
 
         remediation: List[str] = []
         if missing:
-            remediation.append(
-                "Populate required macro fields: " + ", ".join(sorted(missing))
-            )
+            remediation.append("Populate required macro fields: " + ", ".join(sorted(missing)))
         if empty:
-            remediation.append(
-                "Ensure required fields are not empty: " + ", ".join(sorted(empty))
-            )
+            remediation.append("Ensure required fields are not empty: " + ", ".join(sorted(empty)))
         if invalid_context:
             remediation.append(
                 "Align macro context with allowed values: " + ", ".join(sorted(default_context))
@@ -605,8 +636,7 @@ class QAEngine:
         remediation_steps = list(remediation_plan.steps)
         if untracked_metrics:
             remediation_steps.append(
-                "Register QA budgets for untracked metrics: "
-                + ", ".join(untracked_metrics)
+                "Register QA budgets for untracked metrics: " + ", ".join(untracked_metrics)
             )
 
         evaluation = QAEvaluation(
@@ -648,7 +678,7 @@ class QAEngine:
             except (TypeError, ValueError):
                 weight = 1.0
             weight = max(weight, 0.0)
-            decay_factor = self.FAILURE_DECAY ** weight if weight > 0 else 1.0
+            decay_factor = self.FAILURE_DECAY**weight if weight > 0 else 1.0
 
             current_score = self.trust_scores.get(agent_name, 1.0)
             updated_score = max(current_score * decay_factor, self.FAILURE_FLOOR)
@@ -786,7 +816,9 @@ class QAEngine:
     def evaluate_metrics(self, agent_name: str, metrics: Dict[str, Any]) -> List[str]:
         """Return violation messages for compatibility with legacy integrations."""
 
-        return [violation.message for violation in self.evaluate_metrics_detailed(agent_name, metrics)]
+        return [
+            violation.message for violation in self.evaluate_metrics_detailed(agent_name, metrics)
+        ]
 
     @classmethod
     def _treat_as_upper_bound(cls, metric_name: str) -> bool:
@@ -808,15 +840,11 @@ class QAEngine:
         macros: List[str] = []
 
         if missing_tests:
-            steps.append(
-                "Execute missing QA tests: " + ", ".join(sorted(set(missing_tests)))
-            )
+            steps.append("Execute missing QA tests: " + ", ".join(sorted(set(missing_tests))))
         else:
             required_tests = self.get_agent_tests(agent_name)
             if required_tests:
-                steps.append(
-                    "Re-run mandatory QA tests: " + ", ".join(sorted(required_tests))
-                )
+                steps.append("Re-run mandatory QA tests: " + ", ".join(sorted(required_tests)))
 
         budget = self.get_agent_budget(agent_name)
         if budget is not None and violated_metrics:
@@ -828,9 +856,7 @@ class QAEngine:
                 macros.extend(policy.remediation_macros)
 
         if len(history) >= 3:
-            steps.append(
-                "Escalate to Architecture for systemic review due to repeated failures."
-            )
+            steps.append("Escalate to Architecture for systemic review due to repeated failures.")
 
         if any("latency" in reason.lower() for reason in history):
             steps.append("Profile performance hotspots and review caching strategies.")

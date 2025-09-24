@@ -12,6 +12,7 @@ from meta_agent.macro_dependency_manager import MacroDependencyManager
 
 # === Tests ===
 
+
 def test_register_macro_blocks_until_dependency_known() -> None:
     """Macros should be blocked until dependencies have known schemas."""
 

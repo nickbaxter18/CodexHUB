@@ -81,7 +81,9 @@ class QAConfidenceReport:
             "samples": int(self.samples),
         }
 
+
 # === Core Logic / Implementation ===
+
 
 def z_score(mean: float, std_dev: float, threshold: float) -> float:
     """Compute the z-score comparing ``threshold`` against a normal distribution."""
@@ -138,7 +140,9 @@ def platt_calibration(
         intercept = math.log(prior / (1.0 - prior))
         probabilities = np.full(label_array.shape, prior, dtype=float)
         loss = _log_loss(probabilities, label_array, regularization, np.array([intercept, 0.0]))
-        return CalibrationResult(intercept=intercept, slope=0.0, iterations=0, converged=True, loss=loss)
+        return CalibrationResult(
+            intercept=intercept, slope=0.0, iterations=0, converged=True, loss=loss
+        )
 
     design = np.column_stack([np.ones_like(score_array), score_array])
     weights = np.zeros(2, dtype=float)
@@ -255,7 +259,9 @@ def confidence_report(
     )
     brier = brier_score(prob_array, label_array)
     ece = expected_calibration_error(prob_array, label_array, bins=bins)
-    return QAConfidenceReport(mean_probability, lower, upper, observed_rate, brier, ece, int(prob_array.size))
+    return QAConfidenceReport(
+        mean_probability, lower, upper, observed_rate, brier, ece, int(prob_array.size)
+    )
 
 
 def evaluate_calibrated_metric(
@@ -324,7 +330,7 @@ def _align_probabilities(
 
 
 def _ensure_calibration(
-    calibration: Union[CalibrationResult, Dict[str, Union[bool, float, int]]]
+    calibration: Union[CalibrationResult, Dict[str, Union[bool, float, int]]],
 ) -> CalibrationResult:
     if isinstance(calibration, CalibrationResult):
         return calibration

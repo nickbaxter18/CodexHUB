@@ -69,8 +69,6 @@ def test_plan_exports_checklist_and_manifest():
     assert root_task["dependsOn"] == []
     assert root_task["priority"] == "P1"
     assert root_task["phase"] == "build"
-    child_task = next(
-        item for item in manifest["tasks"] if item["macro"] == "::frontendgen-tests"
-    )
+    child_task = next(item for item in manifest["tasks"] if item["macro"] == "::frontendgen-tests")
     assert child_task["dependsOn"] == ["::frontendgen"]
     assert child_task["priority"] is None

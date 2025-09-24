@@ -74,7 +74,9 @@ def test_confidence_report_summarises_probabilities() -> None:
 
     probabilities = [0.8, 0.7, 0.9, 0.4]
     labels = [1, 1, 1, 0]
-    report = confidence_report(probabilities, labels, confidence_level=0.9, bootstrap_iterations=200)
+    report = confidence_report(
+        probabilities, labels, confidence_level=0.9, bootstrap_iterations=200
+    )
     assert isinstance(report, QAConfidenceReport)
     assert report.samples == 4
     assert report.brier_score == pytest.approx(brier_score(probabilities, labels), rel=1e-6)

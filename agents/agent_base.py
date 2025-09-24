@@ -8,6 +8,7 @@ SECTION: Header & Purpose
 SECTION: Imports / Dependencies
     - Imports typing helpers alongside the shared QA modules.
 """
+
 from __future__ import annotations
 
 from typing import Any, Dict, Optional, Sequence

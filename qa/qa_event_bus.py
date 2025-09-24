@@ -6,6 +6,7 @@ SECTION: Header & Purpose
 SECTION: Imports / Dependencies
     - Uses Python's standard ``threading`` primitives and typing utilities only.
 """
+
 from __future__ import annotations
 
 import logging
@@ -48,7 +49,9 @@ class QAEventBus:
 
         with self._lock:
             subscribers_snapshot = list(self._subscribers.get(event_type, []))
-        logging.debug("QAEventBus publishing '%s' to %d subscriber(s)", event_type, len(subscribers_snapshot))
+        logging.debug(
+            "QAEventBus publishing '%s' to %d subscriber(s)", event_type, len(subscribers_snapshot)
+        )
         for callback in subscribers_snapshot:
             try:
                 callback(event_type, data)

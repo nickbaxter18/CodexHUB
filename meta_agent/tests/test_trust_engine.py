@@ -10,6 +10,7 @@ from meta_agent.trust_engine import TrustEngine
 
 # === Tests ===
 
+
 def test_initial_load_empty(tmp_path: Path) -> None:
     """TrustEngine should start with no scores when storage is empty."""
 

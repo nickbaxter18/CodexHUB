@@ -174,9 +174,7 @@ def main(argv: Iterable[str] | None = None) -> int:
             return 0
 
         if args.deps:
-            deps = engine.dependencies(
-                args.deps, recursive=not args.no_recursive
-            )
+            deps = engine.dependencies(args.deps, recursive=not args.no_recursive)
             for item in deps:
                 print(item)
             return 0

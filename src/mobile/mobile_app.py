@@ -480,30 +480,26 @@ async def start_mobile_app() -> None:
 
 async def create_goal(title: str, description: str, priority: str = "medium") -> Dict[str, Any]:
     """Create a new goal using the mobile app."""
-    
+
     mobile_app = get_mobile_app()
-    goal = await mobile_app.create_goal(
-        title=title,
-        description=description,
-        priority=priority
-    )
-    
+    goal = await mobile_app.create_goal(title=title, description=description, priority=priority)
+
     return {
         "id": goal.goal_id,
         "title": goal.title,
         "description": goal.description,
         "priority": goal.priority.value,
         "status": goal.approval_status.value,
-        "created_at": goal.created_at.isoformat()
+        "created_at": goal.created_at.isoformat(),
     }
 
 
 async def get_goals(status_filter: Optional[str] = None) -> List[Dict[str, Any]]:
     """Get all goals using the mobile app."""
-    
+
     mobile_app = get_mobile_app()
     goals = await mobile_app.get_goals(status_filter)
-    
+
     return [
         {
             "id": goal.goal_id,
@@ -511,7 +507,7 @@ async def get_goals(status_filter: Optional[str] = None) -> List[Dict[str, Any]]
             "description": goal.description,
             "priority": goal.priority.value,
             "status": goal.approval_status.value,
-            "created_at": goal.created_at.isoformat()
+            "created_at": goal.created_at.isoformat(),
         }
         for goal in goals
     ]

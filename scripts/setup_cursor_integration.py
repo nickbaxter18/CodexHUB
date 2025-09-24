@@ -17,23 +17,23 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 def check_environment_variables():
     """Check if required environment variables are set."""
-    
+
     print("🔧 Checking Environment Variables...")
-    
+
     required_vars = {
-        'CURSOR_API_URL': 'https://api.cursor.sh',
-        'CURSOR_API_KEY': 'Your Cursor API Key'
+        "CURSOR_API_URL": "https://api.cursor.sh",
+        "CURSOR_API_KEY": "Your Cursor API Key",
     }
-    
+
     missing_vars = []
-    
+
     for var, description in required_vars.items():
         value = os.getenv(var)
         if not value:
             missing_vars.append(f"{var}: {description}")
         else:
             print(f"✅ {var}: {'*' * 8 if 'KEY' in var else value}")
-    
+
     if missing_vars:
         print(f"\n❌ Missing environment variables:")
         for var in missing_vars:
@@ -42,15 +42,15 @@ def check_environment_variables():
         print(f"   - CURSOR_API_URL: https://api.cursor.sh")
         print(f"   - CURSOR_API_KEY: Your actual Cursor API key")
         return False
-    
+
     return True
 
 
 def check_file_structure():
     """Check if all required files exist."""
-    
+
     print("\n📁 Checking File Structure...")
-    
+
     required_files = [
         "src/cursor/__init__.py",
         "src/cursor/cursor_client.py",
@@ -61,32 +61,32 @@ def check_file_structure():
         "src/knowledge/brain_blocks_integration.py",
         "scripts/bootstrap_integration.py",
         "scripts/enforce_cursor_usage.py",
-        "scripts/test_cursor_integration.py"
+        "scripts/test_cursor_integration.py",
     ]
-    
+
     missing_files = []
-    
+
     for file_path in required_files:
         if Path(file_path).exists():
             print(f"✅ {file_path}")
         else:
             missing_files.append(file_path)
             print(f"❌ {file_path}")
-    
+
     if missing_files:
         print(f"\n❌ Missing files:")
         for file_path in missing_files:
             print(f"   - {file_path}")
         return False
-    
+
     return True
 
 
 def check_imports():
     """Check if all imports are working."""
-    
+
     print("\n📦 Checking Imports...")
-    
+
     try:
         # Test core Cursor imports
         from src.cursor import (
@@ -100,21 +100,27 @@ def check_imports():
             enforce_cursor_integration,
             require_cursor_agent,
             validate_cursor_compliance,
-            get_cursor_usage_report
+            get_cursor_usage_report,
         )
+
         print("✅ Core Cursor imports working")
-        
+
         # Test knowledge imports
         from src.knowledge.auto_loader import get_auto_loader, start_knowledge_auto_loading
-        from src.knowledge.brain_blocks_integration import get_brain_blocks_integration, start_brain_blocks_integration
+        from src.knowledge.brain_blocks_integration import (
+            get_brain_blocks_integration,
+            start_brain_blocks_integration,
+        )
+
         print("✅ Knowledge imports working")
-        
+
         # Test mobile imports
         from src.mobile.mobile_app import get_mobile_app, start_mobile_app
+
         print("✅ Mobile imports working")
-        
+
         return True
-        
+
     except Exception as e:
         print(f"❌ Import error: {e}")
         return False
@@ -122,9 +128,9 @@ def check_imports():
 
 def create_environment_template():
     """Create environment template file."""
-    
+
     print("\n📝 Creating Environment Template...")
-    
+
     template_content = """# Cursor Integration Environment Variables
 # Copy these to your Codex environment settings
 
@@ -149,95 +155,87 @@ MOBILE_NOTIFICATIONS_ENABLED=true
 CURSOR_PERFORMANCE_MONITORING=true
 CURSOR_USAGE_TRACKING=true
 """
-    
+
     template_path = Path("config/cursor_environment_template.env")
     template_path.parent.mkdir(parents=True, exist_ok=True)
-    
-    with open(template_path, 'w') as f:
+
+    with open(template_path, "w") as f:
         f.write(template_content)
-    
+
     print(f"✅ Environment template created: {template_path}")
     return template_path
 
 
 def create_integration_config():
     """Create integration configuration file."""
-    
+
     print("\n⚙️ Creating Integration Configuration...")
-    
+
     config = {
         "cursor_integration": {
             "enabled": True,
             "auto_invocation": True,
             "enforcement": True,
-            "performance_monitoring": True
+            "performance_monitoring": True,
         },
         "knowledge_integration": {
             "enabled": True,
             "auto_loading": True,
             "brain_blocks": True,
-            "real_time_sync": True
+            "real_time_sync": True,
         },
         "mobile_integration": {
             "enabled": True,
             "notifications": True,
             "goal_management": True,
-            "approval_workflows": True
+            "approval_workflows": True,
         },
         "agent_configuration": {
             "frontend": {
                 "enabled": True,
                 "auto_trigger": True,
-                "patterns": ["**/*.tsx", "**/*.jsx"]
+                "patterns": ["**/*.tsx", "**/*.jsx"],
             },
-            "backend": {
-                "enabled": True,
-                "auto_trigger": True,
-                "patterns": ["**/*.py"]
-            },
+            "backend": {"enabled": True, "auto_trigger": True, "patterns": ["**/*.py"]},
             "qa": {
                 "enabled": True,
                 "auto_trigger": True,
-                "patterns": ["**/test_*.py", "**/*.test.js"]
+                "patterns": ["**/test_*.py", "**/*.test.js"],
             },
             "architect": {
                 "enabled": True,
                 "auto_trigger": True,
-                "patterns": ["**/*.md", "**/ARCHITECTURE.md"]
+                "patterns": ["**/*.md", "**/ARCHITECTURE.md"],
             },
             "cicd": {
                 "enabled": True,
                 "auto_trigger": True,
-                "patterns": ["**/.github/workflows/**", "**/Dockerfile"]
+                "patterns": ["**/.github/workflows/**", "**/Dockerfile"],
             },
             "knowledge": {
                 "enabled": True,
                 "auto_trigger": True,
-                "patterns": ["**/*.ndjson", "**/docs/**"]
+                "patterns": ["**/*.ndjson", "**/docs/**"],
             },
-            "meta": {
-                "enabled": True,
-                "auto_trigger": True,
-                "patterns": ["**/*"]
-            }
-        }
+            "meta": {"enabled": True, "auto_trigger": True, "patterns": ["**/*"]},
+        },
     }
-    
+
     config_path = Path("config/cursor_integration_config.json")
     config_path.parent.mkdir(parents=True, exist_ok=True)
-    
-    with open(config_path, 'w') as f:
+
+    with open(config_path, "w") as f:
         json.dump(config, f, indent=2)
-    
+
     print(f"✅ Integration configuration created: {config_path}")
     return config_path
 
 
 def create_startup_script():
     """Create startup script for Cursor integration."""
-    
+
     print("\n🚀 Creating Startup Script...")
-    
+
     startup_content = """#!/usr/bin/env python3
 \"\"\"
 Cursor Integration Startup Script
@@ -293,25 +291,25 @@ async def start_all_integrations():
 if __name__ == "__main__":
     asyncio.run(start_all_integrations())
 """
-    
+
     startup_path = Path("scripts/start_cursor_integration.py")
     startup_path.parent.mkdir(parents=True, exist_ok=True)
-    
-    with open(startup_path, 'w') as f:
+
+    with open(startup_path, "w") as f:
         f.write(startup_content)
-    
+
     # Make executable
     startup_path.chmod(0o755)
-    
+
     print(f"✅ Startup script created: {startup_path}")
     return startup_path
 
 
 def create_validation_script():
     """Create validation script for Cursor integration."""
-    
+
     print("\n✅ Creating Validation Script...")
-    
+
     validation_content = """#!/usr/bin/env python3
 \"\"\"
 Cursor Integration Validation Script
@@ -386,56 +384,56 @@ async def validate_integration():
 if __name__ == "__main__":
     asyncio.run(validate_integration())
 """
-    
+
     validation_path = Path("scripts/validate_cursor_integration.py")
     validation_path.parent.mkdir(parents=True, exist_ok=True)
-    
-    with open(validation_path, 'w') as f:
+
+    with open(validation_path, "w") as f:
         f.write(validation_content)
-    
+
     # Make executable
     validation_path.chmod(0o755)
-    
+
     print(f"✅ Validation script created: {validation_path}")
     return validation_path
 
 
 def main():
     """Main setup function."""
-    
+
     print("🔧 CURSOR INTEGRATION SETUP")
     print("=" * 50)
     print("Setting up Cursor integration components...")
     print()
-    
+
     setup_results = {}
-    
+
     # Check environment variables
     setup_results["environment"] = check_environment_variables()
-    
+
     # Check file structure
     setup_results["files"] = check_file_structure()
-    
+
     # Check imports
     setup_results["imports"] = check_imports()
-    
+
     # Create configuration files
     setup_results["environment_template"] = create_environment_template()
     setup_results["integration_config"] = create_integration_config()
     setup_results["startup_script"] = create_startup_script()
     setup_results["validation_script"] = create_validation_script()
-    
+
     # Summary
     print("\n📊 SETUP RESULTS:")
     print("=" * 30)
-    
+
     for name, result in setup_results.items():
         if isinstance(result, bool):
             status = "✅ PASS" if result else "❌ FAIL"
             print(f"{name.upper():20} {status}")
         else:
             print(f"{name.upper():20} ✅ CREATED")
-    
+
     # Final status
     if all(isinstance(r, bool) and r for r in setup_results.values() if isinstance(r, bool)):
         print("\n🎉 CURSOR INTEGRATION SETUP COMPLETE!")
@@ -452,7 +450,7 @@ def main():
     else:
         print("\n⚠️ Some setup issues need to be resolved")
         print("Check the failed components above and fix them")
-    
+
     return all(isinstance(r, bool) and r for r in setup_results.values() if isinstance(r, bool))
 
 
