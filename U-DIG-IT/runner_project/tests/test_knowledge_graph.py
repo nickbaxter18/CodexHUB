@@ -6,6 +6,7 @@ import pytest
 
 from src import config
 from src.knowledge import retrieval
+from src.knowledge.graph import KnowledgeGraph, KnowledgeRecord
 
 
 def create_dataset(tmp_path: Path) -> Path:
@@ -44,8 +45,6 @@ async def test_query_and_neighbours(monkeypatch: Any, tmp_path: Path) -> None:
     assert "a" in neighbours
 
     # Ingest a new record and ensure it can be queried immediately.
-    from src.knowledge.graph import KnowledgeRecord
-
     retrieval.ingest(
         KnowledgeRecord(
             identifier="c", title="Gamma", text="bayesian methods", tags=("math",), metadata={}
@@ -56,3 +55,55 @@ async def test_query_and_neighbours(monkeypatch: Any, tmp_path: Path) -> None:
 
     retrieval.clear_cache()
     config.get_config.cache_clear()
+
+
+def test_query_uses_metadata_and_deterministic_order() -> None:
+    graph = KnowledgeGraph()
+    graph.add_record(
+        KnowledgeRecord(
+            identifier="alpha",
+            title="Alpha",
+            text="Bayes fundamentals",
+            tags=("probability",),
+            metadata={"topic": "statistics"},
+        )
+    )
+    graph.add_record(
+        KnowledgeRecord(
+            identifier="beta",
+            title="Beta",
+            text="Bayes fundamentals",
+            tags=(),
+            metadata={"topic": "statistics"},
+        )
+    )
+
+    results = graph.query("bayes", limit=5)
+
+    assert [item["id"] for item in results[:2]] == ["alpha", "beta"]
+    assert results[0]["metadata"] == {"topic": "statistics"}
+    assert results[0]["tags"] == ["probability"]
+
+
+def test_metadata_only_document_matches_query() -> None:
+    graph = KnowledgeGraph()
+    graph.add_record(
+        KnowledgeRecord(
+            identifier="meta", title="Meta", text="", tags=(), metadata={"priority": 42}
+        )
+    )
+
+    results = graph.query("42", limit=1)
+    assert results and results[0]["id"] == "meta"
+
+
+def test_neighbours_sorted_by_identifier() -> None:
+    graph = KnowledgeGraph()
+    graph.add_record(KnowledgeRecord(identifier="a", title="A", text="root", tags=(), metadata={}))
+    graph.add_record(KnowledgeRecord(identifier="b", title="B", text="child", tags=(), metadata={}))
+    graph.add_record(KnowledgeRecord(identifier="c", title="C", text="child", tags=(), metadata={}))
+    graph.graph.add_edge("a", "b")
+    graph.graph.add_edge("c", "a")
+
+    neighbours = graph.neighbours("a", depth=1)
+    assert neighbours == ["b", "c"]
