@@ -50,6 +50,7 @@ Copy `.env.example` (if present) or create a new `.env` file to supply:
 pnpm run lint
 pnpm test
 python -m pytest
+pnpm run codex:status
 ```
 
 Additional commands for formatting, security scanning, and governance validation are documented in `docs/usage.md`.

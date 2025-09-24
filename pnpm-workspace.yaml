@@ -1,9 +1,5 @@
 packages:
-  - 'apps/*'
-  - 'packages/*'
-  - 'tools/*'
+  - './'
   - 'src/cursor'
   - 'src/knowledge'
   - 'src/mobile'
-  - 'scripts'
-  - 'config'

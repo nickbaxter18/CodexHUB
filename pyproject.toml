@@ -18,7 +18,13 @@ warn_unused_configs = true
 ignore_missing_imports = true
 pretty = true
 strict = true
-exclude = "^(scripts/|macro_system/|meta_agent/|qa_engine/|tests/|src/cursor/|src/knowledge/|src/mobile/|src/performance/)"
+follow_imports = "skip"
+exclude = "^(scripts/|macro_system/|meta_agent/|qa_engine/|tests/)"
+files = [
+    "src/performance/metrics_collector.py",
+    "src/cursor/auto_invocation.py",
+    "scripts/codex_status.py",
+]
 
 [[tool.mypy.overrides]]
 module = [
@@ -27,10 +33,6 @@ module = [
     "meta_agent.*",
     "qa_engine.*",
     "tests.*",
-    "src.cursor.*",
-    "src.knowledge.*",
-    "src.mobile.*",
-    "src.performance.*",
 ]
 ignore_errors = true
 
