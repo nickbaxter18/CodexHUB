@@ -54,6 +54,26 @@
         "failure_threshold": {
           "type": "integer",
           "minimum": 1
+        },
+        "psi_threshold": {
+          "type": "number",
+          "minimum": 0
+        },
+        "ks_threshold": {
+          "type": "number",
+          "minimum": 0
+        },
+        "kl_threshold": {
+          "type": "number",
+          "minimum": 0
+        },
+        "min_samples": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "bin_count": {
+          "type": "integer",
+          "minimum": 2
         }
       },
       "additionalProperties": false

@@ -2,7 +2,7 @@
 
 from .arbitration_engine import ArbitrationDecision, ArbitrationEngine
 from .config_loader import ConfigLoader
-from .drift_detector import DriftDetector
+from .drift_detector import DriftDetector, DriftMetricResult, DriftReport
 from .fallback_manager import FallbackManager
 from .logger import Logger
 from .macro_dependency_manager import MacroDependencyManager, MacroState
@@ -17,6 +17,8 @@ __all__ = [
     "ArbitrationEngine",
     "ConfigLoader",
     "DriftDetector",
+    "DriftMetricResult",
+    "DriftReport",
     "FallbackManager",
     "Logger",
     "MacroDependencyManager",
