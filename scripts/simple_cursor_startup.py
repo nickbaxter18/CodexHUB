@@ -74,7 +74,7 @@ def check_agents_instructions():
 
     print("📋 Checking AGENTS.md Instructions...")
 
-    agents_files = ["AGENTS.md/AGENTS.md", "AGENTS_CURSOR_INTEGRATION.md"]
+    agents_files = ["AGENTS.md/AGENTS.md", "cursor/AGENTS_CURSOR_INTEGRATION.md"]
 
     for file_path in agents_files:
         if Path(file_path).exists():
@@ -103,7 +103,7 @@ def check_python_dependencies():
 
     if missing_packages:
         print(f"\n⚠️ Missing Python packages: {', '.join(missing_packages)}")
-        print("💡 Install with: pip install -r requirements-cursor.txt")
+        print("💡 Install with: pip install -r cursor/requirements-cursor.txt")
         return False
 
     return True
