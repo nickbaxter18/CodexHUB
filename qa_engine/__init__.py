@@ -1,45 +1,12 @@
-"""Probabilistic QA engine package exposing uncertainty-aware utilities."""
+"""Compatibility shim for the relocated ``qa_engine`` package."""
 
-# === Header & Purpose ===
-# Aggregates helper modules that interpret QA metrics as probability
-# distributions for trust-aware decision making.
+from __future__ import annotations
 
-from .probabilistic_qa import (
-    CalibrationResult,
-    QAConfidenceReport,
-    apply_calibration,
-    brier_score,
-    confidence_report,
-    evaluate_calibrated_metric,
-    evaluate_metric,
-    expected_calibration_error,
-    pass_probability,
-    platt_calibration,
-    z_score,
-)
-from .statistics_helpers import (
-    bootstrap_confidence_interval,
-    clamp_probability,
-    mean_confidence_interval,
-    percentile,
-    sample_mean_std,
-)
+import importlib
+import sys
 
-__all__ = [
-    "CalibrationResult",
-    "QAConfidenceReport",
-    "apply_calibration",
-    "brier_score",
-    "confidence_report",
-    "evaluate_calibrated_metric",
-    "evaluate_metric",
-    "expected_calibration_error",
-    "pass_probability",
-    "platt_calibration",
-    "z_score",
-    "bootstrap_confidence_interval",
-    "clamp_probability",
-    "mean_confidence_interval",
-    "percentile",
-    "sample_mean_std",
-]
+_module = importlib.import_module("packages.automation.qa_engine")
+sys.modules[__name__] = _module
+
+if hasattr(_module, "__all__"):
+    __all__ = list(_module.__all__)  # type: ignore[assignment]

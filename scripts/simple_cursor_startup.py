@@ -74,7 +74,7 @@ def check_agents_instructions():
 
     print("📋 Checking AGENTS.md Instructions...")
 
-    agents_files = ["AGENTS.md/AGENTS.md", "cursor/AGENTS_CURSOR_INTEGRATION.md"]
+    agents_files = ["apps/editor/AGENTS.md", "cursor/AGENTS_CURSOR_INTEGRATION.md"]
 
     for file_path in agents_files:
         if Path(file_path).exists():

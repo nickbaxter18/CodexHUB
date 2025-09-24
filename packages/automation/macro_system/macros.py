@@ -35,12 +35,35 @@ def load_macros(source: Mapping[str, object] | str | Path) -> Dict[str, Macro]:
 def _load_json(path: Path) -> Dict[str, object]:
     """Read JSON file from disk."""
 
-    try:
-        return cast(Dict[str, object], json.loads(path.read_text(encoding="utf-8")))
-    except FileNotFoundError as exc:  # pragma: no cover - explicit error passthrough
-        raise MacroDefinitionError(f"Macro definition file not found: {path}") from exc
-    except json.JSONDecodeError as exc:
-        raise MacroDefinitionError(f"Invalid JSON in macro definition file: {path}") from exc
+    base = Path(__file__).parent
+    candidates = [path]
+    candidates.append(base / path.name)
+
+    if "macro_system" in path.parts:
+        suffix_parts = path.parts[path.parts.index("macro_system") + 1 :]
+        if suffix_parts:
+            candidates.append(base.joinpath(*suffix_parts))
+        else:
+            candidates.append(base)
+    elif not path.is_absolute():
+        candidates.append(base / path)
+
+    tried: list[Path] = []
+    for candidate in candidates:
+        try:
+            tried.append(candidate)
+            return cast(Dict[str, object], json.loads(candidate.read_text(encoding="utf-8")))
+        except FileNotFoundError:
+            continue
+        except json.JSONDecodeError as exc:
+            raise MacroDefinitionError(
+                f"Invalid JSON in macro definition file: {candidate}"
+            ) from exc
+
+    raise MacroDefinitionError(
+        "Macro definition file not found; looked in: "
+        + ", ".join(str(candidate) for candidate in tried)
+    )
 
 
 def _convert_macro(name: str, payload: object) -> Macro:

@@ -51,7 +51,7 @@ Knowledge auto-loading is coordinated through `src/knowledge/auto_loader.py`.
 
 - `KNOWLEDGE_AUTO_LOAD=false` disables the watcher entirely.
 - `KNOWLEDGE_NDJSON_PATHS` overrides the default NDJSON search paths.
-- `KNOWLEDGE_WATCH_INTERVAL` controls how frequently sources are rescanned (defaults to 30 seconds, set to `0` to disable).
+- `KNOWLEDGE_WATCH_INTERVAL` controls how frequently sources are rescanned (leave blank or set to `0` to disable).
 - Ignored directories include `.git`, `node_modules`, `cache`, and `__pycache__` to keep scans lightweight.
 
 To trigger a manual reload in code:

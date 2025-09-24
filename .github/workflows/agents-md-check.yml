@@ -19,7 +19,7 @@ jobs:
           if [ -f AGENTS.md ]; then
             path="AGENTS.md"
           else
-            path="$(find . -maxdepth 2 -type f -name AGENTS.md | head -n1 || true)"
+            path="$(find . -maxdepth 3 -type f -name AGENTS.md | head -n1 || true)"
           fi
 
           if [ -z "$path" ]; then

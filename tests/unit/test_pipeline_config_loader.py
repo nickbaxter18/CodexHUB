@@ -41,11 +41,12 @@ def test_load_pipeline_config_success(tmp_path: Path) -> None:
             experiment_name: test-exp
             run_name: test-run
           model:
-            framework: pytorch
+            framework: sklearn-logistic-regression
             hyperparameters:
-              epochs: 5
-              learning_rate: 0.1
-              batch_size: 8
+              max_iterations: 100
+              solver: lbfgs
+              penalty: l2
+              regularization_strength: 1.5
         inference:
           default_model_name: demo
           cache_ttl_seconds: 60

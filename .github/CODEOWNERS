@@ -1,4 +1,4 @@
 # Enforce Architect Agent review on governance documents
 QA.md @Architect-Agent
-AGENTS.md @Architect-Agent
-AGENTS.md/** @Architect-Agent
+apps/editor @Architect-Agent
+apps/editor/** @Architect-Agent

@@ -136,7 +136,7 @@ CodexHUB demonstrates a **comprehensive multi-agent architecture** with extensiv
 
 ### 2. ✅ **Comprehensive Agent Instructions**
 
-- **Files**: `AGENTS.md/AGENTS.md`, `cursor/AGENTS_CURSOR_INTEGRATION.md`
+- **Files**: `apps/editor/AGENTS.md`, `cursor/AGENTS_CURSOR_INTEGRATION.md`
 - **Features**: Mandatory Cursor usage, agent selection protocol, compliance enforcement
 - **Impact**: All agents aware of and using Cursor IDE integration
 

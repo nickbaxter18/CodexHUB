@@ -6,7 +6,7 @@
     "node_modules",
     "**/node_modules/**",
     "pnpm-lock.yaml",
-    "AGENTS.md/**",
+    "apps/editor/**",
     "AGENTS_*.md",
     "Block*.md",
     "CODEX_*.md",

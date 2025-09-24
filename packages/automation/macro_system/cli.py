@@ -15,7 +15,6 @@ from .reports import generate_macro_review
 from .schema import macro_schema
 from .types import MacroError
 
-
 # === Implementation ===
 
 

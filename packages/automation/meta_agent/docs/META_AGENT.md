@@ -1,6 +1,7 @@
 # Meta Agent v2
 
 ## Purpose and Scope
+
 Meta Agent v2 is the executive control plane for the Codex ecosystem. It aggregates QA
 signals, arbitrates conflicting judgments, curates trust scores, observes macro health, and
 proposes governance amendments when systemic drift is detected. The component harmonizes
@@ -8,6 +9,7 @@ Frontend, Backend, Architect, QA, and Macro Orchestrator agents by ensuring a si
 source-of-truth for QA outcomes.
 
 ## Architecture Overview
+
 - **MetaAgent** — Coordinates subsystem engines, subscribes to the QA event bus, records
   causal traces, and publishes arbitration decisions.
 - **TrustEngine** — Maintains Bayesian-style trust scores with an append-only journal and
@@ -26,6 +28,7 @@ source-of-truth for QA outcomes.
   delivery metrics so arbitration, drift, and macro notifications never block one another.
 
 ## Data Flow
+
 1. Agents publish standardized QA events (`qa_success` / `qa_failure`) via the event bus.
 2. MetaAgent consumes each event, sanitizes payloads (validating numeric ranges and
    required identifiers), normalizes status synonyms (e.g., success/pass/fail), updates
@@ -45,6 +48,7 @@ source-of-truth for QA outcomes.
    continuous operation during chaos experiments or outages.
 
 ## Governance Integration
+
 - Governance rules are externalized in JSON, enabling compliance reviewers to adjust agent
   priorities without touching code.
 - Arbitration decisions are persisted as JSON Lines (defaulting to `logs/arbitrations.jsonl`)
@@ -56,6 +60,7 @@ source-of-truth for QA outcomes.
   enforcement.
 
 ## Security & Privacy
+
 - Event payloads are sanitized to avoid leaking secrets into logs and always carry
   correlation IDs for traceability.
 - Trust and arbitration logs are stored on disk with directories created explicitly to
@@ -64,6 +69,7 @@ source-of-truth for QA outcomes.
   layered at the bus boundary for production deployments.
 
 ## Resilience & Chaos Engineering
+
 - Chaos experiments can publish simulated failures to validate fallback macros while the
   asynchronous bus ensures other arbitration streams continue unhindered.
 - Drift detection catches repeated test disables or sudden coverage loss.
@@ -71,12 +77,14 @@ source-of-truth for QA outcomes.
   recovers.
 
 ## Extensibility
+
 - Engines are composed via dependency injection, enabling alternative trust models,
   arbitration policies, or drift algorithms without modifying MetaAgent core logic.
 - Additional event types (e.g., `qa_warning`, `qa_exemption`) can be integrated by
   extending the event bus subscriptions.
 
 ## Operational Guidance
+
 - Persist trust scores and arbitration logs on durable storage to survive restarts.
 - Review drift proposals regularly and amend governance documents when warranted.
 - Monitor the size of arbitration logs and rotate as part of operational hygiene.

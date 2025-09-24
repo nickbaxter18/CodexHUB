@@ -1,4 +1,4 @@
-# AGENTS.md
+# AGENTS.md Website
 
 <p align="center">
   <img src="https://agents.md/og.png">
@@ -40,12 +40,12 @@ This repository also includes a basic Next.js website hosted at https://agents.m
 that explains the project’s goals in a simple way, and featuring some examples.
 
 ### Running the app locally
-1. Install dependencies:
+1. Install dependencies from the repository root using pnpm filters:
    ```bash
-   npm install
+   pnpm install --recursive --filter apps/editor...
    ```
-2. Start the development server:
+2. Start the development server (still from the repo root or this directory):
    ```bash
-   npm run dev
+   pnpm --filter apps/editor dev
    ```
 3. Open your browser and go to http://localhost:3000

@@ -3,12 +3,11 @@
 # === Imports / Dependencies ===
 from __future__ import annotations
 
-import pytest
-
 from pathlib import Path
 
-from meta_agent.macro_dependency_manager import MacroDependencyManager
+import pytest
 
+from meta_agent.macro_dependency_manager import MacroDependencyManager
 
 # === Tests ===
 

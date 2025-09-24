@@ -19,18 +19,12 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ],
+    "qaHooks": ["qa::review", "qa::report"],
     "phase": "build",
     "priority": "P1",
     "status": "planned",
     "estimatedDuration": "8h",
-    "tags": [
-      "frontend",
-      "scaffold"
-    ],
+    "tags": ["frontend", "scaffold"],
     "version": "1.1.0"
   },
   "::frontendgen-layout": {
@@ -45,10 +39,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::frontendgen-state": {
     "expansion": "Sets up state management (Context API or Redux) and data flow for components, ensuring unidirectional data and predictable updates.",
@@ -62,10 +53,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::frontendgen-forms": {
     "expansion": "Creates form components with validation, error handling and user friendly UX guidelines.",
@@ -79,10 +67,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::frontendgen-access": {
     "expansion": "Performs accessibility audits including contrast ratio checks, ARIA attributes and keyboard navigation.",
@@ -96,11 +81,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::frontendgen-motion": {
     "expansion": "Integrates Framer Motion to add subtle animations following motion grammar for natural interactions.",
@@ -114,10 +95,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::frontendgen-tests": {
     "expansion": "Generates front-end unit tests using React Testing Library with high coverage.",
@@ -131,11 +109,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::frontendgen-docs": {
     "expansion": "Produces UI documentation with Storybook or equivalent to showcase components and usage.",
@@ -149,10 +123,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::backendgen": {
     "expansion": "Creates a robust RESTful API scaffold using FastAPI (or chosen framework), including database connection, models and security primitives.",
@@ -175,10 +146,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::backendgen-api": {
     "expansion": "Scaffolds CRUD endpoints with pagination and filtering on the chosen framework.",
@@ -192,10 +160,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::backendgen-auth": {
     "expansion": "Implements authentication and authorization mechanisms (JWT or OAuth2).",
@@ -209,10 +174,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::backendgen-models": {
     "expansion": "Defines ORM models and Pydantic schemas based on the database schema.",
@@ -226,10 +188,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::backendgen-security": {
     "expansion": "Adds security measures such as input sanitization, CSRF protection and rate limiting.",
@@ -243,11 +202,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::backendgen-migrations": {
     "expansion": "Creates database migration scripts to manage schema evolution (Alembic or equivalent).",
@@ -261,10 +216,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::backendgen-logging": {
     "expansion": "Sets up structured logging and monitoring hooks to trace API behaviour and performance.",
@@ -278,10 +230,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::backendgen-tests": {
     "expansion": "Generates API unit and integration tests to ensure endpoint correctness and error handling.",
@@ -295,11 +244,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::backendgen-docs": {
     "expansion": "Auto-generates API documentation (OpenAPI/Swagger) and example usages.",
@@ -313,10 +258,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::dbdesign": {
     "expansion": "Designs a database schema (relational or NoSQL) from business requirements.",
@@ -336,10 +278,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::dbdesign-schema": {
     "expansion": "Produces entity–relationship diagrams and table/collection definitions with keys and constraints.",
@@ -353,10 +292,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::dbdesign-normalize": {
     "expansion": "Normalises the schema to third normal form while balancing denormalization for performance.",
@@ -370,10 +306,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::dbdesign-index": {
     "expansion": "Suggests indexes and partitioning strategies to optimise query performance.",
@@ -387,10 +320,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::dbdesign-seed": {
     "expansion": "Generates seed data aligned with schema definitions for development and testing.",
@@ -404,11 +334,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::dbdesign-migrate": {
     "expansion": "Writes migration scripts to evolve the database schema safely across versions.",
@@ -422,19 +348,11 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::apidocgen": {
     "expansion": "Generates comprehensive API documentation including endpoints, request/response examples and error codes.",
-    "calls": [
-      "::apidocgen-swagger",
-      "::apidocgen-code",
-      "::apidocgen-errors",
-      "::apidocgen-tests"
-    ],
+    "calls": ["::apidocgen-swagger", "::apidocgen-code", "::apidocgen-errors", "::apidocgen-tests"],
     "ownerAgent": "Knowledge Agent",
     "outcomes": [
       "Knowledge Agent delivers the ::apidocgen macro with actionable guidance.",
@@ -444,10 +362,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::apidocgen-swagger": {
     "expansion": "Creates an OpenAPI/Swagger specification for the API.",
@@ -461,10 +376,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::apidocgen-code": {
     "expansion": "Provides example code snippets (curl, Python, JS) demonstrating API usage.",
@@ -478,10 +390,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::apidocgen-errors": {
     "expansion": "Documents standardised error codes and messages with causes and solutions.",
@@ -495,10 +404,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::apidocgen-tests": {
     "expansion": "Creates tests to validate that the API documentation matches the actual implementation.",
@@ -512,11 +418,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::testgen": {
     "expansion": "Constructs a suite of tests across units, integrations, end-to-end scenarios, coverage analysis and performance.",
@@ -537,11 +439,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::testgen-unit": {
     "expansion": "Generates unit tests for individual functions or modules, covering nominal and edge cases.",
@@ -555,11 +453,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::testgen-integration": {
     "expansion": "Produces integration tests to verify interactions between components and external services.",
@@ -573,11 +467,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::testgen-e2e": {
     "expansion": "Creates end-to-end tests with headless browsers or API calls to simulate real user flows.",
@@ -591,11 +481,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::testgen-coverage": {
     "expansion": "Measures code coverage and identifies untested paths.",
@@ -609,11 +495,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::testgen-performance": {
     "expansion": "Implements performance stress tests and benchmarks to assess throughput and latency.",
@@ -627,11 +509,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::testgen-security": {
     "expansion": "Creates security tests to check for vulnerabilities such as injection, authentication bypass and misconfigurations.",
@@ -645,11 +523,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::cicdsetup": {
     "expansion": "Sets up continuous integration and deployment pipelines with linting, testing, building, deployment and monitoring stages.",
@@ -671,11 +545,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::cicd-lint": {
     "expansion": "Runs linting tools (ESLint, PEP8, Prettier) and applies automatic fixes to formatting issues.",
@@ -689,11 +559,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::cicd-test": {
     "expansion": "Executes unit, integration and end-to-end tests during the pipeline.",
@@ -707,11 +573,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::cicd-build": {
     "expansion": "Builds and bundles the application (e.g., Webpack/Vite bundling or Docker image creation).",
@@ -725,10 +587,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::cicd-deploy": {
     "expansion": "Deploys the application to the target environment (Docker, Render, Kubernetes) and performs environment configuration.",
@@ -742,10 +601,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::cicd-monitor": {
     "expansion": "Monitors deployed applications with health checks and alerts to detect failures or performance degradations.",
@@ -759,10 +615,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::cicd-notify": {
     "expansion": "Sends notifications (Slack, email) about pipeline status and deployment outcomes.",
@@ -776,10 +629,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::cicd-rollback": {
     "expansion": "Provides automated rollback procedures when deployments fail or regress.",
@@ -793,10 +643,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::lintfix": {
     "expansion": "Applies linting and formatting rules to all project files and reports violations.",
@@ -810,11 +657,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::securityaudit": {
     "expansion": "Runs a comprehensive security audit, scanning source code, dependencies and configurations for vulnerabilities and ethics issues.",
@@ -836,11 +679,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::security-static": {
     "expansion": "Performs static analysis (SAST) to detect vulnerabilities such as SQL injection or XSS.",
@@ -854,11 +693,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::security-deps": {
     "expansion": "Scans dependencies for known CVEs and insecure versions.",
@@ -872,11 +707,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::security-injection": {
     "expansion": "Identifies injection vulnerabilities in code paths accepting external input.",
@@ -890,11 +721,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::security-authz": {
     "expansion": "Audits roles, permissions and secrets management for proper authorization enforcement.",
@@ -908,11 +735,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::security-report": {
     "expansion": "Generates a risk report with severity scores and remediation advice.",
@@ -926,11 +749,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::security-fairness": {
     "expansion": "Assesses algorithmic bias and fairness metrics across demographic groups.",
@@ -944,11 +763,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::security-ethics": {
     "expansion": "Evaluates ethical compliance including privacy, diversity and inclusion considerations.",
@@ -962,21 +777,11 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::perfprofile": {
     "expansion": "Profiles code performance (CPU, memory, I/O, network) and recommends optimisations.",
-    "calls": [
-      "::perf-cpu",
-      "::perf-memory",
-      "::perf-io",
-      "::perf-network",
-      "::perf-benchmark"
-    ],
+    "calls": ["::perf-cpu", "::perf-memory", "::perf-io", "::perf-network", "::perf-benchmark"],
     "ownerAgent": "Architect Agent",
     "outcomes": [
       "Architect Agent delivers the ::perfprofile macro with actionable guidance.",
@@ -986,10 +791,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::perf-cpu": {
     "expansion": "Measures CPU usage and identifies hot spots in the code.",
@@ -1003,10 +805,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::perf-memory": {
     "expansion": "Analyzes memory allocations and detects leaks.",
@@ -1020,10 +819,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::perf-io": {
     "expansion": "Profiles disk and network I/O patterns to detect bottlenecks.",
@@ -1037,10 +833,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::perf-network": {
     "expansion": "Measures network latency, throughput and concurrency for API endpoints.",
@@ -1054,10 +847,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::perf-benchmark": {
     "expansion": "Provides comparative benchmarks across different implementations or configurations.",
@@ -1071,10 +861,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::coderefactor": {
     "expansion": "Refactors code to improve maintainability and architecture using design patterns and modularisation.",
@@ -1094,10 +881,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::refactor-smells": {
     "expansion": "Detects and resolves code smells such as duplication, large methods and long parameter lists.",
@@ -1111,10 +895,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::refactor-patterns": {
     "expansion": "Suggests design patterns and architecture improvements to enhance flexibility and extensibility.",
@@ -1128,10 +909,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::refactor-modular": {
     "expansion": "Splits monoliths into modular components and services.",
@@ -1145,10 +923,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::refactor-complexity": {
     "expansion": "Reduces cyclomatic complexity by simplifying logic and improving cohesion.",
@@ -1162,10 +937,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::refactor-docs": {
     "expansion": "Updates docstrings and comments to reflect refactored code structure.",
@@ -1179,10 +951,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::codequality": {
     "expansion": "Evaluates code readability, maintainability, architecture and adherence to standards.",
@@ -1201,11 +970,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::codequality-read": {
     "expansion": "Assesses variable naming, code clarity and documentation quality.",
@@ -1219,11 +984,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::codequality-maintain": {
     "expansion": "Identifies maintainability issues such as tight coupling and poor separation of concerns.",
@@ -1237,11 +998,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::codequality-architecture": {
     "expansion": "Evaluates overall architecture coherence and alignment with best practices.",
@@ -1255,11 +1012,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::codequality-standards": {
     "expansion": "Ensures adherence to organisational coding standards and style guides.",
@@ -1273,11 +1026,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::typegen": {
     "expansion": "Generates type definitions and schemas (Pydantic, TypeScript, JSON Schema, Protobuf, ORM models) from data samples or schemas.",
@@ -1297,10 +1046,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::typegen-pydantic": {
     "expansion": "Creates Pydantic models from JSON or Python dictionaries.",
@@ -1314,10 +1060,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::typegen-ts": {
     "expansion": "Generates TypeScript interfaces from API responses or schemas.",
@@ -1331,10 +1074,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::typegen-jsonschema": {
     "expansion": "Produces JSON Schema definitions for data validation and documentation.",
@@ -1348,10 +1088,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::typegen-proto": {
     "expansion": "Creates Protocol Buffer definitions for gRPC services.",
@@ -1365,10 +1102,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::typegen-orm": {
     "expansion": "Generates ORM models (SQLAlchemy, TypeORM) based on schema definitions.",
@@ -1382,19 +1116,11 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::mockdata": {
     "expansion": "Generates realistic test data for development, testing and demonstration purposes.",
-    "calls": [
-      "::mockdata-sample",
-      "::mockdata-distrib",
-      "::mockdata-edge",
-      "::mockdata-sensitive"
-    ],
+    "calls": ["::mockdata-sample", "::mockdata-distrib", "::mockdata-edge", "::mockdata-sensitive"],
     "ownerAgent": "QA Agent",
     "outcomes": [
       "QA Agent delivers the ::mockdata macro with actionable guidance.",
@@ -1404,11 +1130,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::mockdata-sample": {
     "expansion": "Creates standard dummy data consistent with given types and constraints.",
@@ -1422,10 +1144,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::mockdata-distrib": {
     "expansion": "Samples data from statistical distributions to mimic real-world values.",
@@ -1439,10 +1158,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::mockdata-edge": {
     "expansion": "Produces edge-case data to test boundary conditions.",
@@ -1456,11 +1172,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::mockdata-sensitive": {
     "expansion": "Generates anonymised versions of sensitive data to preserve privacy while testing.",
@@ -1474,20 +1186,11 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::deployscript": {
     "expansion": "Creates deployment scripts and configuration for various environments (Docker, Kubernetes, Render).",
-    "calls": [
-      "::deploy-docker",
-      "::deploy-env",
-      "::deploy-scaling",
-      "::deploy-monitor"
-    ],
+    "calls": ["::deploy-docker", "::deploy-env", "::deploy-scaling", "::deploy-monitor"],
     "ownerAgent": "Architect Agent",
     "outcomes": [
       "Architect Agent delivers the ::deployscript macro with actionable guidance.",
@@ -1497,10 +1200,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::deploy-docker": {
     "expansion": "Generates Dockerfile and docker-compose configurations with best practices.",
@@ -1514,10 +1214,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::deploy-env": {
     "expansion": "Creates environment variable templates and secrets management guidelines.",
@@ -1531,10 +1228,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::deploy-scaling": {
     "expansion": "Produces configuration for autoscaling clusters (Kubernetes, Render) with resource limits and health probes.",
@@ -1548,10 +1242,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::deploy-monitor": {
     "expansion": "Integrates logging and monitoring agents for observability after deployment.",
@@ -1565,10 +1256,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::uiuxaudit": {
     "expansion": "Conducts UI/UX audits covering colour harmony, typography, layout, motion and emotional resonance.",
@@ -1588,11 +1276,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::uiux-color": {
     "expansion": "Checks colour palettes for harmony and sufficient contrast ratios.",
@@ -1606,10 +1290,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::uiux-typography": {
     "expansion": "Evaluates typography flow, font choices and legibility across devices.",
@@ -1623,10 +1304,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::uiux-layout": {
     "expansion": "Analyzes spatial rhythm, grid balance and alignment.",
@@ -1640,10 +1318,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::uiux-motion": {
     "expansion": "Assesses animation usage for naturalness, timing and context.",
@@ -1657,10 +1332,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::uiux-emotion": {
     "expansion": "Reviews emotional tone and resonance of the user interface.",
@@ -1674,10 +1346,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::analyticsinject": {
     "expansion": "Inserts analytics instrumentation with probabilistic sampling for event tracking and performance metrics.",
@@ -1696,10 +1365,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::analytics-events": {
     "expansion": "Tracks page views, clicks and custom events across the application.",
@@ -1713,10 +1379,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::analytics-performance": {
     "expansion": "Measures load times, rendering performance and resource usage for analytics.",
@@ -1730,10 +1393,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::analytics-userflow": {
     "expansion": "Collects funnel and conversion metrics to understand user behaviour.",
@@ -1747,10 +1407,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::analytics-abtest": {
     "expansion": "Creates instrumentation for A/B testing of variants and features.",
@@ -1764,11 +1421,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::erroranalysis": {
     "expansion": "Parses logs and diagnostics to identify root causes of errors and suggest fixes.",
@@ -1788,10 +1441,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::error-logparser": {
     "expansion": "Parses application logs and extracts error events, stack traces and context.",
@@ -1805,10 +1455,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::error-rootcause": {
     "expansion": "Identifies the root cause of errors by analysing call stacks and dependencies.",
@@ -1822,10 +1469,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::error-fixsuggest": {
     "expansion": "Suggests code changes or configuration adjustments to fix identified issues.",
@@ -1839,10 +1483,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::error-reproduce": {
     "expansion": "Generates reproducible test cases to trigger the observed error.",
@@ -1856,11 +1497,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::error-report": {
     "expansion": "Summarizes the error analysis in a clear report for developers and stakeholders.",
@@ -1874,10 +1511,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::integrationtest": {
     "expansion": "Builds automated integration test scripts for third-party APIs and services.",
@@ -1896,11 +1530,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::integration-setup": {
     "expansion": "Sets up the testing environment and any required test data for integration tests.",
@@ -1914,11 +1544,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::integration-call": {
     "expansion": "Sends requests to APIs and services with various payloads during integration tests.",
@@ -1932,11 +1558,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::integration-validate": {
     "expansion": "Validates responses and side effects from integration tests against expected outcomes.",
@@ -1950,11 +1572,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::integration-teardown": {
     "expansion": "Cleans up the environment after integration tests are executed.",
@@ -1968,11 +1586,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::fulldeveloper": {
     "expansion": "Orchestrates the rapid creation of an end-to-end prototype by combining front-end, back-end, database, testing and deployment tasks.",
@@ -1991,11 +1605,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::prototype-scaffold": {
     "expansion": "Quickly builds a working UI, API and database skeleton for prototyping.",
@@ -2009,10 +1619,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::prototype-tests": {
     "expansion": "Sets up a minimal testing harness for the prototype to ensure basic functionality.",
@@ -2026,11 +1633,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::prototype-deploy": {
     "expansion": "Packages the prototype for deployment, creating necessary scripts and configuration.",
@@ -2044,10 +1647,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::prototype-docs": {
     "expansion": "Generates basic documentation describing the prototype’s architecture and usage.",
@@ -2061,17 +1661,11 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::frontendsuite": {
     "expansion": "Executes the front-end scaffold and coordinates QA alignment for the resulting assets.",
-    "calls": [
-      "::frontendgen",
-      "::qa-agent-md-integration"
-    ],
+    "calls": ["::frontendgen", "::qa-agent-md-integration"],
     "ownerAgent": "QA Agent",
     "outcomes": [
       "QA Agent delivers the ::frontendsuite macro with actionable guidance.",
@@ -2081,20 +1675,12 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ],
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"],
     "phase": "qa",
     "priority": "P0",
     "status": "ready",
     "estimatedDuration": "3h",
-    "tags": [
-      "frontend",
-      "qa",
-      "integration"
-    ],
+    "tags": ["frontend", "qa", "integration"],
     "version": "1.0.1"
   },
   "::qa-agent-md-integration": {
@@ -2109,19 +1695,12 @@
       "Every referenced outcome includes at least one measurable assertion.",
       "QA hooks enumerate trigger identifiers for automation."
     ],
-    "qaHooks": [
-      "qa::calibrate",
-      "qa::score",
-      "qa::report"
-    ],
+    "qaHooks": ["qa::calibrate", "qa::score", "qa::report"],
     "phase": "qa",
     "priority": "P0",
     "status": "in-progress",
     "estimatedDuration": "2h",
-    "tags": [
-      "qa",
-      "integration"
-    ],
+    "tags": ["qa", "integration"],
     "version": "1.0.0"
   },
   "::meta-agent-orchestration": {
@@ -2136,26 +1715,17 @@
       "Each macro dependency includes a status gate and expected duration.",
       "A communication cadence is documented for cross-agent sync."
     ],
-    "qaHooks": [
-      "meta::sync",
-      "meta::timeline"
-    ],
+    "qaHooks": ["meta::sync", "meta::timeline"],
     "phase": "orchestration",
     "priority": "P1",
     "status": "planned",
     "estimatedDuration": "90m",
-    "tags": [
-      "meta",
-      "scheduling"
-    ],
+    "tags": ["meta", "scheduling"],
     "version": "1.0.0"
   },
   "::agent-integration-suite": {
     "expansion": "Synchronises QA Agent MD calibration with Meta Agent orchestration to provide integration-ready outputs.",
-    "calls": [
-      "::qa-agent-md-integration",
-      "::meta-agent-orchestration"
-    ],
+    "calls": ["::qa-agent-md-integration", "::meta-agent-orchestration"],
     "ownerAgent": "Meta Agent",
     "outcomes": [
       "QA and Meta agents collaborate on a single, deduplicated execution record.",
@@ -2165,28 +1735,17 @@
       "QA deliverables reference the same identifiers surfaced in the Meta manifest.",
       "Meta Agent receives priority and status metadata from each contributing macro."
     ],
-    "qaHooks": [
-      "meta::sync",
-      "qa::handoff"
-    ],
+    "qaHooks": ["meta::sync", "qa::handoff"],
     "phase": "integration",
     "priority": "P0",
     "status": "ready",
     "estimatedDuration": "2h",
-    "tags": [
-      "integration",
-      "meta",
-      "qa"
-    ],
+    "tags": ["integration", "meta", "qa"],
     "version": "1.0.0"
   },
   "::backendsuite": {
     "expansion": "Runs back-end scaffolding, DB design and API documentation macros.",
-    "calls": [
-      "::backendgen",
-      "::dbdesign",
-      "::apidocgen"
-    ],
+    "calls": ["::backendgen", "::dbdesign", "::apidocgen"],
     "ownerAgent": "Backend Agent",
     "outcomes": [
       "Backend Agent delivers the ::backendsuite macro with actionable guidance.",
@@ -2196,18 +1755,11 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::testsuite": {
     "expansion": "Executes unit, integration, end-to-end, coverage, performance, security and error analysis macros.",
-    "calls": [
-      "::testgen",
-      "::integrationtest",
-      "::erroranalysis"
-    ],
+    "calls": ["::testgen", "::integrationtest", "::erroranalysis"],
     "ownerAgent": "QA Agent",
     "outcomes": [
       "QA Agent delivers the ::testsuite macro with actionable guidance.",
@@ -2217,19 +1769,11 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::cicdsuite": {
     "expansion": "Runs the CI/CD setup including linting, testing, building, deploying, monitoring and notifications, along with security and performance profiling.",
-    "calls": [
-      "::cicdsetup",
-      "::securityaudit",
-      "::perfprofile"
-    ],
+    "calls": ["::cicdsetup", "::securityaudit", "::perfprofile"],
     "ownerAgent": "QA Agent",
     "outcomes": [
       "QA Agent delivers the ::cicdsuite macro with actionable guidance.",
@@ -2239,17 +1783,11 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::securesuite": {
     "expansion": "Combines security analysis, fairness and ethical review macros.",
-    "calls": [
-      "::securityaudit"
-    ],
+    "calls": ["::securityaudit"],
     "ownerAgent": "QA Agent",
     "outcomes": [
       "QA Agent delivers the ::securesuite macro with actionable guidance.",
@@ -2259,19 +1797,11 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::optimizsuite": {
     "expansion": "Runs performance profiling, refactoring and code quality evaluation macros.",
-    "calls": [
-      "::perfprofile",
-      "::coderefactor",
-      "::codequality"
-    ],
+    "calls": ["::perfprofile", "::coderefactor", "::codequality"],
     "ownerAgent": "QA Agent",
     "outcomes": [
       "QA Agent delivers the ::optimizsuite macro with actionable guidance.",
@@ -2281,17 +1811,11 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::deploysuite": {
     "expansion": "Generates deployment scripts and configures scaling and monitoring.",
-    "calls": [
-      "::deployscript"
-    ],
+    "calls": ["::deployscript"],
     "ownerAgent": "Architect Agent",
     "outcomes": [
       "Architect Agent delivers the ::deploysuite macro with actionable guidance.",
@@ -2301,17 +1825,11 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::datasuite": {
     "expansion": "Generates data schemas, type definitions and mock data.",
-    "calls": [
-      "::typegen",
-      "::mockdata"
-    ],
+    "calls": ["::typegen", "::mockdata"],
     "ownerAgent": "Backend Agent",
     "outcomes": [
       "Backend Agent delivers the ::datasuite macro with actionable guidance.",
@@ -2321,17 +1839,11 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::uxsuite": {
     "expansion": "Performs a UI/UX audit and injects analytics instrumentation for better product insights.",
-    "calls": [
-      "::uiuxaudit",
-      "::analyticsinject"
-    ],
+    "calls": ["::uiuxaudit", "::analyticsinject"],
     "ownerAgent": "Frontend Agent",
     "outcomes": [
       "Frontend Agent delivers the ::uxsuite macro with actionable guidance.",
@@ -2341,10 +1853,7 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   },
   "::fullstacksuite": {
     "expansion": "Builds a cohesive stack by orchestrating front-end, back-end, testing, CI/CD and deployment macros.",
@@ -2365,21 +1874,11 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::execute",
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::execute", "qa::review", "qa::report"]
   },
   "::masterdev": {
     "expansion": "Coordinates the entire macro system by constructing belief structures, calibrating uncertainty and executing all relevant suites to produce a complete production-grade software package with ethical, secure and performant characteristics.",
-    "calls": [
-      "::fullstacksuite",
-      "::datasuite",
-      "::securesuite",
-      "::optimizsuite",
-      "::uxsuite"
-    ],
+    "calls": ["::fullstacksuite", "::datasuite", "::securesuite", "::optimizsuite", "::uxsuite"],
     "ownerAgent": "Architect Agent",
     "outcomes": [
       "Architect Agent delivers the ::masterdev macro with actionable guidance.",
@@ -2389,9 +1888,6 @@
       "All dependencies expand without errors and metadata fields are populated.",
       "QA Agent MD can identify the accountable owner for this macro step."
     ],
-    "qaHooks": [
-      "qa::review",
-      "qa::report"
-    ]
+    "qaHooks": ["qa::review", "qa::report"]
   }
 }

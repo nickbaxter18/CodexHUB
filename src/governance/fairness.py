@@ -8,9 +8,10 @@ from __future__ import annotations
 
 # SECTION 2: Imports / Dependencies
 from dataclasses import dataclass
-from typing import Dict, Iterable, Mapping
+from typing import Any, Dict, Iterable, Mapping
 
 import numpy as np
+from numpy.typing import NDArray
 
 from src.common.config_loader import FairnessGovernanceConfig, MetricsConfig, MetricThreshold
 
@@ -109,24 +110,30 @@ def evaluate_fairness(
 __all__ = ["FairnessMetricResult", "evaluate_fairness"]
 
 
-def _validate_input_lengths(y_true: np.ndarray, y_pred: np.ndarray, sensitive: np.ndarray) -> None:
+NumericArray = NDArray[Any]
+BooleanArray = NDArray[Any]
+
+
+def _validate_input_lengths(
+    y_true: NumericArray, y_pred: NumericArray, sensitive: NumericArray
+) -> None:
     """Ensure all inputs share identical lengths."""
 
     if not (len(y_true) == len(y_pred) == len(sensitive)):
         raise ValueError("y_true, y_pred, and sensitive_attribute must be the same length")
 
 
-def _group_masks(sensitive: np.ndarray) -> Dict[str | int, np.ndarray]:
+def _group_masks(sensitive: NumericArray) -> Dict[str | int, BooleanArray]:
     """Generate boolean masks for each sensitive attribute value."""
 
-    masks: Dict[str | int, np.ndarray] = {}
+    masks: Dict[str | int, BooleanArray] = {}
     for group in np.unique(sensitive):
         masks[group] = sensitive == group
     return masks
 
 
 def _true_positive_rates(
-    y_true: np.ndarray, y_pred: np.ndarray, masks: Mapping[str | int, np.ndarray]
+    y_true: NumericArray, y_pred: NumericArray, masks: Mapping[str | int, BooleanArray]
 ) -> Dict[str | int, float]:
     """Calculate true positive rates for each group."""
 

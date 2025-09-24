@@ -13,6 +13,13 @@
 3. **Model Cards:** Deliver automated model card generation in `src/governance/model_card_generator.py` tied to governance configs and stored under `docs/model_cards/`.
 4. **CI Enhancements:** Extend GitHub Actions to run the new Python test suites and integrate governance compliance checks into pipelines.
 
+## Upcoming Improvements After Workspace Restructure
+
+1. **Retire Legacy Cursor Scripts:** Gradually replace the legacy `scripts/*cursor*` entry points with thin wrappers around `python -m src.cursor.cli` and remove duplicated logic.
+2. **Adopt Locked Python Dependencies:** Introduce a `pyproject.toml` `[project]` section paired with `pip-tools` or `uv` lockfiles so CI/CD and developers share deterministic Python environments.
+3. **Expand Static Analysis Coverage:** Reduce the mypy ignore surface for `packages.automation.*` modules and port remaining automation code to the new namespace package.
+4. **Centralise Observability:** Replace ad-hoc JSON outputs in `results/` with a persistent metrics backend (MLflow or OpenTelemetry) and surface dashboards for CI runs.
+
 ## Risk Tracking
 
 - **Dependency Weight:** MLflow adds runtime overhead; monitor installation time and consider lightweight registry fallbacks for constrained environments.

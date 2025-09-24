@@ -8,7 +8,6 @@ from typing import Iterable, List
 from .engine import MacroEngine
 from .types import MacroCycleError, PlanStep
 
-
 # === Implementation ===
 
 

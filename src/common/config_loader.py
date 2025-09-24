@@ -10,7 +10,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
-from typing import Any, Dict, Iterable, Mapping, MutableMapping, Type, TypeVar
+from typing import Any, Dict, Iterable, Literal, Mapping, MutableMapping, Type, TypeVar
 
 import yaml  # type: ignore[import-untyped]
 from pydantic import (
@@ -63,19 +63,56 @@ class DatasetConfig(BaseModel):
         return value
 
 
-class ModelHyperparameters(BaseModel):
-    """Schema representing framework-agnostic hyperparameters."""
+class LogisticRegressionHyperparameters(BaseModel):
+    """Hyperparameters supported by the baseline logistic regression model."""
 
-    epochs: PositiveInt
-    learning_rate: float = Field(gt=0.0)
-    batch_size: PositiveInt
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    max_iterations: PositiveInt = Field(default=200, alias="max_iterations")
+    solver: str = Field(default="lbfgs")
+    penalty: str = Field(default="l2")
+    regularization_strength: float = Field(gt=0.0, default=1.0, alias="regularization_strength")
+
+    @field_validator("solver")
+    @classmethod
+    def _normalize_solver(cls, value: str) -> str:
+        normalized = value.lower()
+        allowed = {"lbfgs", "liblinear", "newton-cg", "saga", "sag"}
+        if normalized not in allowed:
+            raise ValueError(f"Unsupported solver '{value}'. Expected one of: {sorted(allowed)}")
+        return normalized
+
+    @field_validator("penalty")
+    @classmethod
+    def _normalize_penalty(cls, value: str) -> str:
+        normalized = value.lower()
+        allowed = {"l1", "l2", "elasticnet", "none"}
+        if normalized not in allowed:
+            raise ValueError(f"Unsupported penalty '{value}'. Expected one of: {sorted(allowed)}")
+        return normalized
+
+    @model_validator(mode="after")
+    def _validate_combination(self) -> "LogisticRegressionHyperparameters":
+        if self.penalty == "l1" and self.solver not in {"liblinear", "saga"}:
+            raise ValueError("l1 penalty requires either 'liblinear' or 'saga' solver")
+        if self.penalty == "elasticnet" and self.solver != "saga":
+            raise ValueError("elasticnet penalty requires the 'saga' solver")
+        if self.penalty == "none" and self.solver not in {"lbfgs", "newton-cg", "sag"}:
+            raise ValueError(
+                "penalty 'none' is only supported with lbfgs, newton-cg, or sag solvers"
+            )
+        return self
 
 
 class ModelConfig(BaseModel):
     """Schema describing model metadata and hyperparameters."""
 
-    framework: str
-    hyperparameters: ModelHyperparameters
+    framework: Literal["sklearn-logistic-regression"]
+    hyperparameters: LogisticRegressionHyperparameters
+
+
+# Backwards compatibility alias for downstream imports that still reference ModelHyperparameters.
+ModelHyperparameters = LogisticRegressionHyperparameters
 
 
 class ExperimentConfig(BaseModel):
@@ -317,6 +354,7 @@ __all__ = [
     "load_yaml",
     "MetricsConfig",
     "ModelConfig",
+    "LogisticRegressionHyperparameters",
     "ModelHyperparameters",
     "MonitoringConfig",
     "PipelineConfig",

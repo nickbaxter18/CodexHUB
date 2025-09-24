@@ -4,7 +4,7 @@ logs/
 .env
 dist
 tmp
-AGENTS.md/**
+apps/editor/**
 AGENTS_*.md
 Block*.md
 CODEX_*.md

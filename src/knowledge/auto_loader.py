@@ -216,19 +216,25 @@ class KnowledgeAutoLoader:
 
     def _resolve_watch_interval(self) -> Optional[int]:
         raw_value = os.getenv("KNOWLEDGE_WATCH_INTERVAL")
-        if raw_value is None:
-            return 30
+        if raw_value is None or raw_value.strip() == "":
+            # Default to no watcher so contributors do not pay the cost unless they opt in.
+            return None
 
         try:
             interval = int(raw_value)
         except ValueError:
             logger.warning(
-                "Invalid KNOWLEDGE_WATCH_INTERVAL '%s'; using default 30 seconds",
+                "Invalid KNOWLEDGE_WATCH_INTERVAL '%s'; disabling change watcher",
                 raw_value,
             )
-            return 30
+            return None
 
         return interval if interval > 0 else None
+
+    async def refresh_all_sources(self) -> None:
+        """Reload every enabled knowledge source immediately."""
+
+        await self._load_all_sources()
 
     def remove_source(self, source_name: str) -> bool:
         """Remove a knowledge source."""
@@ -392,11 +398,19 @@ async def get_knowledge_entries() -> List[Dict[str, Any]]:
     return entries
 
 
+async def refresh_knowledge_sources() -> None:
+    """Force a reload of every enabled knowledge source."""
+
+    auto_loader = get_auto_loader()
+    await auto_loader.refresh_all_sources()
+
+
 # Export main classes and functions
 __all__ = [
     "KnowledgeAutoLoader",
     "KnowledgeSource",
     "get_auto_loader",
     "start_knowledge_auto_loading",
+    "refresh_knowledge_sources",
     "get_knowledge_entries",
 ]

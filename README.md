@@ -7,9 +7,12 @@ Python ML pipeline that handles ingestion, training, governance, and inference.
 ## Repository Layout
 
 - `src/` – Node services, Express entry points, and shared utilities.
+- `apps/` – End-user web experiences.
+  - `apps/editor/` – The AGENTS.md documentation site (Next.js).
 - `backend/` – Development helpers for the web-based Codex editor and local automation hooks.
-- `agents/`, `meta_agent/`, `macro_system/` – Specialist AI agents, macro tooling, and
-  coordination logic.
+- `packages/automation/` – Python automation stacks (agents, macro system, meta-agent, QA engine)
+  surfaced as a normalized workspace. Legacy import paths remain available for compatibility.
+- `rentalos-ai/` – Experimental AI-assisted rental operations workspace (Vite front end).
 - `qa/`, `tests/` – Quality gates, governance checks, and automated verification suites.
 - `docs/` – Living documentation for setup, API usage, governance, and architecture.
 - `scripts/` – Automation helpers for Cursor, knowledge ingestion, and repo health checks.
@@ -27,39 +30,49 @@ Python ML pipeline that handles ingestion, training, governance, and inference.
 ### 1. Install dependencies
 
 ```bash
-pnpm install
-python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-pip install -r requirements-dev.txt
+pnpm run setup
 ```
+
+The bootstrap script installs Node dependencies, provisions a `.venv` virtual environment, installs
+both runtime and development Python requirements, and wires up `husky`/`pre-commit` hooks. Pass
+`--skip-node`, `--skip-python`, or `--no-dev-extras` to customise the workflow when you only need a
+subset of the toolchain. If you want to hydrate additional pnpm workspaces (for example
+`apps/editor` or `rentalos-ai`), follow up with filtered installs such as
+`pnpm install --filter apps/editor...`.
 
 ### 2. Configure environment variables
 
-Copy `.env.example` into `.env` and adjust the values to match your environment. The template now
-includes the runtime defaults referenced throughout the automation stack (Cursor, knowledge
-ingestion, mobile control, and performance monitoring). Review `docs/setup.md` for a complete
-option reference and avoid committing secrets.
+Copy `.env.example` into `.env` and adjust the values to match your environment. Curated profiles
+live under `config/environments/` (`.env.development`, `.env.cursor`, `.env.ci`) so you can quickly
+swap between a minimal setup and the Cursor-heavy automation stack. Review `docs/setup.md` for a
+complete option reference and avoid committing secrets.
 
-After installing dependencies, enable the repo's git hooks with:
-
-```bash
-pre-commit install
-```
-
-Husky hooks will automatically delegate to the shared lint-staged configuration for
-JavaScript/TypeScript files, while `pre-commit` manages Python, Markdown, YAML, and spelling
-consistency.
+Knowledge ingestion watchers are now opt-in: leave `KNOWLEDGE_WATCH_INTERVAL` blank to skip polling
+and set it to a positive number to enable background reloads.
 
 ### 3. Run services
 
 - **Express scaffolding**: `pnpm run dev` or `pnpm start` starts the Node entry point on port `4000`.
 - **Editor health server**: `node backend/health-test.js` exposes `/health-test`, `/cursor-agent`,
   and `/task-status` guarded by `EDITOR_API_KEY`.
-- **Python pipeline**: activate your virtual environment and run the relevant modules,
+- **Python pipeline**: activate your virtual environment (created by `pnpm run setup`) and run the relevant modules,
   e.g. `python -m src.training.pipeline` or `python -m src.inference.service`. Detailed workflows
   live in `docs/usage.md`.
 
-### 4. Quality checks
+### 4. Cursor automation CLI
+
+The consolidated CLI exposes all Cursor-focused automation through a single entry point:
+
+```bash
+python -m src.cursor.cli start --with-knowledge        # start auto-invocation + knowledge sync
+python -m src.cursor.cli status                        # inspect compliance and usage metrics
+python -m src.cursor.cli knowledge-refresh             # reload knowledge sources once without watchers
+python -m src.cursor.cli rules                         # review auto-invocation rule stats
+```
+
+Existing `pnpm run cursor:*` scripts now forward to this CLI.
+
+### 5. Quality checks
 
 ```bash
 make quality       # orchestrate Node, docs, and Python quality suites with metrics capture
