@@ -1,0 +1,57 @@
+{
+  "cursor_integration": {
+    "enabled": true,
+    "auto_invocation": true,
+    "enforcement": true,
+    "performance_monitoring": true
+  },
+  "knowledge_integration": {
+    "enabled": true,
+    "auto_loading": true,
+    "brain_blocks": true,
+    "real_time_sync": true
+  },
+  "mobile_integration": {
+    "enabled": true,
+    "notifications": true,
+    "goal_management": true,
+    "approval_workflows": true
+  },
+  "agent_configuration": {
+    "frontend": {
+      "enabled": true,
+      "auto_trigger": true,
+      "patterns": ["**/*.tsx", "**/*.jsx"]
+    },
+    "backend": {
+      "enabled": true,
+      "auto_trigger": true,
+      "patterns": ["**/*.py"]
+    },
+    "qa": {
+      "enabled": true,
+      "auto_trigger": true,
+      "patterns": ["**/test_*.py", "**/*.test.js"]
+    },
+    "architect": {
+      "enabled": true,
+      "auto_trigger": true,
+      "patterns": ["**/*.md", "**/ARCHITECTURE.md"]
+    },
+    "cicd": {
+      "enabled": true,
+      "auto_trigger": true,
+      "patterns": ["**/.github/workflows/**", "**/Dockerfile"]
+    },
+    "knowledge": {
+      "enabled": true,
+      "auto_trigger": true,
+      "patterns": ["**/*.ndjson", "**/docs/**"]
+    },
+    "meta": {
+      "enabled": true,
+      "auto_trigger": true,
+      "patterns": ["**/*"]
+    }
+  }
+}

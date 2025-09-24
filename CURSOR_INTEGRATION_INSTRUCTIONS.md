@@ -26,6 +26,8 @@
 - `scripts/test_cursor_integration.py` - Test all components
 - `scripts/bootstrap_integration.py` - Bootstrap all systems
 - `scripts/enforce_cursor_usage.py` - Enforce compliance
+- `scripts/bootstrap_cursor_integration.py` - Bootstrap Cursor integration
+- `scripts/bootstrap_knowledge.py` - Bootstrap Knowledge agent
 
 ### **Configuration Files:**
 - `config/cursor_environment_template.env` - Environment template
