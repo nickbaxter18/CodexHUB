@@ -13,6 +13,11 @@
 
 ## Operational Safeguards
 
-- **No Secrets in Repo:** All registry URIs and experiment names are plain-text development defaults. Production deployments must source URIs via environment variables or secret managers.
+- **Secret management:** All runtime credentials (including the editor health-test API key) must be injected via environment variables or an external secret manager. The repository no longer contains hard-coded keys—rotate any keys that previously lived in source control.
+- **No Secrets in Repo:** Keep `.env` files out of version control and rely on deployment-specific secret storage (e.g. Doppler, Vault, GitHub Actions secrets).
 - **Auditability:** MLflow registry usage centralises run metadata, supporting future audit trails and alignment with GDPR/CCPA.
 - **Testing:** Comprehensive unit, integration, and compliance tests (see `tests/`) enforce behaviour for malformed inputs, fairness coverage, and privacy guarantees.
+
+## Cross-platform hygiene
+
+- Development helpers in `backend/` now avoid Windows-only paths. When extending automation scripts, prefer relative paths or configurable environment variables to maintain compatibility across Linux, macOS, and Windows environments.

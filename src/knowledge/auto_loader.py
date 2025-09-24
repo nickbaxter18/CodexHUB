@@ -6,12 +6,9 @@ Automatically loads NDJSON data into Knowledge Agent and keeps it synchronized.
 from __future__ import annotations
 
 import asyncio
-import json
 import logging
-
-# Import Knowledge Agent
+import os
 import sys
-import time
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -19,9 +16,9 @@ from typing import Any, Callable, Dict, List, Optional
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from agents.specialist_agents import KnowledgeAgent, KnowledgeDocument
-from qa.qa_engine import QAEngine, QARules
-from qa.qa_event_bus import QAEventBus
+from agents.specialist_agents import KnowledgeAgent  # noqa: E402
+from qa.qa_engine import QAEngine, QARules  # noqa: E402
+from qa.qa_event_bus import QAEventBus  # noqa: E402
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -49,6 +46,14 @@ class KnowledgeAutoLoader:
         self.sources: List[KnowledgeSource] = []
         self.is_running = False
         self.watch_callbacks: List[Callable] = []
+        self._watch_task: Optional[asyncio.Task] = None
+        self.watch_interval = self._resolve_watch_interval()
+        self.ignored_directories = {
+            ".git",
+            "node_modules",
+            "__pycache__",
+            "cache",
+        }
 
         # Setup default sources
         self._setup_default_sources()
@@ -56,22 +61,49 @@ class KnowledgeAutoLoader:
     def _setup_default_sources(self) -> None:
         """Setup default knowledge sources."""
 
-        default_sources = [
-            # Brain docs cleansed NDJSON
-            KnowledgeSource(
-                name="brain_docs", path=Path("Brain docs cleansed .ndjson"), priority=1
-            ),
-            # Bundle cleansed NDJSON
-            KnowledgeSource(name="bundle_docs", path=Path("Bundle cleansed .ndjson"), priority=2),
-            # Any other NDJSON files in the repository
-            KnowledgeSource(name="repository_docs", path=Path("."), priority=3),
-        ]
+        configured_paths = os.getenv("KNOWLEDGE_NDJSON_PATHS")
+        sources: List[KnowledgeSource] = []
 
-        self.sources.extend(default_sources)
-        logger.info(f"Setup {len(default_sources)} default knowledge sources")
+        if configured_paths:
+            for index, raw_path in enumerate(configured_paths.split(",")):
+                candidate = raw_path.strip()
+                if not candidate:
+                    continue
+                path_obj = Path(candidate)
+                sources.append(
+                    KnowledgeSource(
+                        name=f"configured_{index}",
+                        path=path_obj,
+                        priority=index + 1,
+                    )
+                )
+
+        if not sources:
+            default_sources = [
+                KnowledgeSource(
+                    name="brain_docs", path=Path("Brain docs cleansed .ndjson"), priority=1
+                ),
+                KnowledgeSource(
+                    name="bundle_docs", path=Path("Bundle cleansed .ndjson"), priority=2
+                ),
+                KnowledgeSource(
+                    name="repository_docs",
+                    path=Path("data/knowledge"),
+                    priority=3,
+                    auto_reload=False,
+                ),
+            ]
+            sources.extend(default_sources)
+            logger.info(f"Setup {len(default_sources)} default knowledge sources")
+
+        self.sources.extend(sources)
 
     async def start_auto_loading(self) -> None:
         """Start automatic knowledge loading."""
+
+        if self.is_running:
+            logger.info("Knowledge auto-loader already running")
+            return
 
         self.is_running = True
         logger.info("Starting knowledge auto-loading")
@@ -79,8 +111,15 @@ class KnowledgeAutoLoader:
         # Initial load of all sources
         await self._load_all_sources()
 
-        # Start watching for changes
-        await self._watch_for_changes()
+        # Start watching for changes without blocking startup
+        loop = asyncio.get_running_loop()
+        if self.watch_interval:
+            self._watch_task = loop.create_task(
+                self._watch_for_changes(),
+                name="knowledge-auto-loader-watch",
+            )
+        else:
+            logger.info("Knowledge auto-loader started without change watcher (interval disabled)")
 
     async def _load_all_sources(self) -> None:
         """Load all enabled knowledge sources."""
@@ -93,6 +132,9 @@ class KnowledgeAutoLoader:
         """Load a specific knowledge source."""
 
         try:
+            if not source.path.exists():
+                logger.debug(f"Skipping missing knowledge source: {source.path}")
+                return
             if source.path.is_file() and source.path.suffix == ".ndjson":
                 # Load single NDJSON file
                 loaded_count = self.knowledge_agent.load_ndjson(source.path)
@@ -104,6 +146,8 @@ class KnowledgeAutoLoader:
                 # Load all NDJSON files in directory
                 total_loaded = 0
                 for ndjson_file in source.path.rglob("*.ndjson"):
+                    if any(part in self.ignored_directories for part in ndjson_file.parts):
+                        continue
                     loaded_count = self.knowledge_agent.load_ndjson(ndjson_file)
                     total_loaded += loaded_count
                     logger.info(f"Loaded {loaded_count} documents from {ndjson_file.name}")
@@ -129,7 +173,7 @@ class KnowledgeAutoLoader:
                         await self._check_source_changes(source)
 
                 # Wait before next check
-                await asyncio.sleep(5)
+                await asyncio.sleep(self.watch_interval or 30)
 
             except Exception as e:
                 logger.error(f"Error in change detection: {e}")
@@ -151,6 +195,8 @@ class KnowledgeAutoLoader:
             elif source.path.is_dir():
                 # Check for new or modified NDJSON files
                 for ndjson_file in source.path.rglob("*.ndjson"):
+                    if any(part in self.ignored_directories for part in ndjson_file.parts):
+                        continue
                     if (
                         source.last_loaded is None
                         or ndjson_file.stat().st_mtime > source.last_loaded.timestamp()
@@ -167,6 +213,22 @@ class KnowledgeAutoLoader:
 
         self.sources.append(source)
         logger.info(f"Added knowledge source: {source.name}")
+
+    def _resolve_watch_interval(self) -> Optional[int]:
+        raw_value = os.getenv("KNOWLEDGE_WATCH_INTERVAL")
+        if raw_value is None:
+            return 30
+
+        try:
+            interval = int(raw_value)
+        except ValueError:
+            logger.warning(
+                "Invalid KNOWLEDGE_WATCH_INTERVAL '%s'; using default 30 seconds",
+                raw_value,
+            )
+            return 30
+
+        return interval if interval > 0 else None
 
     def remove_source(self, source_name: str) -> bool:
         """Remove a knowledge source."""
@@ -270,7 +332,13 @@ class KnowledgeAutoLoader:
     def stop_auto_loading(self) -> None:
         """Stop automatic knowledge loading."""
 
+        if not self.is_running:
+            return
+
         self.is_running = False
+        if self._watch_task and not self._watch_task.done():
+            self._watch_task.cancel()
+        self._watch_task = None
         logger.info("Stopped knowledge auto-loading")
 
 
@@ -295,6 +363,10 @@ def get_auto_loader() -> KnowledgeAutoLoader:
 async def start_knowledge_auto_loading() -> None:
     """Start knowledge auto-loading."""
 
+    if os.getenv("KNOWLEDGE_AUTO_LOAD", "true").lower() in {"0", "false", "off"}:
+        logger.info("Knowledge auto-loading disabled via KNOWLEDGE_AUTO_LOAD")
+        return
+
     auto_loader = get_auto_loader()
     await auto_loader.start_auto_loading()
 
@@ -303,7 +375,6 @@ async def get_knowledge_entries() -> List[Dict[str, Any]]:
     """Get all knowledge entries from the auto-loader."""
 
     auto_loader = get_auto_loader()
-    stats = auto_loader.get_source_stats()
 
     # Return knowledge entries in a format that can be used
     entries = []
