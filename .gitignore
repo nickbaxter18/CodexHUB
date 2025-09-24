@@ -2,6 +2,7 @@ node_modules/
 .pnpm-store/
 logs/
 .env
+.cache/
 dist/
 __pycache__/
 coverage/
