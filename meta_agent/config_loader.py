@@ -80,6 +80,11 @@ class ConfigLoader:
 
         return self._get_or_load("qa_rules", "qa_rules.json", "qa_rules.schema.json")
 
+    def get_drift_profiles(self) -> Dict[str, Any]:
+        """Return statistical drift reference profiles and enforcement thresholds."""
+
+        return self._get_or_load("drift", "drift.json", "drift.schema.json")
+
     def resolve_path(self, name: str) -> Path:
         """Return an absolute path under the configuration directory."""
 

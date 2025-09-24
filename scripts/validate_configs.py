@@ -15,6 +15,7 @@ CONFIG_SCHEMA_MAP: Dict[str, str] = {
     "agents.json": "agents.schema.json",
     "qa_policies.json": "qa_policies.schema.json",
     "qa_rules.json": "qa_rules.schema.json",
+    "drift.json": "drift.schema.json",
 }
 
 

@@ -17,7 +17,7 @@
     "failure_multiplier": 0.9
   },
   "drift_detection": {
-    "window_size": 5,
+    "window_size": 50,
     "failure_threshold": 3
   },
   "fallbacks": {
