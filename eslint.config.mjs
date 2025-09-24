@@ -48,7 +48,6 @@ const extendedConfigs = [
     'plugin:yaml/legacy',
     'prettier'
   ),
-  unicornPlugin.configs.recommended,
 ];
 
 const baseConfig = {
@@ -67,6 +66,7 @@ const baseConfig = {
     'simple-import-sort': simpleImportSortPlugin,
     'unused-imports': unusedImportsPlugin,
     prettier: prettierPlugin,
+    unicorn: unicornPlugin,
   },
   rules: {
     'prettier/prettier': 'error',
@@ -110,6 +110,7 @@ const baseConfig = {
         },
       },
     ],
+    'unicorn/no-array-reverse': 'off',
     'jsdoc/require-jsdoc': 'off',
     'import/no-unresolved': 'off',
     'import/order': 'off',

@@ -84,7 +84,7 @@ jobs:
         run: bandit -q -r macro_system meta_agent qa -x macro_system/tests,meta_agent/tests,tests
 
       - name: pip-audit
-        run: pip-audit -r requirements-dev.txt
+        run: python -m pip_audit -r requirements-dev.txt
 
       - name: pnpm audit
         run: pnpm audit --audit-level=high

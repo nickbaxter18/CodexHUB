@@ -31,6 +31,6 @@ jobs:
       - name: npm audit
         run: pnpm audit --audit-level=high
       - name: pip audit
-        run: pip-audit -r requirements-dev.txt
+        run: python -m pip_audit -r requirements-dev.txt
       - name: Bandit
         run: bandit -q -r macro_system meta_agent qa -x macro_system/tests,meta_agent/tests,tests
