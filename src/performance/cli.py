@@ -6,7 +6,7 @@ import argparse
 import subprocess
 import time
 from pathlib import Path
-from typing import Iterable, List, Mapping, MutableSequence, Sequence
+from typing import Dict, Iterable, List, Mapping, MutableSequence, Sequence
 
 from src.performance.metrics_collector import PerformanceCollector
 
@@ -70,7 +70,7 @@ def _resolve_suite(name: str) -> List[SuiteCommand]:
 
 def _run_command(command: SuiteCommand, collector: PerformanceCollector, suite_name: str) -> None:
     start = time.perf_counter()
-    metadata = {"command": " ".join(command)}
+    metadata: Dict[str, object] = {"command": " ".join(command)}
     try:
         subprocess.run(list(command), check=True)
     except subprocess.CalledProcessError as exc:

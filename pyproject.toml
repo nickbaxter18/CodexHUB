@@ -19,21 +19,27 @@ ignore_missing_imports = true
 pretty = true
 strict = true
 follow_imports = "skip"
-exclude = "^(macro_system/|meta_agent/|qa_engine/|tests/)"
+exclude = "^tests/"
 files = [
-    "scripts/codex_status.py",
-    "src/performance/metrics_collector.py",
     "src/cursor/auto_invocation.py",
-    "src/knowledge/auto_loader.py",
+    "src/knowledge",
+    "src/performance",
 ]
 
 [[tool.mypy.overrides]]
 module = [
-    "scripts.*",
     "macro_system.*",
     "meta_agent.*",
     "qa_engine.*",
-    "tests.*",
+]
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = [
+    "scripts.*",
+    "src.cursor.cursor_client",
+    "src.cursor.cursor_client.*",
+    "src.mobile.*",
 ]
 ignore_errors = true
 

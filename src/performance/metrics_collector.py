@@ -76,8 +76,7 @@ class PerformanceCollector:
         self._agent_history: List[AgentMetrics] = []
 
         # Setup logging
-        logging.basicConfig(level=logging.INFO)
-        self.logger = logging.getLogger(__name__)
+        self.logger = logger
 
     def record_metric(
         self,
@@ -289,3 +288,7 @@ __all__ = [
     "get_performance_collector",
     "record_build_time",
 ]
+
+logger = logging.getLogger(__name__)
+if not logger.handlers:
+    logger.addHandler(logging.NullHandler())

@@ -5,10 +5,8 @@ Integrates Brain Blocks NDJSON data with Knowledge Agent for intelligent queryin
 
 from __future__ import annotations
 
-import asyncio
 import json
 import logging
-import time
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -18,12 +16,10 @@ from agents.specialist_agents import KnowledgeAgent, KnowledgeDocument
 from qa.qa_engine import QAEngine, QARules
 from qa.qa_event_bus import QAEventBus
 
-# Import Knowledge components
-from .auto_loader import KnowledgeAutoLoader, KnowledgeSource
-
 # Setup logging
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+if not logger.handlers:
+    logger.addHandler(logging.NullHandler())
 
 
 @dataclass
@@ -220,8 +216,8 @@ Hash: {brain_block.hash}
             return {"error": "Brain blocks not loaded"}
 
         # Analyze brain blocks
-        sections = {}
-        tags = {}
+        sections: Dict[str, int] = {}
+        tag_counts: Dict[str, int] = {}
         total_content_length = 0
 
         for block in self.brain_blocks:
@@ -231,7 +227,7 @@ Hash: {brain_block.hash}
 
             # Count tags
             for tag in block.tags:
-                tags[tag] = tags.get(tag, 0) + 1
+                tag_counts[tag] = tag_counts.get(tag, 0) + 1
 
             # Sum content length
             total_content_length += len(block.content)
@@ -240,11 +236,13 @@ Hash: {brain_block.hash}
             "total_blocks": len(self.brain_blocks),
             "sections": {
                 "count": len(sections),
-                "top_sections": sorted(sections.items(), key=lambda x: x[1], reverse=True)[:10],
+                "top_sections": sorted(sections.items(), key=lambda item: item[1], reverse=True)[
+                    :10
+                ],
             },
             "tags": {
-                "count": len(tags),
-                "top_tags": sorted(tags.items(), key=lambda x: x[1], reverse=True)[:20],
+                "count": len(tag_counts),
+                "top_tags": sorted(tag_counts.items(), key=lambda item: item[1], reverse=True)[:20],
             },
             "content": {
                 "total_length": total_content_length,
@@ -364,12 +362,12 @@ async def query_brain_blocks(query: str = "", limit: int = 10) -> List[Dict[str,
 
     return [
         {
-            "doc_id": block.doc_id,
-            "title": block.title,
-            "content": block.content,
-            "section": block.section,
-            "tags": block.tags,
-            "updated_at": block.updated_at,
+            "doc_id": block.get("doc_id"),
+            "title": block.get("title"),
+            "content": block.get("content") or block.get("snippet"),
+            "section": block.get("section"),
+            "tags": block.get("tags", []),
+            "updated_at": block.get("updated_at"),
         }
         for block in results
     ]

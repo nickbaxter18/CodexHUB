@@ -7,20 +7,20 @@ Version: 4.3+
 License: MIT
 """
 
-import os
-import json
 import asyncio
-import aiohttp
 import logging
-from typing import Dict, List, Optional, Any, Union
-from dataclasses import dataclass, asdict
+import os
+from dataclasses import dataclass
 from enum import Enum
-import time
+from typing import Any, Dict, List, Optional
 from urllib.parse import urljoin
 
+import aiohttp
+
 # Configure logging
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+if not logger.handlers:
+    logger.addHandler(logging.NullHandler())
 
 
 class CursorAPIError(Exception):
@@ -101,26 +101,36 @@ class CursorClient:
             config = self._load_config_from_env()
 
         self.config = config
-        self._validate_config()
-        self._initialize_agent_methods()
         self.session = None
+        self.agents: Dict[AgentType, Any] = {}
+        self.enabled = self._validate_config()
+        if self.enabled:
+            self._initialize_agent_methods()
 
     def _load_config_from_env(self) -> CursorConfig:
         """Load configuration from environment variables"""
         return CursorConfig(
-            api_base_url=os.getenv("CURSOR_API_URL", ""),
+            api_base_url=os.getenv("CURSOR_API_URL", "https://api.cursor.sh"),
             api_key=os.getenv("CURSOR_API_KEY", ""),
             timeout=int(os.getenv("CURSOR_TIMEOUT", "30")),
             max_retries=int(os.getenv("CURSOR_MAX_RETRIES", "3")),
             retry_delay=float(os.getenv("CURSOR_RETRY_DELAY", "1.0")),
         )
 
-    def _validate_config(self):
-        """Validate required configuration"""
+    def _validate_config(self) -> bool:
+        """Validate required configuration and determine availability."""
+
         if not self.config.api_base_url:
-            raise ValueError("CURSOR_API_URL is required")
+            self.config.api_base_url = "https://api.cursor.sh"
+
+        self.config.api_base_url = self.config.api_base_url.rstrip("/")
+        self.config.api_key = (self.config.api_key or "").strip()
+
         if not self.config.api_key:
-            raise ValueError("CURSOR_API_KEY is required")
+            logger.info("CURSOR_API_KEY not configured; Cursor client will run in disabled mode")
+            return False
+
+        return True
 
     def _initialize_agent_methods(self):
         """Initialize agent-specific methods"""
@@ -136,6 +146,9 @@ class CursorClient:
 
     async def __aenter__(self):
         """Async context manager entry"""
+        if not self.enabled:
+            raise RuntimeError("CursorClient is disabled; set CURSOR_API_KEY to enable API access")
+
         self.session = aiohttp.ClientSession(
             timeout=aiohttp.ClientTimeout(total=self.config.timeout),
             headers={
@@ -168,6 +181,9 @@ class CursorClient:
         Raises:
             CursorAPIError: If request fails after retries
         """
+        if not self.enabled:
+            raise CursorAPIError("Cursor client disabled; cannot make requests")
+
         if not self.session:
             raise RuntimeError("Client not initialized. Use async context manager.")
 
@@ -382,6 +398,9 @@ class CursorClient:
         Returns:
             Agent methods instance or None
         """
+        if not self.enabled:
+            return None
+
         return self.agents.get(agent_type)
 
     async def coordinate_agents(self, task: str, context: Dict[str, Any] = None) -> Dict[str, Any]:

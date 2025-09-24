@@ -5,7 +5,6 @@ Complete mobile functionality for goal setting, approvals, and agent control.
 
 from __future__ import annotations
 
-import asyncio
 import json
 import logging
 import time
@@ -13,7 +12,7 @@ from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from qa.qa_engine import QAEngine, QARules
 
@@ -27,8 +26,9 @@ from .control_interface import (
 )
 
 # Setup logging
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+if not logger.handlers:
+    logger.addHandler(logging.NullHandler())
 
 
 class MobileAppState(Enum):

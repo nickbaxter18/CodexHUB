@@ -8,16 +8,16 @@ from __future__ import annotations
 import asyncio
 import inspect
 import logging
-import sys
-import traceback
-from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Type, Union
-from functools import wraps
+import os
 import time
+from functools import wraps
+from pathlib import Path
+from typing import Any, Callable, Dict, List
 
 # Setup logging
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+if not logger.handlers:
+    logger.addHandler(logging.NullHandler())
 
 
 class CursorEnforcementError(Exception):
@@ -31,7 +31,7 @@ class CursorEnforcement:
 
     def __init__(self):
         self.cursor_usage_log: List[Dict[str, Any]] = []
-        self.enforcement_active = True
+        self.enforcement_active = self._resolve_enforcement_state()
         self.required_agents = {
             ".tsx": "FRONTEND",
             ".jsx": "FRONTEND",
@@ -57,6 +57,21 @@ class CursorEnforcement:
         )
 
         logger.info(f"CURSOR USAGE: {agent_type} -> {action} for {file_path}")
+
+    def _resolve_enforcement_state(self) -> bool:
+        """Determine whether enforcement should be active."""
+
+        env_value = os.getenv("CURSOR_ENFORCEMENT_ENABLED")
+        if env_value is None:
+            # Default to disabled when no explicit opt-in is provided.
+            enabled = False
+        else:
+            enabled = env_value.lower() not in {"0", "false", "off"}
+
+        if not os.getenv("CURSOR_API_KEY"):
+            return False
+
+        return enabled
 
     def determine_required_agent(self, file_path: str) -> str:
         """Determine required Cursor agent for file path."""
@@ -141,7 +156,7 @@ def enforce_cursor_integration(agent_type: str, action: str):
 
                 return result
 
-            except Exception as e:
+            except Exception:
                 # Log failed Cursor usage
                 _global_enforcement.log_cursor_usage(agent_type, action, file_path, False)
                 raise
@@ -163,7 +178,7 @@ def enforce_cursor_integration(agent_type: str, action: str):
 
                 return result
 
-            except Exception as e:
+            except Exception:
                 # Log failed Cursor usage
                 _global_enforcement.log_cursor_usage(agent_type, action, file_path, False)
                 raise
@@ -230,7 +245,7 @@ async def _execute_with_cursor_agent(func: Callable, agent_type: str, *args, **k
 
     try:
         # Import Cursor client
-        from .cursor_client import CursorClient, AgentType
+        from .cursor_client import AgentType, CursorClient
 
         # Get Cursor client
         cursor_client = CursorClient()
@@ -268,7 +283,7 @@ def _execute_with_cursor_agent_sync(func: Callable, agent_type: str, *args, **kw
 
     try:
         # Import Cursor client
-        from .cursor_client import CursorClient, AgentType
+        from .cursor_client import AgentType, CursorClient
 
         # Get Cursor client
         cursor_client = CursorClient()
@@ -306,13 +321,17 @@ def validate_cursor_compliance() -> bool:
 
     stats = _global_enforcement.get_usage_stats()
 
+    if not _global_enforcement.enforcement_active:
+        logger.debug("Cursor enforcement inactive; treating compliance as satisfied")
+        return True
+
     if stats["total_usage"] == 0:
-        raise CursorEnforcementError("No Cursor integration usage detected!")
+        logger.warning("No Cursor integration usage detected; compliance check failed")
+        return False
 
     if stats["success_rate"] < 0.8:
-        raise CursorEnforcementError(
-            f"Low Cursor integration success rate: {stats['success_rate']:.2%}"
-        )
+        logger.warning("Low Cursor integration success rate: %.2f%%", stats["success_rate"] * 100)
+        return False
 
     return True
 
