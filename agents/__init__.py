@@ -1,18 +1,12 @@
-"""
-SECTION: Header & Purpose
-    - Aggregates agent-facing utilities for consumers of the QA framework.
-
-SECTION: Imports / Dependencies
-    - Provides convenient imports for the base agent class, meta agent implementation, and the
-      domain-specific specialist agents introduced in the governance roadmap.
-
-SECTION: Exports / Public API
-    - ``Agent`` and ``MetaAgent`` classes together with concrete specialist agents for
-      architecture, frontend, backend, QA, CI/CD, and knowledge management.
-"""
+"""Convenience exports for CodexHUB agent implementations."""
 
 from .agent_base import Agent, AgentTaskError
-from .knowledge_agent import KnowledgeAgent, KnowledgeRecord, KnowledgeSearchResult, KnowledgeStore
+from .knowledge_agent import (
+    KnowledgeAgent as RetrievalKnowledgeAgent,
+    KnowledgeRecord,
+    KnowledgeSearchResult,
+    KnowledgeStore,
+)
 from .meta_agent import MetaAgent
 from .specialist_agents import (
     AgentTask,
@@ -20,15 +14,20 @@ from .specialist_agents import (
     BackendAgent,
     CICDAgent,
     FrontendAgent,
-    KnowledgeAgent,
+    KnowledgeAgent as SpecialistKnowledgeAgent,
     KnowledgeDocument,
     QAAgent,
     SpecialistAgent,
 )
 
+# Maintain backwards compatibility for callers expecting the specialist knowledge agent
+KnowledgeAgent = SpecialistKnowledgeAgent
+
+# Expose the retrieval-focused implementation with an explicit alias
+KnowledgeRetrievalAgent = RetrievalKnowledgeAgent
+
 __all__ = [
     "Agent",
-<<<<<<< HEAD
     "AgentTask",
     "AgentTaskError",
     "ArchitectAgent",
@@ -37,15 +36,11 @@ __all__ = [
     "FrontendAgent",
     "KnowledgeAgent",
     "KnowledgeDocument",
-    "MetaAgent",
-    "QAAgent",
-    "SpecialistAgent",
-=======
-    "AgentTaskError",
-    "KnowledgeAgent",
     "KnowledgeRecord",
+    "KnowledgeRetrievalAgent",
     "KnowledgeSearchResult",
     "KnowledgeStore",
     "MetaAgent",
->>>>>>> origin/codex/establish-repository-audit-process
+    "QAAgent",
+    "SpecialistAgent",
 ]

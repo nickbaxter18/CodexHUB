@@ -1,15 +1,9 @@
 """
 SECTION: Header & Purpose
-<<<<<<< HEAD
-    - Implements the ``MetaAgent`` responsible for arbitrating QA signals and coordinating
-      trust updates.
+    - Implements the ``MetaAgent`` responsible for arbitrating QA signals and coordinating trust
+      updates across specialist agents.
     - Listens to QA event bus topics, enforces missing-test escalations, weighs severity scoring,
       tracks error payloads, and publishes consolidated arbitration outcomes.
-=======
-    - Implements the ``MetaAgent`` that arbitrates QA signals and coordinates trust updates.
-    - Listens to QA event bus topics, enforces missing-test escalations, and scores severity.
-    - Tracks error payloads and publishes consolidated arbitration outcomes.
->>>>>>> origin/codex/establish-repository-audit-process
 
 SECTION: Imports / Dependencies
     - Depends on the shared QA engine and event bus modules only.
@@ -90,11 +84,7 @@ class MetaAgent:
 
         agent = evaluation["agent"]
         previous: Optional[Dict[str, Any]] = self.agent_last_event.get(agent)
-<<<<<<< HEAD
         previous_status = previous.get("status") if previous is not None else None
-=======
-        previous_status = previous.get("status") if previous else None
->>>>>>> origin/codex/establish-repository-audit-process
         conflict = previous_status is not None and previous_status != evaluation.get("status")
         missing_tests = evaluation.get("missing_tests", [])
         severity = float(evaluation.get("severity", 0.0))
