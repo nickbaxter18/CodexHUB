@@ -1,76 +1,149 @@
-﻿import expressModule from "express";
+import expressModule from "express";
+import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { exec } from "child_process";
 
+import dotenv from "dotenv";
+
+dotenv.config();
+
 const express = expressModule.default || expressModule;
 const app = express();
 
-// Middleware
 app.use(express.json());
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const PORT = 5000;
-const API_KEY = "JncDAe7RBfUSzdF05TOwuPsWrp4hxELVIgG9Nomy";
-let tasks = {};
+const PORT = Number.parseInt(process.env.EDITOR_PORT || "5000", 10);
+const API_KEY = process.env.EDITOR_API_KEY;
+const cursorAgentCommand = process.env.CURSOR_AGENT_COMMAND || "cursor-agent";
+const cursorAgentCwd = path.resolve(
+  process.env.CURSOR_AGENT_CWD || path.join(__dirname, ".."),
+);
 
-// ✅ Explicit path to your editor folder
-const editorPath = "C:/Users/Nick/CodexBuilder/editor";
+const tasks = new Map();
+
+const resolveEditorPath = () => {
+  const configuredPath = process.env.EDITOR_STATIC_DIR;
+  const candidate = path.resolve(
+    configuredPath && configuredPath.trim().length > 0
+      ? configuredPath
+      : path.join(__dirname, "../editor"),
+  );
+
+  if (!fs.existsSync(candidate)) {
+    console.warn(
+      `⚠️ Editor static directory "${candidate}" does not exist. ` +
+        "Update EDITOR_STATIC_DIR to point at the built editor assets.",
+    );
+  }
+
+  return candidate;
+};
+
+const editorPath = resolveEditorPath();
 app.use("/editor", express.static(editorPath));
 
-// ✅ Default: redirect /editor → codex-editor.html
 app.get("/editor", (req, res) => {
   res.sendFile(path.join(editorPath, "codex-editor.html"));
 });
 
-// ✅ Debug endpoint
-app.get("/health-test", (req, res) => {
-  const key = req.headers["x-api-key"];
-  if (key !== API_KEY) {
-    return res.status(401).json({ error: "Invalid API key" });
+const ensureApiKey = (req, res) => {
+  if (!API_KEY) {
+    res
+      .status(503)
+      .json({ error: "Editor API key is not configured. Set EDITOR_API_KEY." });
+    return false;
   }
+
+  const key = req.headers["x-api-key"];
+  if (!key) {
+    res.status(401).json({ error: "Missing API key" });
+    return false;
+  }
+
+  if (key !== API_KEY) {
+    res.status(403).json({ error: "Invalid API key" });
+    return false;
+  }
+
+  return true;
+};
+
+app.get("/health-test", (req, res) => {
+  if (!ensureApiKey(req, res)) {
+    return;
+  }
+
   res.json({ ok: true, message: "CodexBuilder Editor API is alive" });
 });
 
-// ✅ Cursor CLI Integration
 app.post("/cursor-agent", (req, res) => {
-  const key = req.headers["x-api-key"];
-  if (key !== API_KEY) {
-    return res.status(401).json({ error: "Invalid API key" });
+  if (!ensureApiKey(req, res)) {
+    return;
   }
-  
-  const { query } = req.body;
-  if (!query) return res.status(400).json({ error: "Missing query" });
-  
-  const command = `wsl cursor-agent "${query}"`;
+
+  const { query } = req.body || {};
+  if (!query) {
+    res.status(400).json({ error: "Missing query" });
+    return;
+  }
+
+  const sanitizedQuery = String(query).replace(/"/g, '\\"');
+  const command = `${cursorAgentCommand} "${sanitizedQuery}"`;
   const taskId = Date.now().toString();
-  
-  const child = exec(command, { cwd: "C:/Users/Nick/CodexBuilder" });
-  
-  tasks[taskId] = { status: "running", stdout: "", stderr: "" };
-  child.stdout.on("data", (d) => (tasks[taskId].stdout += d));
-  child.stderr.on("data", (d) => (tasks[taskId].stderr += d));
-  child.on("close", () => (tasks[taskId].status = "done"));
-  
+
+  const child = exec(command, {
+    cwd: cursorAgentCwd,
+    shell: true,
+  });
+
+  tasks.set(taskId, { status: "running", stdout: "", stderr: "" });
+
+  child.stdout.on("data", (chunk) => {
+    const task = tasks.get(taskId);
+    if (task) {
+      task.stdout += chunk;
+    }
+  });
+
+  child.stderr.on("data", (chunk) => {
+    const task = tasks.get(taskId);
+    if (task) {
+      task.stderr += chunk;
+    }
+  });
+
+  child.on("close", (code) => {
+    const task = tasks.get(taskId);
+    if (task) {
+      task.status = code === 0 ? "done" : "error";
+      task.exitCode = code;
+    }
+  });
+
   res.json({ message: "Cursor Agent started", taskId });
 });
 
-// ✅ Task status endpoint
 app.get("/task-status", (req, res) => {
-  const key = req.headers["x-api-key"];
-  if (key !== API_KEY) {
-    return res.status(401).json({ error: "Invalid API key" });
+  if (!ensureApiKey(req, res)) {
+    return;
   }
-  
+
   const { taskId } = req.query;
-  if (!taskId) return res.status(400).json({ error: "Missing taskId" });
-  
-  const task = tasks[taskId];
-  if (!task) {
-    return res.status(404).json({ error: "Task not found" });
+  if (!taskId) {
+    res.status(400).json({ error: "Missing taskId" });
+    return;
   }
+
+  const task = tasks.get(String(taskId));
+  if (!task) {
+    res.status(404).json({ error: "Task not found" });
+    return;
+  }
+
   res.json(task);
 });
 

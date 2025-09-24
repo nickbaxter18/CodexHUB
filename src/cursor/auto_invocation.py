@@ -6,16 +6,15 @@ Automatically invokes Cursor IDE capabilities based on code changes and agent ta
 from __future__ import annotations
 
 import asyncio
-import json
-import time
-from pathlib import Path
-from typing import Dict, List, Optional, Any, Callable
+import logging
+import os
 from dataclasses import dataclass
 from datetime import datetime
-import logging
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 # Import Cursor client
-from .cursor_client import CursorClient, AgentType
+from .cursor_client import AgentType, CursorClient
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -43,9 +42,19 @@ class CursorAutoInvoker:
         self.rules: List[AutoInvocationRule] = []
         self.is_running = False
         self.watch_paths: List[Path] = []
+        self._watch_task: Optional[asyncio.Task] = None
+        self.poll_interval = self._resolve_poll_interval()
+        self.ignored_directories = {
+            ".git",
+            "node_modules",
+            "__pycache__",
+            "cache",
+        }
+        self._file_mtimes: Dict[Path, float] = {}
 
         # Setup default rules
         self._setup_default_rules()
+        self.file_patterns = self._resolve_file_patterns()
 
     def _setup_default_rules(self) -> None:
         """Setup default auto-invocation rules."""
@@ -137,13 +146,25 @@ class CursorAutoInvoker:
     async def start_auto_invocation(self, watch_paths: List[Path]) -> None:
         """Start automatic Cursor invocation."""
 
+        if self.is_running:
+            logger.info("Cursor auto-invoker already running")
+            return
+
         self.watch_paths = watch_paths
         self.is_running = True
 
         logger.info(f"Starting auto-invocation for {len(watch_paths)} paths")
 
-        # Start watching for changes
-        await self._watch_for_changes()
+        await self._prime_file_snapshot()
+
+        if self.poll_interval:
+            loop = asyncio.get_running_loop()
+            self._watch_task = loop.create_task(
+                self._watch_for_changes(),
+                name="cursor-auto-invocation-watch",
+            )
+        else:
+            logger.info("Cursor auto-invocation started without file watcher (interval disabled)")
 
     async def _watch_for_changes(self) -> None:
         """Watch for file changes and trigger appropriate agents."""
@@ -157,7 +178,7 @@ class CursorAutoInvoker:
                     await self._process_changes(changed_files)
 
                 # Wait before next check
-                await asyncio.sleep(1)
+                await asyncio.sleep(self.poll_interval or 5)
 
             except Exception as e:
                 logger.error(f"Error in change detection: {e}")
@@ -169,13 +190,29 @@ class CursorAutoInvoker:
         changed_files = []
 
         for watch_path in self.watch_paths:
-            if watch_path.exists():
-                # Simple change detection based on file modification time
-                for file_path in watch_path.rglob("*"):
-                    if file_path.is_file():
-                        # Check if file was modified recently (within last 5 seconds)
-                        if time.time() - file_path.stat().st_mtime < 5:
-                            changed_files.append(file_path)
+            if not watch_path.exists():
+                continue
+
+            for pattern in self.file_patterns:
+                for file_path in watch_path.glob(pattern):
+                    if not file_path.is_file():
+                        continue
+                    if any(part in self.ignored_directories for part in file_path.parts):
+                        continue
+
+                    mtime = file_path.stat().st_mtime
+                    previous = self._file_mtimes.get(file_path)
+                    self._file_mtimes[file_path] = mtime
+
+                    if previous is None:
+                        continue
+
+                    if mtime > previous:
+                        changed_files.append(file_path)
+
+        for tracked_file in list(self._file_mtimes.keys()):
+            if not tracked_file.exists():
+                self._file_mtimes.pop(tracked_file, None)
 
         return changed_files
 
@@ -353,8 +390,48 @@ class CursorAutoInvoker:
     def stop_auto_invocation(self) -> None:
         """Stop automatic Cursor invocation."""
 
+        if not self.is_running:
+            return
+
         self.is_running = False
+        if self._watch_task and not self._watch_task.done():
+            self._watch_task.cancel()
+        self._watch_task = None
         logger.info("Stopped auto-invocation")
+
+    def _resolve_file_patterns(self) -> List[str]:
+        env_patterns = os.getenv("CURSOR_FILE_PATTERNS")
+        if env_patterns:
+            return [pattern.strip() for pattern in env_patterns.split(",") if pattern.strip()]
+
+        return sorted({rule.trigger_pattern for rule in self.rules})
+
+    def _resolve_poll_interval(self) -> Optional[int]:
+        raw_value = os.getenv("CURSOR_MONITOR_INTERVAL")
+        if raw_value is None:
+            return 5
+
+        try:
+            interval = int(raw_value)
+        except ValueError:
+            logger.warning(
+                "Invalid CURSOR_MONITOR_INTERVAL '%s'; using default 5 seconds",
+                raw_value,
+            )
+            return 5
+
+        return interval if interval > 0 else None
+
+    async def _prime_file_snapshot(self) -> None:
+        for watch_path in self.watch_paths:
+            if not watch_path.exists():
+                continue
+            for pattern in self.file_patterns:
+                for file_path in watch_path.glob(pattern):
+                    if file_path.is_file() and not any(
+                        part in self.ignored_directories for part in file_path.parts
+                    ):
+                        self._file_mtimes[file_path] = file_path.stat().st_mtime
 
 
 # Global auto-invoker instance
@@ -372,6 +449,10 @@ def get_auto_invoker() -> CursorAutoInvoker:
 
 async def start_cursor_auto_invocation(watch_paths: List[Path]) -> None:
     """Start Cursor auto-invocation for specified paths."""
+
+    if os.getenv("CURSOR_AUTO_INVOCATION_ENABLED", "true").lower() in {"0", "false", "off"}:
+        logger.info("Cursor auto-invocation disabled via CURSOR_AUTO_INVOCATION_ENABLED")
+        return
 
     auto_invoker = get_auto_invoker()
     await auto_invoker.start_auto_invocation(watch_paths)

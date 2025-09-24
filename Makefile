@@ -1,17 +1,17 @@
 install:
-    npm install
+	pnpm install
 
 dev:
-    npm run dev
+	pnpm run dev
 
 lint:
-    npm run lint
+	pnpm run lint
 
 test:
-    npm test
+	pnpm test
 
 docker-build:
-    docker build -t codexbuilder .
+	docker build -t codexhub .
 
 docker-run:
-    docker run -p 3000:3000 codexbuilder
+	docker run -p 3000:3000 codexhub

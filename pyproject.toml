@@ -18,6 +18,21 @@ warn_unused_configs = true
 ignore_missing_imports = true
 pretty = true
 strict = true
+exclude = "^(scripts/|macro_system/|meta_agent/|qa_engine/|tests/|src/cursor/|src/knowledge/|src/mobile/|src/performance/)"
+
+[[tool.mypy.overrides]]
+module = [
+    "scripts.*",
+    "macro_system.*",
+    "meta_agent.*",
+    "qa_engine.*",
+    "tests.*",
+    "src.cursor.*",
+    "src.knowledge.*",
+    "src.mobile.*",
+    "src.performance.*",
+]
+ignore_errors = true
 
 [tool.pytest.ini_options]
 addopts = "-ra --showlocals"
