@@ -91,9 +91,13 @@ class MetaAgent:
             stale_after=float(arbitration_cfg.get("stale_after_seconds", 30.0)),
             max_queue=int(arbitration_cfg.get("max_queue_size", 50)),
         )
+        stat_thresholds = drift_cfg.get("statistical_thresholds", {})
         drift = DriftDetector(
             window_size=int(drift_cfg.get("window_size", 5)),
             threshold=int(drift_cfg.get("failure_threshold", 3)),
+            statistical_thresholds=stat_thresholds,
+            min_sample_size=int(drift_cfg.get("min_samples", 30)),
+            histogram_bins=int(drift_cfg.get("histogram_bins", 10)),
         )
         fallback = FallbackManager(fallbacks)
         macro_manager = MacroDependencyManager()

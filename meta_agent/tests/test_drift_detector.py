@@ -3,10 +3,11 @@
 # === Imports / Dependencies ===
 from __future__ import annotations
 
-from meta_agent.drift_detector import DriftDetector
+from meta_agent.drift_detector import DriftDetector, DriftReport
 
 
 # === Tests ===
+
 
 def test_is_drift_detects_repeated_failures() -> None:
     """Two failures within the window should trigger drift detection."""
@@ -62,3 +63,47 @@ def test_disabled_events_request_agents_doc() -> None:
     assert detector.is_drift()
     proposal = detector.propose_amendment()
     assert "AGENTS.md" in proposal["recommended_documents"]
+
+
+def test_distribution_drift_detects_large_shift() -> None:
+    """Statistical drift detection should flag significant distribution changes."""
+
+    detector = DriftDetector(
+        window_size=3,
+        threshold=2,
+        statistical_thresholds={"psi": 0.05, "ks": 0.2, "kl": 0.05},
+        min_sample_size=20,
+        histogram_bins=5,
+    )
+    reference = [1.0, 1.2, 0.9, 1.1] * 10
+    live = [2.5, 2.6, 2.7, 2.8, 3.0] * 8
+    report = detector.detect_distribution_drift(reference, live, feature="latency")
+    assert isinstance(report, DriftReport)
+    assert report.triggered is True
+    assert report.metrics["psi"].drift_detected is True
+    assert report.metrics["ks"].drift_detected is True
+    assert report.metrics["kl"].drift_detected is True
+
+
+def test_distribution_drift_respects_sample_threshold() -> None:
+    """Insufficient sample counts should disable statistical drift decisions."""
+
+    detector = DriftDetector(min_sample_size=50)
+    reference = [1.0] * 10
+    live = [1.0] * 10
+    report = detector.detect_distribution_drift(reference, live, feature="latency")
+    assert report.triggered is False
+    assert report.reason is not None
+    assert report.metrics == {}
+
+
+def test_distribution_drift_sanitises_invalid_values() -> None:
+    """NaN and infinite values should be removed prior to statistical analysis."""
+
+    detector = DriftDetector(min_sample_size=4, histogram_bins=3)
+    reference = [1.0, float("nan"), 1.5, float("inf"), 0.8, 1.2]
+    live = [1.1, 1.0, 0.9, 1.2, float("nan"), 1.3]
+    report = detector.detect_distribution_drift(reference, live, feature="stability")
+    assert report.reference_size == 4
+    assert report.live_size == 5
+    assert report.reason is None

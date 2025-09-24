@@ -6,6 +6,7 @@ SECTION 1: Header & Purpose
 
 # SECTION 2: Imports / Dependencies
 from .fairness import FairnessMetricResult, evaluate_fairness
+from .policy_enforcer import PolicyDecision, PolicyEnforcementResult, PolicyEnforcer
 from .privacy import PIIScrubbingError, contains_blocked_pii, scrub_text
 
 # SECTION 3: Types / Interfaces / Schemas
@@ -24,6 +25,9 @@ from .privacy import PIIScrubbingError, contains_blocked_pii, scrub_text
 __all__ = [
     "FairnessMetricResult",
     "PIIScrubbingError",
+    "PolicyDecision",
+    "PolicyEnforcementResult",
+    "PolicyEnforcer",
     "contains_blocked_pii",
     "evaluate_fairness",
     "scrub_text",

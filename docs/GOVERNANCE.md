@@ -35,7 +35,8 @@ It covers both the structure and process for maintaining governance configuratio
 
 - [ ] Arbitration lists remain ordered by priority and cover all high-risk metrics.
 - [ ] Trust multipliers keep scores within `[0.1, 1.5]` bounds.
-- [ ] Drift detection thresholds balance sensitivity and noise.
+- [ ] Drift detection thresholds (window + PSI/KS/KL + min_samples) balance sensitivity
+      and noise.
 - [ ] Fallback macro identifiers map to registered macros in macro registry.
 - [ ] Agents gain explicit responsibilities and permissions.
 
@@ -52,6 +53,10 @@ It covers both the structure and process for maintaining governance configuratio
 
 - **Config Validation:** `src/common/config_loader.py` defines Pydantic schemas for all YAML configurations under `config/`. CI should load `config/default.yaml`, `config/metrics.yaml`, and `config/governance.yaml` to ensure schema compliance before merges.
 - **Governance Thresholds:** Metric and fairness thresholds declared in `config/metrics.yaml` are consumed by `src/training/metrics.py` and `src/governance/fairness.py` during evaluation.
+
+### Policy Enforcement
+
+- **CI/CD Gates:** `src/governance/policy_enforcer.py` evaluates QA policy thresholds with probabilistic confidence scoring sourced from `config/qa_policies.json`. `tests/unit/test_policy_enforcer.py` provides regression coverage ensuring blocking decisions remain deterministic.
 
 ### Fairness Management
 
