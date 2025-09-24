@@ -42,10 +42,12 @@ subset of the toolchain. If you want to hydrate additional pnpm workspaces (for 
 
 ### 2. Configure environment variables
 
-Copy `.env.example` into `.env` and adjust the values to match your environment. Curated profiles
-live under `config/environments/` (`.env.development`, `.env.cursor`, `.env.ci`) so you can quickly
-swap between a minimal setup and the Cursor-heavy automation stack. Review `docs/setup.md` for a
-complete option reference and avoid committing secrets.
+Copy `.env.example` into `.env` and adjust the values to match your environment. Regenerate the
+example file with `pnpm run env:example` whenever environment variables change to keep
+documentation, automation, and templates aligned. Curated profiles now live under
+`config/environments/` (`development.env`, `cursor.env`, `ci.env`) so you can quickly swap between a
+minimal setup and the Cursor-heavy automation stack. Review `docs/setup.md` for a complete option
+reference and avoid committing secrets.
 
 Knowledge ingestion watchers are now opt-in: leave `KNOWLEDGE_WATCH_INTERVAL` blank to skip polling
 and set it to a positive number to enable background reloads.
