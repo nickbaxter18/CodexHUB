@@ -13,6 +13,7 @@ from src.common.config_loader import (
     MetricsConfig,
     PipelineConfig,
     load_config,
+    validate_known_configs,
 )
 
 # SECTION 3: Types / Interfaces / Schemas
@@ -30,6 +31,7 @@ def test_load_pipeline_config_success(tmp_path: Path) -> None:
             path: data/sample.csv
             target_column: label
             feature_columns: [a, b]
+            sensitive_attribute: segment
             validation_split: 0.2
             stratify: true
             random_state: 42
@@ -79,6 +81,12 @@ def test_metrics_config_validation(tmp_path: Path) -> None:
     metrics = load_config(config_path, MetricsConfig)
     assert "accuracy" in metrics.core_metrics
     assert metrics.fairness_metrics["statistical_parity_difference"].maximum == 0.1
+
+
+def test_validate_known_configs_success() -> None:
+    results = validate_known_configs()
+    assert results
+    assert all(payload.get("status") == "ok" for payload in results.values())
 
 
 # SECTION 5: Error & Edge Case Handling

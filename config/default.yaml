@@ -5,6 +5,7 @@ training:
     feature_columns:
       - feature_one
       - feature_two
+    sensitive_attribute: sensitive_segment
     validation_split: 0.2
     stratify: true
     random_state: 42

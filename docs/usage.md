@@ -36,7 +36,10 @@ Configure the static asset directory (`EDITOR_STATIC_DIR`) if you build the edit
 
 Activate your virtual environment and use the Python entry points in `src/`:
 
-- `python -m src.training.pipeline` – End-to-end training pipeline using configuration schemas.
+- `python -m src.training.pipeline` – End-to-end training pipeline using configuration schemas. The
+  module now logs dataset/train/evaluation timings, computes fairness metrics when a
+  `sensitive_attribute` is supplied, and (optionally) records metrics to MLflow if a registry factory
+  is provided.
 - `python -m src.inference.service` – Launches the inference service (see `src/inference` for configuration details).
 - `python -m src.governance.validate` – Runs the governance validation suite.
 
@@ -72,10 +75,15 @@ The watchers run in the background on the active event loop, so startup scripts 
 
 ## Quality assurance
 
-- `pnpm run lint` – Lints Node/TypeScript sources.
-- `pnpm test` – Executes the Node.js test suites under `tests/`.
-- `python -m pytest` – Runs Python unit and governance tests.
-- `pnpm run coverage` – Produces coverage reports for codexbridge utilities.
-- `pnpm run audit:js` / `pnpm run audit:py` – Dependency vulnerability scans.
+- `make quality` – Runs Node, documentation, and Python suites in one command while saving
+  performance metrics to `results/performance/`.
+- `python -m src.performance.cli node-quality` – Execute only the Node.js commands (typecheck, lint,
+  tests, audit) with timing capture.
+- `python -m src.performance.cli docs-quality` – Run Markdown/YAML/editorconfig linting with timing
+  capture.
+- `python -m src.performance.cli python-quality` – Validate configuration bundles, execute pytest
+  with coverage, run Bandit, and audit Python dependencies.
+- `python -m src.common.config_loader --json` – Emit a machine-readable report verifying pipeline,
+  metrics, and governance configuration files.
 
 Always run the relevant checks before committing to maintain the mixed-language toolchain.

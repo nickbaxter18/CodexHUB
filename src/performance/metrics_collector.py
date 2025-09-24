@@ -202,9 +202,11 @@ class PerformanceCollector:
 
         output_path = self.output_dir / filename
 
+        summary = self.get_summary()
+
         with self._lock:
             data = {
-                "summary": self.get_summary(),
+                "summary": summary,
                 "metrics": [metric.to_dict() for metric in self._metrics],
                 "build_history": [asdict(build) for build in self._build_history],
                 "agent_history": [asdict(agent) for agent in self._agent_history],

@@ -1,4 +1,4 @@
-.PHONY: install install-python dev lint lint-python typecheck test test-python clean docker-build docker-run status format format-python security cursor-status
+.PHONY: install install-python dev lint lint-python typecheck test test-python clean docker-build docker-run status format format-python security cursor-status quality quality-node quality-python quality-docs
 
 install:
 pnpm install --frozen-lockfile
@@ -35,10 +35,22 @@ test:
 pnpm test
 
 test-python:
-python -m pytest
+    python -m pytest
+
+quality:
+    python -m src.performance.cli quality
+
+quality-node:
+    python -m src.performance.cli node-quality
+
+quality-python:
+    python -m src.performance.cli python-quality
+
+quality-docs:
+    python -m src.performance.cli docs-quality
 
 clean:
-rm -rf node_modules .pytest_cache .mypy_cache coverage results/performance
+    rm -rf node_modules .pytest_cache .mypy_cache coverage results/performance
 find . -type d -name "__pycache__" -prune -exec rm -rf {} +
 
 docker-build:

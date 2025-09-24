@@ -1,6 +1,11 @@
-id,feature_one,feature_two,label
-1,0.42,0.58,0
-2,0.35,0.74,1
-3,0.91,0.12,0
-4,0.63,0.44,1
-5,0.27,0.81,0
+id,feature_one,feature_two,sensitive_segment,label
+1,0.42,0.58,alpha,0
+2,0.35,0.74,beta,1
+3,0.91,0.12,alpha,0
+4,0.63,0.44,beta,1
+5,0.27,0.81,alpha,0
+6,0.55,0.67,beta,1
+7,0.48,0.52,alpha,0
+8,0.72,0.39,beta,1
+9,0.31,0.78,alpha,0
+10,0.66,0.41,beta,1

@@ -23,6 +23,7 @@ def _create_sample_csv(tmp_path: Path) -> Path:
         {
             "feature_one": [1, 2, 3, 4],
             "feature_two": [0.1, 0.3, 0.2, 0.5],
+            "sensitive_segment": ["alpha", "beta", "alpha", "beta"],
             "label": [0, 1, 0, 1],
         }
     )
@@ -40,10 +41,16 @@ def test_load_dataset_success(tmp_path: Path) -> None:
         validation_split=0.25,
         stratify=True,
         random_state=7,
+        sensitive_attribute="sensitive_segment",
     )
     dataset = load_dataset(config)
     assert not dataset.empty
-    assert list(dataset.columns) == ["feature_one", "feature_two", "label"]
+    assert list(dataset.columns) == [
+        "feature_one",
+        "feature_two",
+        "label",
+        "sensitive_segment",
+    ]
 
 
 def test_load_dataset_missing_column(tmp_path: Path) -> None:
@@ -69,11 +76,15 @@ def test_split_dataset_stratified(tmp_path: Path) -> None:
         validation_split=0.25,
         stratify=True,
         random_state=42,
+        sensitive_attribute="sensitive_segment",
     )
     dataset = load_dataset(config)
     splits = split_dataset(config, dataset)
     assert isinstance(splits, DatasetSplits)
     assert len(splits.x_train) + len(splits.x_validation) == len(dataset)
+    assert splits.sensitive_validation is not None
+    assert not splits.sensitive_validation.empty
+    assert set(splits.sensitive_validation.unique()).issubset({"alpha", "beta"})
 
 
 # SECTION 5: Error & Edge Case Handling
