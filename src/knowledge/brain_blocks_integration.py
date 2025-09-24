@@ -352,6 +352,25 @@ async def start_brain_blocks_integration() -> None:
     await integration._auto_load_brain_blocks()
 
 
+async def query_brain_blocks(query: str = "", limit: int = 10) -> List[Dict[str, Any]]:
+    """Query brain blocks and return results."""
+    
+    integration = get_brain_blocks_integration()
+    results = await integration.query_brain_blocks(query, limit)
+    
+    return [
+        {
+            "doc_id": block.doc_id,
+            "title": block.title,
+            "content": block.content,
+            "section": block.section,
+            "tags": block.tags,
+            "updated_at": block.updated_at
+        }
+        for block in results
+    ]
+
+
 # Export main classes and functions
 __all__ = [
     "BrainBlocksIntegration",
@@ -359,4 +378,5 @@ __all__ = [
     "BrainBlockQuery",
     "get_brain_blocks_integration",
     "start_brain_blocks_integration",
+    "query_brain_blocks",
 ]
