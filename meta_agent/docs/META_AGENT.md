@@ -15,8 +15,9 @@ source-of-truth for QA outcomes.
 - **ArbitrationEngine** — Normalizes conflicting events and resolves winners using trust
   weights and governance priorities loaded from `config/governance_rules.json` when
   available.
-- **DriftDetector** — Observes sliding windows of QA events, flags repeated failures or
-  disables, and emits amendment proposals for QA.md/AGENTS.md.
+- **DriftDetector** — Observes sliding windows of QA events, computes PSI/KS/KL metrics
+  for statistical drift, flags repeated failures or distribution shifts, and emits
+  amendment proposals for QA.md/AGENTS.md.
 - **FallbackManager** — Invokes predefined macros when primary macros fail chaos or
   resilience thresholds.
 - **MacroDependencyManager** — Tracks macro dependency schemas, blocks macros on
@@ -34,9 +35,9 @@ source-of-truth for QA outcomes.
 3. When multiple judgments exist for the same metric, the ArbitrationEngine resolves a
    winner based on trust × governance priority, captures the confidence gap, and emits an
    audit log entry plus a `qa_arbitration` event.
-4. DriftDetector records every outcome; if repeated failures or disables cross the
-   configured threshold, it emits a drift proposal broadcast through `qa_drift` events for
-   human governance review.
+4. DriftDetector records every outcome; if repeated failures, disables, or PSI/KS/KL
+   thresholds cross configured limits, it emits a drift proposal broadcast through
+   `qa_drift` events for human governance review complete with statistical evidence.
 5. MacroDependencyManager listens to macro definition and dependency update events,
    blocking or unblocking macros when schema compatibility changes. It publishes
    `macro_blocked`/`macro_unblocked` events enriched with dependency diffs for

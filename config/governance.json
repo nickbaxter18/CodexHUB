@@ -18,7 +18,14 @@
   },
   "drift_detection": {
     "window_size": 5,
-    "failure_threshold": 3
+    "failure_threshold": 3,
+    "statistical_thresholds": {
+      "psi": 0.2,
+      "ks": 0.1,
+      "kl": 0.5
+    },
+    "min_samples": 50,
+    "histogram_bins": 12
   },
   "fallbacks": {
     "latency": "macro_id_latency_fallback",

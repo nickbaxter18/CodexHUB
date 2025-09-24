@@ -54,6 +54,33 @@
         "failure_threshold": {
           "type": "integer",
           "minimum": 1
+        },
+        "statistical_thresholds": {
+          "type": "object",
+          "required": ["psi", "ks", "kl"],
+          "properties": {
+            "psi": {
+              "type": "number",
+              "minimum": 0
+            },
+            "ks": {
+              "type": "number",
+              "minimum": 0
+            },
+            "kl": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false
+        },
+        "min_samples": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "histogram_bins": {
+          "type": "integer",
+          "minimum": 2
         }
       },
       "additionalProperties": false
