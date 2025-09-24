@@ -10,6 +10,7 @@ from __future__ import annotations
 from typing import Any, Callable, Mapping, Optional
 
 import mlflow
+from mlflow import ActiveRun
 from mlflow.client import MlflowClient
 
 from src.common.config_loader import ExperimentConfig
@@ -46,11 +47,20 @@ class MLflowRegistry:
     def _ensure_experiment(self, name: str) -> str:
         existing = self._client.get_experiment_by_name(name)
         if existing:
-            return existing.experiment_id
+            return str(existing.experiment_id)
         return self._client.create_experiment(name)
 
-    def start_run(self, run_name: str | None = None, tags: Optional[Mapping[str, str]] = None):
-        return mlflow.start_run(experiment_id=self._experiment_id, run_name=run_name, tags=tags)
+    def start_run(
+        self,
+        run_name: str | None = None,
+        tags: Optional[Mapping[str, str]] = None,
+    ) -> ActiveRun:
+        normalized_tags = dict(tags) if tags is not None else None
+        return mlflow.start_run(
+            experiment_id=self._experiment_id,
+            run_name=run_name,
+            tags=normalized_tags,
+        )
 
     def log_metrics(self, run_id: str, metrics: Mapping[str, float]) -> None:
         for key, value in metrics.items():
