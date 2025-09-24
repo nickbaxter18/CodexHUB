@@ -16,7 +16,7 @@ Python ML pipeline that handles ingestion, training, governance, and inference.
 
 ## Prerequisites
 
-- Node.js 18+
+- Node.js 20+
 - pnpm 8+ (Corepack users can enable with `corepack enable`)
 - Python 3.11 with `pip` (virtual environments recommended)
 - [pre-commit](https://pre-commit.com/) for enforcing mixed-language formatting locally
@@ -52,7 +52,7 @@ consistency.
 
 ### 3. Run services
 
-- **Express scaffolding**: `pnpm run dev` starts the Node entry point on port `4000`.
+- **Express scaffolding**: `pnpm run dev` or `pnpm start` starts the Node entry point on port `4000`.
 - **Editor health server**: `node backend/health-test.js` exposes `/health-test`, `/cursor-agent`,
   and `/task-status` guarded by `EDITOR_API_KEY`.
 - **Python pipeline**: activate your virtual environment and run the relevant modules,
