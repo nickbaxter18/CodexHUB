@@ -1,4 +1,4 @@
-.PHONY: install install-python dev lint lint-python typecheck test test-python clean docker-build docker-run status
+.PHONY: install install-python dev lint lint-python typecheck test test-python clean docker-build docker-run status format format-python security cursor-status
 
 install:
 pnpm install --frozen-lockfile
@@ -18,6 +18,18 @@ python -m flake8 src agents meta_agent macro_system qa_engine
 
 typecheck:
 python -m mypy
+
+format:
+pnpm run format
+python -m black src agents meta_agent macro_system qa_engine scripts
+python -m isort src agents meta_agent macro_system qa_engine scripts
+
+security:
+pnpm run audit:js
+python -m pip_audit -r requirements.txt
+
+cursor-status:
+python scripts/codex_status.py --json
 
 test:
 pnpm test

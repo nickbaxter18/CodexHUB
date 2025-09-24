@@ -45,8 +45,8 @@ class KnowledgeAutoLoader:
         self.knowledge_agent = knowledge_agent
         self.sources: List[KnowledgeSource] = []
         self.is_running = False
-        self.watch_callbacks: List[Callable] = []
-        self._watch_task: Optional[asyncio.Task] = None
+        self.watch_callbacks: List[Callable[[str, Dict[str, Any]], None]] = []
+        self._watch_task: Optional[asyncio.Task[None]] = None
         self.watch_interval = self._resolve_watch_interval()
         self.ignored_directories = {
             ".git",
@@ -288,7 +288,7 @@ class KnowledgeAutoLoader:
             ],
         }
 
-    def subscribe_to_changes(self, callback: Callable) -> None:
+    def subscribe_to_changes(self, callback: Callable[[str, Dict[str, Any]], None]) -> None:
         """Subscribe to knowledge source change notifications."""
 
         self.watch_callbacks.append(callback)

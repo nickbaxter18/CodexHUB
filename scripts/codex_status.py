@@ -3,11 +3,13 @@
 
 from __future__ import annotations
 
+import argparse
 import importlib.util
 import json
+import logging
 import sys
 from pathlib import Path
-from typing import Any, Callable, Dict, Optional, Type, Union, cast
+from typing import Any, Callable, Dict, List, Optional, Tuple, Type, Union, cast
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
@@ -80,24 +82,42 @@ def _collect_cursor_report() -> Dict[str, Any]:
     try:
         compliance: Union[bool, str] = validate_cursor_compliance()
     except CursorEnforcementError as exc:
-        compliance = str(exc)
+        return {
+            "compliance": str(exc),
+            "compliance_ok": False,
+            "report": {},
+            "error": str(exc),
+        }
 
     try:
         report: Dict[str, Any] = get_cursor_usage_report()
     except CursorEnforcementError as exc:
         report = {"error": str(exc)}
 
-    return {"compliance": compliance, "report": report}
+    compliance_ok = bool(compliance) if isinstance(compliance, bool) else False
+    error = report.get("error") if isinstance(report, dict) else None
+
+    return {
+        "compliance": compliance,
+        "compliance_ok": compliance_ok and error is None,
+        "report": report,
+        "error": error,
+    }
 
 
-def display_status() -> None:
+def _render_text_status(
+    cursor_report: Dict[str, Any], performance: Optional[Dict[str, Any]], plan_stats: Dict[str, Any]
+) -> None:
     print("Codex Automation Status")
     print("=" * 26)
 
-    cursor_report = _collect_cursor_report()
     print("Cursor Compliance:", cursor_report["compliance"])
-    if "report" in cursor_report:
-        usage_stats = cursor_report["report"].get("usage_statistics", {})
+    if cursor_report.get("error"):
+        print(f"  error: {cursor_report['error']}")
+
+    report = cursor_report.get("report", {})
+    if isinstance(report, dict):
+        usage_stats = cast(Dict[str, Any], report.get("usage_statistics", {}))
         if usage_stats:
             success_rate = usage_stats.get("success_rate", 0)
             try:
@@ -105,10 +125,8 @@ def display_status() -> None:
             except (TypeError, ValueError):
                 rate_str = str(success_rate)
 
-            print(
-                f"  total usage: {usage_stats.get('total_usage', 0)} | " f"success rate: {rate_str}"
-            )
-        recommendations = cursor_report["report"].get("recommendations", [])
+            print(f"  total usage: {usage_stats.get('total_usage', 0)} | success rate: {rate_str}")
+        recommendations = cast(List[str], report.get("recommendations", []))
         if recommendations:
             print("  recommendations:")
             for item in recommendations:
@@ -116,21 +134,18 @@ def display_status() -> None:
         elif usage_stats:
             print("  recommendations: none")
 
-    performance_summary = _collect_performance_summary()
-    if performance_summary:
+    if performance:
         print("\nLatest Performance Snapshot:")
-        print(f"  file: {performance_summary['file']}")
-        print(f"  metrics recorded: {performance_summary['total_metrics']}")
-        if performance_summary["categories"]:
-            for category, values in performance_summary["categories"].items():
-                print(
-                    f"    - {category}: count={values.get('count', 0)}, "
-                    f"avg={values.get('avg', 0):.2f}"
-                )
+        print(f"  file: {performance['file']}")
+        print(f"  metrics recorded: {performance['total_metrics']}")
+        categories = cast(Dict[str, Dict[str, Any]], performance.get("categories", {}))
+        for category, values in categories.items():
+            count = values.get("count", 0)
+            avg = values.get("avg", 0.0)
+            print(f"    - {category}: count={count}, avg={avg:.2f}")
     else:
         print("\nLatest Performance Snapshot: none recorded yet")
 
-    plan_stats = _collect_plan_stats()
     if plan_stats.get("available"):
         print(
             f"\nPlan Artifacts: {plan_stats['plan_files']} plan files, "
@@ -140,5 +155,45 @@ def display_status() -> None:
         print("\nPlan Artifacts: directory not initialised")
 
 
+def _gather_status() -> Tuple[Dict[str, Any], Optional[Dict[str, Any]], Dict[str, Any]]:
+    cursor_report = _collect_cursor_report()
+    performance_summary = _collect_performance_summary()
+    plan_stats = _collect_plan_stats()
+    return cursor_report, performance_summary, plan_stats
+
+
+def main(argv: Optional[List[str]] = None) -> int:
+    parser = argparse.ArgumentParser(description="Summarise Codex automation health")
+    parser.add_argument("--json", action="store_true", help="Emit status as JSON")
+    args = parser.parse_args(argv)
+
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
+
+    try:
+        cursor_report, performance_summary, plan_stats = _gather_status()
+    except Exception as exc:  # pragma: no cover - defensive safety net
+        logging.exception("Failed to gather automation status")
+        if args.json:
+            print(json.dumps({"error": str(exc)}, indent=2))
+        else:
+            print(f"Error collecting automation status: {exc}", file=sys.stderr)
+        return 2
+
+    payload = {
+        "cursor": cursor_report,
+        "performance": performance_summary,
+        "plans": plan_stats,
+    }
+
+    if args.json:
+        print(json.dumps(payload, indent=2, default=str))
+    else:
+        _render_text_status(cursor_report, performance_summary, plan_stats)
+
+    compliance_ok = bool(cursor_report.get("compliance_ok"))
+    has_error = cursor_report.get("error") is not None
+    return 0 if compliance_ok and not has_error else 1
+
+
 if __name__ == "__main__":
-    display_status()
+    sys.exit(main())
