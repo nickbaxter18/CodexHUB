@@ -61,6 +61,7 @@ class BrainBlocksIntegration:
         self.brain_blocks: List[BrainBlock] = []
         self.is_loaded = False
         self.load_stats: Dict[str, Any] = {}
+        self._brain_block_index: Dict[str, BrainBlock] = {}
 
     async def load_brain_blocks(self, ndjson_path: Path) -> int:
         """Load brain blocks from NDJSON file."""
@@ -82,7 +83,7 @@ class BrainBlocksIntegration:
                         data = json.loads(line)
                         brain_block = self._parse_brain_block(data, line_num)
                         if brain_block:
-                            self.brain_blocks.append(brain_block)
+                            self._register_brain_block(brain_block)
 
                             # Convert to KnowledgeDocument and add to agent
                             doc = self._convert_to_knowledge_document(brain_block)
@@ -154,6 +155,12 @@ Hash: {brain_block.hash}
             tags=tuple(brain_block.tags),
         )
 
+    def _register_brain_block(self, brain_block: BrainBlock) -> None:
+        """Store ``brain_block`` and update indices."""
+
+        self.brain_blocks.append(brain_block)
+        self._brain_block_index[brain_block.doc_id] = brain_block
+
     async def query_brain_blocks(self, query: BrainBlockQuery) -> List[Dict[str, Any]]:
         """Query brain blocks with advanced filtering."""
 
@@ -172,7 +179,7 @@ Hash: {brain_block.hash}
             # Apply additional filters
             filtered_answers = self._apply_filters(answers, query)
 
-            return filtered_answers
+            return self._normalise_answers(filtered_answers)
 
         except Exception as e:
             logger.error(f"Error querying brain blocks: {e}")
@@ -203,6 +210,36 @@ Hash: {brain_block.hash}
             filtered = [a for a in filtered if self._is_in_date_range(a, start_date, end_date)]
 
         return filtered[: query.limit]
+
+    def _normalise_answers(self, answers: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Combine raw agent answers with stored brain block metadata."""
+
+        normalised: List[Dict[str, Any]] = []
+        for answer in answers:
+            doc_id = str(answer.get("id") or answer.get("doc_id") or "")
+            block = self._brain_block_index.get(doc_id)
+
+            tags = answer.get("tags") or []
+            if not isinstance(tags, list):
+                tags = list(tags)
+
+            normalised.append(
+                {
+                    "doc_id": doc_id,
+                    "title": answer.get("title") or (block.title if block else ""),
+                    "snippet": answer.get("snippet", ""),
+                    "score": float(answer.get("score", 0.0) or 0.0),
+                    "tags": tags,
+                    "section": block.section if block else None,
+                    "content": block.content if block else None,
+                    "updated_at": block.updated_at if block else None,
+                    "section_index": block.section_index if block else None,
+                    "chunk_index": block.chunk_index if block else None,
+                    "chunk_total": block.chunk_total if block else None,
+                }
+            )
+
+        return normalised
 
     def _is_in_date_range(
         self, answer: Dict[str, Any], start_date: datetime, end_date: datetime
@@ -353,25 +390,14 @@ async def start_brain_blocks_integration() -> None:
 
 
 async def query_brain_blocks(query: str = "", limit: int = 10) -> List[Dict[str, Any]]:
-    """Query brain blocks and return results."""
-    
+    """Query brain blocks and return normalised results."""
+
     integration = get_brain_blocks_integration()
-    # Create a BrainBlockQuery object
-    from .brain_blocks_integration import BrainBlockQuery
-    query_obj = BrainBlockQuery(query=query, limit=limit)
+    effective_query = query.strip() or "codex system overview"
+    query_obj = BrainBlockQuery(query=effective_query, limit=limit)
     results = await integration.query_brain_blocks(query_obj)
-    
-    return [
-        {
-            "doc_id": block.doc_id,
-            "title": block.title,
-            "content": block.content,
-            "section": block.section,
-            "tags": block.tags,
-            "updated_at": block.updated_at
-        }
-        for block in results
-    ]
+
+    return results
 
 
 # Export main classes and functions

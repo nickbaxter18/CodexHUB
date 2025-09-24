@@ -478,16 +478,35 @@ async def start_mobile_app() -> None:
     await mobile_app.initialize()
 
 
-async def create_goal(title: str, description: str, priority: str = "medium") -> Dict[str, Any]:
+def _coerce_goal_priority(priority: GoalPriority | str) -> GoalPriority:
+    """Convert ``priority`` into a ``GoalPriority`` enum instance."""
+
+    if isinstance(priority, GoalPriority):
+        return priority
+
+    try:
+        normalised = str(priority).strip().lower()
+        return GoalPriority(normalised)
+    except ValueError:
+        logger.warning("Unknown goal priority '%s', defaulting to medium", priority)
+        return GoalPriority.MEDIUM
+
+
+async def create_goal(
+    title: str,
+    description: str,
+    priority: GoalPriority | str = GoalPriority.MEDIUM,
+) -> Dict[str, Any]:
     """Create a new goal using the mobile app."""
-    
+
     mobile_app = get_mobile_app()
+    goal_priority = _coerce_goal_priority(priority)
     goal = await mobile_app.create_goal(
         title=title,
         description=description,
-        priority=priority
+        priority=goal_priority,
     )
-    
+
     return {
         "id": goal.goal_id,
         "title": goal.title,
