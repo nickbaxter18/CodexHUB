@@ -12,7 +12,10 @@ from pathlib import Path
 from typing import Dict, Any, List
 
 # Add src to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+current_dir = Path(__file__).parent.parent
+src_dir = current_dir / "src"
+sys.path.insert(0, str(src_dir))
+sys.path.insert(0, str(current_dir))  # Also add root directory for relative imports
 
 def check_environment_variables():
     """Check if all required environment variables are set."""
@@ -51,16 +54,16 @@ async def start_cursor_integration():
     
     try:
         # Import Cursor components
-        from src.cursor import (
+        from cursor import (
             start_cursor_auto_invocation,
             get_auto_invoker,
             validate_cursor_compliance,
             enforce_cursor_integration,
             require_cursor_agent
         )
-        from src.knowledge.auto_loader import start_knowledge_auto_loading
-        from src.mobile.mobile_app import start_mobile_app
-        from src.knowledge.brain_blocks_integration import start_brain_blocks_integration
+        from knowledge.auto_loader import start_knowledge_auto_loading
+        from mobile.mobile_app import start_mobile_app
+        from knowledge.brain_blocks_integration import start_brain_blocks_integration
         
         print("✅ Cursor components imported successfully")
         
@@ -118,8 +121,8 @@ async def query_knowledge_systems():
     print("📚 Querying Knowledge Systems...")
     
     try:
-        from src.knowledge.auto_loader import get_knowledge_entries
-        from src.knowledge.brain_blocks_integration import query_brain_blocks
+        from knowledge.auto_loader import get_knowledge_entries
+        from knowledge.brain_blocks_integration import query_brain_blocks
         
         # Query knowledge entries
         knowledge_entries = await get_knowledge_entries()
@@ -141,7 +144,7 @@ async def setup_mobile_control():
     print("📱 Setting up Mobile Control...")
     
     try:
-        from src.mobile.mobile_app import create_goal, get_goals
+        from mobile.mobile_app import create_goal, get_goals
         
         # Create initial goal
         goal = await create_goal(
@@ -166,7 +169,7 @@ def enforce_cursor_usage():
     print("🚨 Enforcing Cursor Usage...")
     
     try:
-        from src.cursor.enforcement import enforce_cursor_integration, validate_cursor_compliance
+        from cursor.enforcement import enforce_cursor_integration, validate_cursor_compliance
         
         # Enforce Cursor integration
         enforce_cursor_integration()

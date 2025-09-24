@@ -92,9 +92,12 @@ def test_cursor_connection():
     
     try:
         # Add src to path for imports
-        sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+        current_dir = Path(__file__).parent.parent
+        src_dir = current_dir / "src"
+        sys.path.insert(0, str(src_dir))
+        sys.path.insert(0, str(current_dir))  # Also add root directory for relative imports
         
-        from src.cursor.cursor_client import CursorClient, CursorConfig
+        from cursor.cursor_client import CursorClient, CursorConfig
         
         # Create Cursor client
         config = CursorConfig(
