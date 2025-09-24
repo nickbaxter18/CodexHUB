@@ -1,4 +1,5 @@
 # CODEX CURSOR MANDATE
+
 ## ABSOLUTE REQUIREMENT FOR ALL CODING TASKS
 
 ### 🚨 THIS IS A NON-NEGOTIABLE MANDATE 🚨
@@ -11,6 +12,7 @@
 ## 📁 **REQUIRED FILES REFERENCE**
 
 ### **Core Cursor Integration Files:**
+
 - `src/cursor/__init__.py` - Main package exports
 - `src/cursor/cursor_client.py` - Core Cursor API client
 - `src/cursor/auto_invocation.py` - Auto-invocation system
@@ -20,6 +22,7 @@
 - `src/knowledge/brain_blocks_integration.py` - Brain Blocks integration
 
 ### **Setup & Management Scripts:**
+
 - `scripts/setup_cursor_integration.py` - Complete setup
 - `scripts/start_cursor_integration.py` - Start all systems
 - `scripts/validate_cursor_integration.py` - Validate integration
@@ -28,10 +31,12 @@
 - `scripts/enforce_cursor_usage.py` - Enforce compliance
 
 ### **Configuration Files:**
+
 - `config/cursor_environment_template.env` - Environment template
 - `config/cursor_integration_config.json` - Integration configuration
 
 ### **Documentation Files:**
+
 - `CODEX_CURSOR_MANDATE.md` - This file
 - `CURSOR_INTEGRATION_INSTRUCTIONS.md` - Technical instructions
 - `CURSOR_INTEGRATION_README.md` - System overview
@@ -101,7 +106,7 @@ async def get_knowledge_context():
     from src.knowledge.auto_loader import get_auto_loader
     auto_loader = get_auto_loader()
     knowledge_result = await auto_loader.query_knowledge("task context")
-    
+
     # 2. Query Brain Blocks
     from src.knowledge.brain_blocks_integration import get_brain_blocks_integration
     brain_blocks = get_brain_blocks_integration()
@@ -109,12 +114,12 @@ async def get_knowledge_context():
         query="task context",
         limit=5
     ))
-    
+
     # 3. Check Mobile Requirements
     from src.mobile.mobile_app import get_mobile_app
     mobile_app = get_mobile_app()
     dashboard = await mobile_app.get_dashboard()
-    
+
     return {
         "knowledge": knowledge_result,
         "brain_blocks": brain_result,
@@ -180,19 +185,19 @@ async def quality_assurance_workflow(code, file_path):
     qa_result = await qa_agent.run_automated_reviews(code, [
         "security", "performance", "accessibility", "code_quality"
     ])
-    
+
     # 2. Knowledge Validation
     knowledge_result = await auto_loader.query_knowledge("code validation")
-    
+
     # 3. Brain Blocks Validation
     brain_result = await brain_blocks.query_brain_blocks(BrainBlockQuery(
         query="code best practices",
         limit=3
     ))
-    
+
     # 4. Mobile Compatibility Check
     mobile_result = await mobile_app.get_dashboard()
-    
+
     return {
         "qa": qa_result,
         "knowledge": knowledge_result,
@@ -253,20 +258,20 @@ async def test_cursor_integration():
     # 1. Test auto-invocation
     auto_invoker = get_auto_invoker()
     assert auto_invoker is not None
-    
+
     # 2. Test agent selection
     agent_type = determine_agent_type("test.py")
     assert agent_type == 'BACKEND'
-    
+
     # 3. Test Cursor client
     cursor_client = auto_invoker.cursor_client
     agent = cursor_client.get_agent(AgentType.BACKEND)
     assert agent is not None
-    
+
     # 4. Test agent execution
     result = await agent.generate_apis({"test": "data"})
     assert result is not None
-    
+
     return True
 ```
 
@@ -301,14 +306,14 @@ def document_cursor_usage():
 async def monitor_cursor_performance():
     auto_invoker = get_auto_invoker()
     stats = auto_invoker.get_rule_stats()
-    
+
     # Log performance metrics
     logger.info(f"Cursor integration stats: {stats}")
-    
+
     # Ensure we're using Cursor
     if stats['total_triggers'] == 0:
         raise Exception("Cursor integration not being used!")
-    
+
     return stats
 ```
 
@@ -339,6 +344,7 @@ async def monitor_cursor_performance():
 ## 📞 EMERGENCY PROTOCOL
 
 If you find yourself writing code without Cursor integration:
+
 1. **STOP IMMEDIATELY**
 2. **RESTART** with Cursor integration
 3. **DELETE** any code written without Cursor
@@ -361,20 +367,20 @@ Here's how to implement a coding task with 100% Cursor integration:
 async def implement_feature_with_cursor(feature_name: str, requirements: list):
     # 1. Start Cursor auto-invocation
     await start_cursor_auto_invocation([Path(".")])
-    
+
     # 2. Get auto-invoker
     auto_invoker = get_auto_invoker()
-    
+
     # 3. Determine agent type
     agent_type = determine_agent_type("feature.py")
-    
+
     # 4. Get Cursor client and agent
     cursor_client = auto_invoker.cursor_client
     agent = cursor_client.get_agent(agent_type)
-    
+
     # 5. Query knowledge systems
     knowledge_context = await get_knowledge_context()
-    
+
     # 6. Use Cursor agent for coding
     result = await agent.perform_task({
         "action": "generate_feature",
@@ -384,16 +390,16 @@ async def implement_feature_with_cursor(feature_name: str, requirements: list):
             "context": knowledge_context
         }
     })
-    
+
     # 7. Quality assurance
     qa_result = await quality_assurance_workflow(result, "feature.py")
-    
+
     # 8. Monitor performance
     await monitor_cursor_performance()
-    
+
     # 9. Document usage
     document_cursor_usage()
-    
+
     return result
 ```
 

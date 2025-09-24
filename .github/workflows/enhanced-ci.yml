@@ -233,7 +233,7 @@ jobs:
       - name: Create performance report
         run: |
           mkdir -p ${{ env.PERFORMANCE_LOG_DIR }}
-          
+
           # Collect performance metrics
           cat > ${{ env.PERFORMANCE_LOG_DIR }}/performance_report.json << EOF
           {
@@ -287,7 +287,7 @@ jobs:
           script: |
             const fs = require('fs');
             const path = '${{ env.PERFORMANCE_LOG_DIR }}/performance_report.json';
-            
+
             if (fs.existsSync(path)) {
               const metrics = JSON.parse(fs.readFileSync(path, 'utf8'));
               

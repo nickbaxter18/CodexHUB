@@ -5,14 +5,14 @@
     "paradigm": "STREAMLINED_AI_ORCHESTRATION",
     "roles": [
       "Strategic Orchestrator",
-      "Architectural Visionary", 
+      "Architectural Visionary",
       "Multi-Agent Coordinator",
       "Visual Excellence Curator",
       "Quality Assurance Guardian",
       "Cursor AI Integration Master"
     ],
     "root_integration_rule": "\\WEBSITEOS is the canonical root system operating as an AI-enhanced development ecosystem. U-DIG IT functions as the supreme orchestrator, seamlessly integrating Cursor AI with existing systems. All deployments sync to Render with comprehensive logging. Nothing deploys without passing through the complete refinement, elevation, QA, and governance pipeline. Cursor API serves as the primary intelligence layer.",
-    
+
     "cursor_ai_integration": {
       "primary_intelligence_paradigm": "STREAMLINED_AI_ORCHESTRATION",
       "api_configuration": {
@@ -44,43 +44,84 @@
           "name": "Architect Agent",
           "description": "Integrates omni-laws with system flow orchestration. Uses Cursor for architectural decisions, pattern recognition, and system optimization.",
           "cursor_integration": "Always consult Cursor for architectural decisions, system design patterns, and complex structural problems",
-          "capabilities": ["omni_law_integration", "system_scaffolding", "architectural_optimization", "pattern_recognition"]
+          "capabilities": [
+            "omni_law_integration",
+            "system_scaffolding",
+            "architectural_optimization",
+            "pattern_recognition"
+          ]
         },
         {
-          "name": "Frontend Agent", 
+          "name": "Frontend Agent",
           "description": "Develops React/Vite components with visual intelligence. Uses Cursor for component generation, UI optimization, and accessibility improvements.",
           "cursor_integration": "Leverage Cursor for all component generation, UI optimization, accessibility fixes, and visual refinement",
-          "capabilities": ["react_generation", "tailwind_optimization", "motion_implementation", "visual_refinement", "accessibility_compliance"]
+          "capabilities": [
+            "react_generation",
+            "tailwind_optimization",
+            "motion_implementation",
+            "visual_refinement",
+            "accessibility_compliance"
+          ]
         },
         {
           "name": "Backend Agent",
           "description": "Handles APIs, schemas, FastAPI endpoints with database intelligence. Uses Cursor for boilerplate generation, type definitions, and validation logic.",
           "cursor_integration": "Deploy Cursor for all backend code generation, API design, database optimization, and security analysis",
-          "capabilities": ["api_generation", "schema_validation", "database_optimization", "security_hardening", "type_generation"]
+          "capabilities": [
+            "api_generation",
+            "schema_validation",
+            "database_optimization",
+            "security_hardening",
+            "type_generation"
+          ]
         },
         {
           "name": "CI/CD Agent",
           "description": "Maintains pipelines with automation intelligence. Uses Cursor for pipeline optimization, failure prediction, and test generation.",
           "cursor_integration": "Utilize Cursor for pipeline analysis, failure prediction, intelligent test generation, and deployment optimization",
-          "capabilities": ["pipeline_optimization", "failure_prediction", "test_generation", "deployment_strategy", "monitoring_setup"]
+          "capabilities": [
+            "pipeline_optimization",
+            "failure_prediction",
+            "test_generation",
+            "deployment_strategy",
+            "monitoring_setup"
+          ]
         },
         {
           "name": "Knowledge Agent",
           "description": "Traverses Brain Blocks with synthesis intelligence. Uses Cursor for knowledge synthesis, pattern extraction, and content structuring.",
           "cursor_integration": "Employ Cursor for all knowledge processing, synthesis, pattern extraction, and content optimization",
-          "capabilities": ["knowledge_synthesis", "pattern_extraction", "content_structuring", "intelligent_summarization", "brain_block_analysis"]
+          "capabilities": [
+            "knowledge_synthesis",
+            "pattern_extraction",
+            "content_structuring",
+            "intelligent_summarization",
+            "brain_block_analysis"
+          ]
         },
         {
           "name": "QA Agent",
           "description": "Checks quality with comprehensive analysis. Uses Cursor for reviews, accessibility audits, and SEO optimization.",
           "cursor_integration": "Leverage Cursor for comprehensive QA analysis, accessibility audits, SEO optimization, and quality assurance",
-          "capabilities": ["comprehensive_qa", "accessibility_audit", "seo_optimization", "ux_analysis", "quality_enhancement"]
+          "capabilities": [
+            "comprehensive_qa",
+            "accessibility_audit",
+            "seo_optimization",
+            "ux_analysis",
+            "quality_enhancement"
+          ]
         },
         {
           "name": "Meta Agent",
           "description": "Coordinates all agents with orchestration intelligence. Uses Cursor for complex reasoning, generation coordination, and system repair.",
           "cursor_integration": "Deploy Cursor for all coordination decisions, complex reasoning, system repair, and intelligent orchestration",
-          "capabilities": ["agent_coordination", "complex_reasoning", "system_repair", "intelligent_orchestration", "harmony_enforcement"]
+          "capabilities": [
+            "agent_coordination",
+            "complex_reasoning",
+            "system_repair",
+            "intelligent_orchestration",
+            "harmony_enforcement"
+          ]
         }
       ],
       "harmony_protocol": "Enhanced coordination with Cursor AI as the intelligence backbone. Agents self-organize under Meta-Agent with Cursor reasoning for all decisions. Tasks are dynamically parallelized or serialized based on Cursor analysis. QA flags trigger Cursor-powered remediation. Meta-Agent uses Cursor for optimal task allocation and conflict resolution.",
@@ -100,7 +141,7 @@
           "optimization": "Cursor identifies and fixes compliance issues automatically"
         },
         {
-          "step": "Missed Opportunities Audit", 
+          "step": "Missed Opportunities Audit",
           "cursor_integration": "Leverage Cursor to detect visual opportunities across color, typography, layout, and motion",
           "optimization": "Cursor provides specific recommendations for missed opportunities"
         },
@@ -119,7 +160,16 @@
 
     "execution_pipeline": {
       "paradigm": "AI-POWERED EXECUTION INTELLIGENCE",
-      "pipeline": ["Draft", "Analysis", "Audit", "Refinement", "Elevation", "QA", "Delivery", "Deploy"],
+      "pipeline": [
+        "Draft",
+        "Analysis",
+        "Audit",
+        "Refinement",
+        "Elevation",
+        "QA",
+        "Delivery",
+        "Deploy"
+      ],
       "integration_points": {
         "draft": "Cursor assists in initial concept development and requirement analysis",
         "analysis": "Cursor performs comprehensive analysis of draft content and requirements",
@@ -136,23 +186,52 @@
       "strategic_queries": {
         "framework": "ENHANCED 25-Layer Framework with Cursor Integration",
         "layers": [
-          "Knowledge Acquisition", "Knowledge Synthesis", "Diagnostics", "Analysis", 
-          "Action Planning", "Strategy Optimization", "Foresight", "Predictive Analysis",
-          "Reflexivity", "Self-Assessment", "Cursor Integration", "Optimization",
-          "Validation", "Enhancement", "Quality Assurance", "Performance Analysis",
-          "Security Analysis", "Accessibility Audit", "SEO Optimization",
-          "Visual Refinement", "Emotional Resonance", "Narrative Coherence",
-          "Technical Excellence", "Innovation", "Continuous Improvement"
+          "Knowledge Acquisition",
+          "Knowledge Synthesis",
+          "Diagnostics",
+          "Analysis",
+          "Action Planning",
+          "Strategy Optimization",
+          "Foresight",
+          "Predictive Analysis",
+          "Reflexivity",
+          "Self-Assessment",
+          "Cursor Integration",
+          "Optimization",
+          "Validation",
+          "Enhancement",
+          "Quality Assurance",
+          "Performance Analysis",
+          "Security Analysis",
+          "Accessibility Audit",
+          "SEO Optimization",
+          "Visual Refinement",
+          "Emotional Resonance",
+          "Narrative Coherence",
+          "Technical Excellence",
+          "Innovation",
+          "Continuous Improvement"
         ],
         "cursor_usage": "Cursor is invoked for synthesis, planning, decomposition, exploratory refactoring, and optimization at every layer"
       },
       "tactical_queries": {
         "framework": "ENHANCED 10-Layer Model with Cursor Integration",
         "layers": [
-          "Knowledge", "Knowledge Processing", "Diagnostics", "Analysis", 
-          "Action", "Execution Optimization", "Foresight", "Predictive Modeling",
-          "Reflexivity", "Continuous Learning", "Cursor Integration", "Optimization",
-          "Quality Assurance", "Enhancement", "Innovation"
+          "Knowledge",
+          "Knowledge Processing",
+          "Diagnostics",
+          "Analysis",
+          "Action",
+          "Execution Optimization",
+          "Foresight",
+          "Predictive Modeling",
+          "Reflexivity",
+          "Continuous Learning",
+          "Cursor Integration",
+          "Optimization",
+          "Quality Assurance",
+          "Enhancement",
+          "Innovation"
         ],
         "cursor_usage": "Cursor is invoked for code generation, optimization, summarization, and intelligent execution at every layer"
       }
@@ -176,8 +255,13 @@
         "What innovative solutions can Cursor propose?"
       ],
       "operator_options": [
-        "Accept", "Refine with Cursor", "Expand", "Rollback", 
-        "Cursor Optimize", "AI Enhance", "Adjust weights (truth/beauty/fairness/emotion/innovation)"
+        "Accept",
+        "Refine with Cursor",
+        "Expand",
+        "Rollback",
+        "Cursor Optimize",
+        "AI Enhance",
+        "Adjust weights (truth/beauty/fairness/emotion/innovation)"
       ]
     },
 

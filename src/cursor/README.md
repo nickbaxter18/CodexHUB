@@ -1,4 +1,5 @@
 # Cursor Client Integration
+
 ## U-DIG IT WebsiteOS Meta-Intelligence v4.3+
 
 This directory contains the Cursor client implementations that map your JSON configuration into actual API calls, providing full Cursor leverage for your Codex system.
@@ -12,23 +13,25 @@ This directory contains the Cursor client implementations that map your JSON con
 ## Quick Start
 
 ### JavaScript
+
 ```javascript
 const { CursorClient } = require('./src/cursor/cursor_client.js');
 
 const client = new CursorClient({
   apiBaseUrl: process.env.CURSOR_API_URL,
-  apiKey: process.env.CURSOR_API_KEY
+  apiKey: process.env.CURSOR_API_KEY,
 });
 
 // Generate code
 const result = await client.generateCode({
   requirements: ['Create a React component'],
   language: 'javascript',
-  framework: 'react'
+  framework: 'react',
 });
 ```
 
 ### Python
+
 ```python
 from src.cursor import CursorClient, AgentType
 

@@ -1,4 +1,5 @@
 # CURSOR INTEGRATION INSTRUCTIONS
+
 ## MANDATORY CODEX BEHAVIOR PROTOCOL
 
 ### 🚨 CRITICAL: THESE INSTRUCTIONS ARE NON-NEGOTIABLE 🚨
@@ -11,6 +12,7 @@
 ## 📁 **REQUIRED FILES REFERENCE**
 
 ### **Core Cursor Integration Files:**
+
 - `src/cursor/__init__.py` - Main package exports
 - `src/cursor/cursor_client.py` - Core Cursor API client
 - `src/cursor/auto_invocation.py` - Auto-invocation system
@@ -20,6 +22,7 @@
 - `src/knowledge/brain_blocks_integration.py` - Brain Blocks integration
 
 ### **Setup & Management Scripts:**
+
 - `scripts/setup_cursor_integration.py` - Complete setup
 - `scripts/start_cursor_integration.py` - Start all systems
 - `scripts/validate_cursor_integration.py` - Validate integration
@@ -30,10 +33,12 @@
 - `scripts/bootstrap_knowledge.py` - Bootstrap Knowledge agent
 
 ### **Configuration Files:**
+
 - `config/cursor_environment_template.env` - Environment template
 - `config/cursor_integration_config.json` - Integration configuration
 
 ### **Documentation Files:**
+
 - `CODEX_CURSOR_MANDATE.md` - MANDATORY instructions
 - `CURSOR_INTEGRATION_INSTRUCTIONS.md` - This file
 - `CURSOR_INTEGRATION_README.md` - System overview
@@ -45,12 +50,14 @@
 ## 1. MANDATORY CURSOR USAGE PROTOCOL
 
 ### Before ANY coding task:
+
 1. **ALWAYS** invoke Cursor auto-invocation system
 2. **ALWAYS** check which agent is appropriate for the task
 3. **ALWAYS** use the Cursor API integration we built
 4. **NEVER** write code without Cursor agent assistance
 
 ### Required Cursor Integration Flow:
+
 ```python
 # MANDATORY: Every coding task MUST start with this
 from src.cursor.auto_invocation import get_auto_invoker, start_cursor_auto_invocation
@@ -88,6 +95,7 @@ result = await agent.perform_task(task_payload)
 ### Every task MUST utilize ALL built systems:
 
 #### A. Knowledge Agent Integration (MANDATORY)
+
 ```python
 # ALWAYS query knowledge before coding
 from src.knowledge.auto_loader import get_auto_loader
@@ -98,6 +106,7 @@ knowledge_result = await auto_loader.query_knowledge("relevant context for task"
 ```
 
 #### B. Brain Blocks Integration (MANDATORY)
+
 ```python
 # ALWAYS check brain blocks for relevant information
 from src.knowledge.brain_blocks_integration import get_brain_blocks_integration
@@ -111,6 +120,7 @@ brain_results = await brain_blocks.query_brain_blocks(BrainBlockQuery(
 ```
 
 #### C. Mobile Control Integration (MANDATORY)
+
 ```python
 # ALWAYS check for mobile control requirements
 from src.mobile.mobile_app import get_mobile_app
@@ -126,21 +136,22 @@ dashboard = await mobile_app.get_dashboard()
 
 ### MANDATORY Agent Selection Rules:
 
-| File Type | Agent | Cursor Action | Required Integration |
-|-----------|-------|---------------|-------------------|
-| `.tsx`, `.jsx` | FRONTEND | `generate_components` | Knowledge + Brain Blocks |
-| `.py` | BACKEND | `generate_apis` | Knowledge + Brain Blocks |
-| `.md` | ARCHITECT | `generate_blueprint` | Knowledge + Brain Blocks |
-| `test_*.py` | QA | `run_automated_reviews` | Knowledge + Brain Blocks |
-| `.yml`, `.yaml` | CI/CD | `optimize_pipeline` | Knowledge + Brain Blocks |
-| `.ndjson` | KNOWLEDGE | `traverse_brain_blocks` | Brain Blocks + Mobile |
-| Any other | META | `arbitrate_qa_signals` | All systems |
+| File Type       | Agent     | Cursor Action           | Required Integration     |
+| --------------- | --------- | ----------------------- | ------------------------ |
+| `.tsx`, `.jsx`  | FRONTEND  | `generate_components`   | Knowledge + Brain Blocks |
+| `.py`           | BACKEND   | `generate_apis`         | Knowledge + Brain Blocks |
+| `.md`           | ARCHITECT | `generate_blueprint`    | Knowledge + Brain Blocks |
+| `test_*.py`     | QA        | `run_automated_reviews` | Knowledge + Brain Blocks |
+| `.yml`, `.yaml` | CI/CD     | `optimize_pipeline`     | Knowledge + Brain Blocks |
+| `.ndjson`       | KNOWLEDGE | `traverse_brain_blocks` | Brain Blocks + Mobile    |
+| Any other       | META      | `arbitrate_qa_signals`  | All systems              |
 
 ---
 
 ## 4. MANDATORY CODING WORKFLOW
 
 ### Step 1: ALWAYS Start with Cursor Integration
+
 ```python
 # MANDATORY: This is the FIRST thing you do
 import asyncio
@@ -149,17 +160,17 @@ from src.cursor.auto_invocation import get_auto_invoker, start_cursor_auto_invoc
 async def execute_coding_task():
     # 1. Start Cursor auto-invocation
     await start_cursor_auto_invocation([Path(".")])
-    
+
     # 2. Get auto-invoker
     auto_invoker = get_auto_invoker()
-    
+
     # 3. Determine agent type
     agent_type = determine_agent_type(file_path)
-    
+
     # 4. Get Cursor client and agent
     cursor_client = auto_invoker.cursor_client
     agent = cursor_client.get_agent(agent_type)
-    
+
     # 5. ALWAYS use agent for coding
     result = await agent.perform_task({
         "action": get_action_for_agent(agent_type),
@@ -169,11 +180,12 @@ async def execute_coding_task():
             "context": await get_knowledge_context()
         }
     })
-    
+
     return result
 ```
 
 ### Step 2: ALWAYS Integrate Knowledge Systems
+
 ```python
 # MANDATORY: Query all knowledge sources
 async def get_knowledge_context():
@@ -181,7 +193,7 @@ async def get_knowledge_context():
     from src.knowledge.auto_loader import get_auto_loader
     auto_loader = get_auto_loader()
     knowledge_result = await auto_loader.query_knowledge("task context")
-    
+
     # 2. Query Brain Blocks
     from src.knowledge.brain_blocks_integration import get_brain_blocks_integration
     brain_blocks = get_brain_blocks_integration()
@@ -189,12 +201,12 @@ async def get_knowledge_context():
         query="task context",
         limit=5
     ))
-    
+
     # 3. Check Mobile Requirements
     from src.mobile.mobile_app import get_mobile_app
     mobile_app = get_mobile_app()
     dashboard = await mobile_app.get_dashboard()
-    
+
     return {
         "knowledge": knowledge_result,
         "brain_blocks": brain_result,
@@ -203,12 +215,13 @@ async def get_knowledge_context():
 ```
 
 ### Step 3: ALWAYS Use Cursor Agent for Code Generation
+
 ```python
 # MANDATORY: Never write code without Cursor agent
 async def generate_code_with_cursor(agent_type, requirements, context):
     cursor_client = get_cursor_client()
     agent = cursor_client.get_agent(agent_type)
-    
+
     # ALWAYS use the agent's specific method
     if agent_type == AgentType.FRONTEND:
         result = await agent.generate_components(requirements)
@@ -224,7 +237,7 @@ async def generate_code_with_cursor(agent_type, requirements, context):
         result = await agent.traverse_brain_blocks(requirements)
     elif agent_type == AgentType.META:
         result = await agent.arbitrate_qa_signals(requirements)
-    
+
     return result
 ```
 
@@ -233,6 +246,7 @@ async def generate_code_with_cursor(agent_type, requirements, context):
 ## 5. MANDATORY QUALITY ASSURANCE PROTOCOL
 
 ### Every code change MUST go through:
+
 1. **Cursor Agent Review** - Use QA agent for code review
 2. **Knowledge Validation** - Check against knowledge base
 3. **Brain Blocks Validation** - Verify against brain blocks
@@ -246,19 +260,19 @@ async def quality_assurance_workflow(code, file_path):
     qa_result = await qa_agent.run_automated_reviews(code, [
         "security", "performance", "accessibility", "code_quality"
     ])
-    
+
     # 2. Knowledge Validation
     knowledge_result = await auto_loader.query_knowledge("code validation")
-    
+
     # 3. Brain Blocks Validation
     brain_result = await brain_blocks.query_brain_blocks(BrainBlockQuery(
         query="code best practices",
         limit=3
     ))
-    
+
     # 4. Mobile Compatibility Check
     mobile_result = await mobile_app.get_dashboard()
-    
+
     return {
         "qa": qa_result,
         "knowledge": knowledge_result,
@@ -272,6 +286,7 @@ async def quality_assurance_workflow(code, file_path):
 ## 6. MANDATORY ERROR HANDLING PROTOCOL
 
 ### If Cursor integration fails:
+
 1. **STOP** - Do not proceed without Cursor
 2. **DEBUG** - Check Cursor client connection
 3. **RETRY** - Attempt Cursor integration again
@@ -301,19 +316,20 @@ async def safe_cursor_integration():
 ## 7. MANDATORY PERFORMANCE MONITORING
 
 ### Track Cursor usage:
+
 ```python
 # MANDATORY: Performance monitoring
 async def monitor_cursor_performance():
     auto_invoker = get_auto_invoker()
     stats = auto_invoker.get_rule_stats()
-    
+
     # Log performance metrics
     logger.info(f"Cursor integration stats: {stats}")
-    
+
     # Ensure we're using Cursor
     if stats['total_triggers'] == 0:
         raise Exception("Cursor integration not being used!")
-    
+
     return stats
 ```
 
@@ -322,26 +338,27 @@ async def monitor_cursor_performance():
 ## 8. MANDATORY TESTING PROTOCOL
 
 ### Every implementation MUST be tested:
+
 ```python
 # MANDATORY: Test Cursor integration
 async def test_cursor_integration():
     # 1. Test auto-invocation
     auto_invoker = get_auto_invoker()
     assert auto_invoker is not None
-    
+
     # 2. Test agent selection
     agent_type = determine_agent_type("test.py")
     assert agent_type == AgentType.BACKEND
-    
+
     # 3. Test Cursor client
     cursor_client = auto_invoker.cursor_client
     agent = cursor_client.get_agent(AgentType.BACKEND)
     assert agent is not None
-    
+
     # 4. Test agent execution
     result = await agent.generate_apis({"test": "data"})
     assert result is not None
-    
+
     return True
 ```
 
@@ -350,6 +367,7 @@ async def test_cursor_integration():
 ## 9. MANDATORY DOCUMENTATION PROTOCOL
 
 ### Every code change MUST document Cursor usage:
+
 ```python
 # MANDATORY: Document Cursor integration
 def document_cursor_usage():
@@ -369,6 +387,7 @@ def document_cursor_usage():
 ## 10. MANDATORY COMPLIANCE CHECKLIST
 
 ### Before ANY code change, verify:
+
 - [ ] Cursor auto-invocation is active
 - [ ] Appropriate agent is selected
 - [ ] Knowledge Agent is queried
@@ -394,6 +413,7 @@ def document_cursor_usage():
 ## 📞 EMERGENCY PROTOCOL
 
 If you find yourself writing code without Cursor integration:
+
 1. **STOP IMMEDIATELY**
 2. **RESTART** with Cursor integration
 3. **DELETE** any code written without Cursor

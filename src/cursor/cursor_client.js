@@ -1,7 +1,7 @@
 /**
  * Cursor Client for U-DIG IT WebsiteOS Meta-Intelligence v4.3+
  * Maps JSON configuration into actual Cursor API calls for full system leverage
- * 
+ *
  * @author U-DIG IT Meta-Intelligence System
  * @version 4.3+
  * @license MIT
@@ -21,7 +21,7 @@ class CursorClient {
     this.timeout = config.timeout || 30000;
     this.maxRetries = config.maxRetries || 3;
     this.retryDelay = config.retryDelay || 1000;
-    
+
     this.validateConfig();
     this.initializeAgentMethods();
   }
@@ -49,7 +49,7 @@ class CursorClient {
       cicd: new CICDAgentMethods(this),
       knowledge: new KnowledgeAgentMethods(this),
       qa: new QAAgentMethods(this),
-      meta: new MetaAgentMethods(this)
+      meta: new MetaAgentMethods(this),
     };
   }
 
@@ -58,18 +58,18 @@ class CursorClient {
    */
   async makeRequest(endpoint, method = 'POST', data = null) {
     const url = new URL(`${this.apiBaseUrl}${endpoint}`);
-    
+
     const options = {
       hostname: url.hostname,
       port: url.port || 443,
       path: url.pathname + url.search,
       method,
       headers: {
-        'Authorization': `Bearer ${this.apiKey}`,
+        Authorization: `Bearer ${this.apiKey}`,
         'Content-Type': 'application/json',
-        'User-Agent': 'U-DIG-IT-Codex/4.3+'
+        'User-Agent': 'U-DIG-IT-Codex/4.3+',
       },
-      timeout: this.timeout
+      timeout: this.timeout,
     };
 
     if (data && method !== 'GET') {
@@ -88,8 +88,10 @@ class CursorClient {
         }
       }
     }
-    
-    throw new Error(`Cursor API request failed after ${this.maxRetries} attempts: ${lastError.message}`);
+
+    throw new Error(
+      `Cursor API request failed after ${this.maxRetries} attempts: ${lastError.message}`
+    );
   }
 
   /**
@@ -99,27 +101,27 @@ class CursorClient {
     return new Promise((resolve, reject) => {
       const req = https.request(options, (res) => {
         let responseData = '';
-        
+
         res.on('data', (chunk) => {
           responseData += chunk;
         });
-        
+
         res.on('end', () => {
           resolve({
             statusCode: res.statusCode,
             headers: res.headers,
-            data: responseData
+            data: responseData,
           });
         });
       });
 
       req.on('error', reject);
       req.on('timeout', () => reject(new Error('Request timeout')));
-      
+
       if (data) {
         req.write(JSON.stringify(data));
       }
-      
+
       req.end();
     });
   }
@@ -143,7 +145,7 @@ class CursorClient {
    * Utility delay method
    */
   delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   // ==================== CORE CURSOR API METHODS ====================
@@ -160,7 +162,7 @@ class CursorClient {
       language: request.language || 'javascript',
       framework: request.framework,
       patterns: request.patterns || [],
-      ...request
+      ...request,
     };
 
     return this.makeRequest('/generate', 'POST', payload);
@@ -176,7 +178,7 @@ class CursorClient {
       refactoringType: request.refactoringType || 'optimization',
       targetPattern: request.targetPattern,
       preserveBehavior: request.preserveBehavior !== false,
-      ...request
+      ...request,
     };
 
     return this.makeRequest('/refactor', 'POST', payload);
@@ -192,7 +194,7 @@ class CursorClient {
       testTypes: request.testTypes || ['unit', 'integration'],
       coverage: request.coverage || 'comprehensive',
       framework: request.framework,
-      ...request
+      ...request,
     };
 
     return this.makeRequest('/tests', 'POST', payload);
@@ -208,7 +210,7 @@ class CursorClient {
       synthesisType: request.synthesisType || 'comprehensive',
       outputFormat: request.outputFormat || 'structured',
       context: request.context || {},
-      ...request
+      ...request,
     };
 
     return this.makeRequest('/summarize', 'POST', payload);
@@ -224,7 +226,7 @@ class CursorClient {
       analysisType: request.analysisType || 'variant_analysis',
       criteria: request.criteria || ['performance', 'maintainability', 'scalability'],
       context: request.context || {},
-      ...request
+      ...request,
     };
 
     return this.makeRequest('/analyze', 'POST', payload);
@@ -240,7 +242,7 @@ class CursorClient {
       docTypes: request.docTypes || ['api', 'readme', 'comments'],
       format: request.format || 'markdown',
       style: request.style || 'comprehensive',
-      ...request
+      ...request,
     };
 
     return this.makeRequest('/docs', 'POST', payload);
@@ -255,7 +257,7 @@ class CursorClient {
       sourceCode: request.sourceCode,
       analysisDepth: request.analysisDepth || 'comprehensive',
       checkTypes: request.checkTypes || ['injection', 'auth', 'data_leaks', 'dependencies'],
-      ...request
+      ...request,
     };
 
     return this.makeRequest('/security', 'POST', payload);
@@ -271,7 +273,7 @@ class CursorClient {
       optimizationType: request.optimizationType || 'comprehensive',
       targetMetrics: request.targetMetrics || ['speed', 'memory', 'bundle_size'],
       constraints: request.constraints || {},
-      ...request
+      ...request,
     };
 
     return this.makeRequest('/optimize', 'POST', payload);
@@ -296,7 +298,7 @@ class CursorClient {
       context,
       availableAgents: Object.keys(this.agents),
       coordinationStrategy: 'harmony_protocol',
-      ...context
+      ...context,
     };
 
     return this.makeRequest('/coordinate', 'POST', payload);
@@ -317,7 +319,7 @@ class ArchitectAgentMethods {
     return this.client.makeRequest('/architect/integrate-laws', 'POST', {
       laws,
       context,
-      integrationStrategy: 'system_flow_orchestration'
+      integrationStrategy: 'system_flow_orchestration',
     });
   }
 
@@ -325,14 +327,14 @@ class ArchitectAgentMethods {
     return this.client.makeRequest('/architect/scaffold', 'POST', {
       structure,
       patterns,
-      scaffoldingType: 'omni_domain_architecture'
+      scaffoldingType: 'omni_domain_architecture',
     });
   }
 
   async delegateStructuralExploration(requirements) {
     return this.client.makeRequest('/architect/explore', 'POST', {
       requirements,
-      explorationDepth: 'comprehensive'
+      explorationDepth: 'comprehensive',
     });
   }
 }
@@ -351,7 +353,7 @@ class FrontendAgentMethods {
       styling,
       framework: 'react',
       uiLibrary: 'tailwind',
-      includeMotion: true
+      includeMotion: true,
     });
   }
 
@@ -359,7 +361,7 @@ class FrontendAgentMethods {
     return this.client.makeRequest('/frontend/optimize-ui', 'POST', {
       refinementType,
       currentCode,
-      optimizationTarget: 'visual_refinement_and_elevation'
+      optimizationTarget: 'visual_refinement_and_elevation',
     });
   }
 
@@ -367,7 +369,7 @@ class FrontendAgentMethods {
     return this.client.makeRequest('/frontend/refactor', 'POST', {
       code,
       refactoringGoals,
-      preserveVisualBehavior: true
+      preserveVisualBehavior: true,
     });
   }
 }
@@ -385,7 +387,7 @@ class BackendAgentMethods {
       type,
       schema,
       framework: 'fastapi',
-      includeValidation: true
+      includeValidation: true,
     });
   }
 
@@ -393,7 +395,7 @@ class BackendAgentMethods {
     return this.client.makeRequest('/backend/types', 'POST', {
       schema,
       language,
-      includeValidation: true
+      includeValidation: true,
     });
   }
 
@@ -401,7 +403,7 @@ class BackendAgentMethods {
     return this.client.makeRequest('/backend/db-refactor', 'POST', {
       code,
       optimizationGoals,
-      preserveDataIntegrity: true
+      preserveDataIntegrity: true,
     });
   }
 }
@@ -418,7 +420,7 @@ class CICDAgentMethods {
     return this.client.makeRequest('/cicd/pipeline-steps', 'POST', {
       currentPipeline,
       requirements,
-      bestPractices: true
+      bestPractices: true,
     });
   }
 
@@ -426,7 +428,7 @@ class CICDAgentMethods {
     return this.client.makeRequest('/cicd/debug', 'POST', {
       failureLog,
       context,
-      analysisDepth: 'comprehensive'
+      analysisDepth: 'comprehensive',
     });
   }
 
@@ -434,7 +436,7 @@ class CICDAgentMethods {
     return this.client.makeRequest('/cicd/generate-tests', 'POST', {
       codebase,
       coverageGaps,
-      testTypes: ['unit', 'integration', 'e2e']
+      testTypes: ['unit', 'integration', 'e2e'],
     });
   }
 }
@@ -451,7 +453,7 @@ class KnowledgeAgentMethods {
     return this.client.makeRequest('/knowledge/traverse', 'POST', {
       blocks,
       query,
-      traversalStrategy: 'intelligent_synthesis'
+      traversalStrategy: 'intelligent_synthesis',
     });
   }
 
@@ -459,7 +461,7 @@ class KnowledgeAgentMethods {
     return this.client.makeRequest('/knowledge/summarize', 'POST', {
       scaffolds,
       context,
-      outputFormat: 'structured_knowledge'
+      outputFormat: 'structured_knowledge',
     });
   }
 
@@ -467,7 +469,7 @@ class KnowledgeAgentMethods {
     return this.client.makeRequest('/knowledge/patterns', 'POST', {
       knowledgeBlocks,
       patternTypes,
-      extractionDepth: 'comprehensive'
+      extractionDepth: 'comprehensive',
     });
   }
 }
@@ -484,7 +486,7 @@ class QAAgentMethods {
     return this.client.makeRequest('/qa/automated-review', 'POST', {
       code,
       reviewTypes: reviewTypes || ['accessibility', 'seo', 'ux', 'aesthetics'],
-      reviewDepth: 'comprehensive'
+      reviewDepth: 'comprehensive',
     });
   }
 
@@ -492,7 +494,7 @@ class QAAgentMethods {
     return this.client.makeRequest('/qa/accessibility-fixes', 'POST', {
       code,
       accessibilityIssues,
-      complianceLevel: 'WCAG_2_1_AA'
+      complianceLevel: 'WCAG_2_1_AA',
     });
   }
 
@@ -500,7 +502,7 @@ class QAAgentMethods {
     return this.client.makeRequest('/qa/seo-optimizations', 'POST', {
       code,
       seoContext,
-      optimizationLevel: 'comprehensive'
+      optimizationLevel: 'comprehensive',
     });
   }
 }
@@ -517,7 +519,7 @@ class MetaAgentMethods {
     return this.client.makeRequest('/meta/reasoning', 'POST', {
       context,
       reasoningType,
-      accelerationStrategy: 'intelligent_synthesis'
+      accelerationStrategy: 'intelligent_synthesis',
     });
   }
 
@@ -525,7 +527,7 @@ class MetaAgentMethods {
     return this.client.makeRequest('/meta/coordinate-generation', 'POST', {
       task,
       agentContexts,
-      coordinationStrategy: 'harmony_protocol'
+      coordinationStrategy: 'harmony_protocol',
     });
   }
 
@@ -533,7 +535,7 @@ class MetaAgentMethods {
     return this.client.makeRequest('/meta/repair', 'POST', {
       issue,
       systemContext,
-      repairStrategy: 'comprehensive_fix'
+      repairStrategy: 'comprehensive_fix',
     });
   }
 }
@@ -552,7 +554,7 @@ class VisualRefinementCursor {
     return this.client.makeRequest('/visual/compliance', 'POST', {
       code,
       brandGuidelines,
-      passType: 'compliance_check'
+      passType: 'compliance_check',
     });
   }
 
@@ -560,7 +562,7 @@ class VisualRefinementCursor {
     return this.client.makeRequest('/visual/opportunities', 'POST', {
       code,
       opportunityTypes: opportunityTypes || ['color_cognition', 'typography', 'layout', 'motion'],
-      auditDepth: 'comprehensive'
+      auditDepth: 'comprehensive',
     });
   }
 
@@ -568,7 +570,7 @@ class VisualRefinementCursor {
     return this.client.makeRequest('/visual/refinement', 'POST', {
       code,
       refinementGoals,
-      refinementType: 'visual_elevation'
+      refinementType: 'visual_elevation',
     });
   }
 
@@ -577,7 +579,7 @@ class VisualRefinementCursor {
       code,
       elevationLevel: elevationLevel || 'luxury_polish',
       includeCinematicEffects: true,
-      includeEmotionalCues: true
+      includeEmotionalCues: true,
     });
   }
 }
@@ -594,7 +596,7 @@ module.exports = {
   CICDAgentMethods,
   KnowledgeAgentMethods,
   QAAgentMethods,
-  MetaAgentMethods
+  MetaAgentMethods,
 };
 
 // Auto-initialization if used directly

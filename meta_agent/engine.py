@@ -94,6 +94,11 @@ class MetaAgent:
         drift = DriftDetector(
             window_size=int(drift_cfg.get("window_size", 5)),
             threshold=int(drift_cfg.get("failure_threshold", 3)),
+            psi_threshold=float(drift_cfg.get("psi_threshold", 0.2)),
+            ks_threshold=float(drift_cfg.get("ks_threshold", 0.1)),
+            kl_threshold=float(drift_cfg.get("kl_threshold", 0.05)),
+            min_samples=int(drift_cfg.get("min_samples", 50)),
+            bin_count=int(drift_cfg.get("bin_count", 10)),
         )
         fallback = FallbackManager(fallbacks)
         macro_manager = MacroDependencyManager()

@@ -1,4 +1,5 @@
 # Cursor Integration Guide
+
 ## U-DIG IT WebsiteOS Meta-Intelligence v4.3+
 
 This guide explains how to integrate the Cursor client with your existing Codex system for full AI-powered development leverage.
@@ -32,7 +33,7 @@ const enhancedMetaAgent = cursorClient.getAgent('meta');
 const coordination = await enhancedMetaAgent.coordinateGeneration({
   task: 'Build user management system',
   agents: ['frontend', 'backend', 'qa'],
-  aiAssistance: true
+  aiAssistance: true,
 });
 ```
 
@@ -47,16 +48,16 @@ from src.cursor import CursorClient, AgentType
 class EnhancedMacroEngine:
     def __init__(self):
         self.cursor_client = CursorClient()
-        
+
     async def execute_macro_with_ai(self, macro_name, context):
         # Use AI to enhance macro execution
         backend_agent = self.cursor_client.get_agent(AgentType.BACKEND)
-        
+
         result = await backend_agent.generate_boilerplate(
-            macro_name, 
+            macro_name,
             context.get('schema', {})
         )
-        
+
         return result
 ```
 
@@ -71,10 +72,10 @@ from src.cursor import CursorClient, AgentType
 class EnhancedQAEngine:
     def __init__(self):
         self.cursor_client = CursorClient()
-        
+
     async def run_ai_enhanced_review(self, code, review_types):
         qa_agent = self.cursor_client.get_agent(AgentType.QA)
-        
+
         return await qa_agent.run_automated_reviews(code, review_types)
 ```
 
@@ -119,30 +120,30 @@ class EnhancedDevelopmentWorkflow {
     this.cursorClient = new CursorClient();
     this.visualRefinement = new VisualRefinementCursor(this.cursorClient);
   }
-  
+
   async buildFeature(requirements) {
     // 1. Meta-Agent coordination
     const metaAgent = this.cursorClient.getAgent('meta');
     const plan = await metaAgent.coordinateGeneration({
       task: requirements.task,
-      context: requirements.context
+      context: requirements.context,
     });
-    
+
     // 2. Execute with AI assistance
     const results = {};
     for (const task of plan.agentTasks) {
       const agent = this.cursorClient.getAgent(task.agent);
       results[task.agent] = await this.executeWithAI(agent, task);
     }
-    
+
     // 3. Visual refinement
     if (results.frontend) {
       results.frontend = await this.visualRefinement.elevationPass(
-        results.frontend.code, 
+        results.frontend.code,
         'luxury_polish'
       );
     }
-    
+
     return results;
   }
 }
@@ -155,29 +156,29 @@ class EnhancedDevelopmentWorkflow {
 class EnhancedCodeGenerationPipeline:
     def __init__(self):
         self.cursor_client = CursorClient()
-        
+
     async def generate_complete_feature(self, spec):
         # Generate backend API
         backend_agent = self.cursor_client.get_agent(AgentType.BACKEND)
         api_code = await backend_agent.generate_boilerplate(
-            'rest_api', 
+            'rest_api',
             spec['api_schema']
         )
-        
+
         # Generate frontend components
         frontend_agent = self.cursor_client.get_agent(AgentType.FRONTEND)
         components = await frontend_agent.generate_react_component(
             spec['component_spec'],
             spec['styling_requirements']
         )
-        
+
         # Generate tests
         tests = await self.cursor_client.generate_tests({
             'sourceCode': api_code['code'] + components['code'],
             'testTypes': ['unit', 'integration', 'e2e'],
             'framework': 'jest'
         })
-        
+
         return {
             'api': api_code,
             'components': components,
@@ -193,20 +194,20 @@ class VisualRefinementPipeline {
   constructor(cursorClient) {
     this.visualRefinement = new VisualRefinementCursor(cursorClient);
   }
-  
+
   async refineUserInterface(code, brandGuidelines) {
     const pipeline = [
       () => this.visualRefinement.compliancePass(code, brandGuidelines),
       (result) => this.visualRefinement.missedOpportunitiesAudit(result.code),
       (result) => this.visualRefinement.refinementPass(result.code, ['palette', 'spacing']),
-      (result) => this.visualRefinement.elevationPass(result.code, 'luxury_polish')
+      (result) => this.visualRefinement.elevationPass(result.code, 'luxury_polish'),
     ];
-    
+
     let current = { code };
     for (const step of pipeline) {
       current = await step(current);
     }
-    
+
     return current;
   }
 }
@@ -217,26 +218,32 @@ class VisualRefinementPipeline {
 ### Core Methods
 
 #### `generateCode(request)`
+
 Generate code with intelligent reasoning.
 
 **Parameters:**
+
 - `requirements`: Array of code requirements
 - `language`: Programming language (default: 'javascript')
 - `framework`: Framework to use
 - `context`: Additional context object
 
 #### `refactorCode(request)`
+
 Refactor existing code with AI assistance.
 
 **Parameters:**
+
 - `sourceCode`: Code to refactor
 - `refactoringType`: Type of refactoring ('optimization', 'security', etc.)
 - `preserveBehavior`: Whether to preserve existing behavior
 
 #### `coordinateAgents(task, context)`
+
 Coordinate multiple agents for complex tasks.
 
 **Parameters:**
+
 - `task`: Task description
 - `context`: Context for coordination
 
@@ -263,7 +270,7 @@ async function robustCursorOperation() {
   } catch (error) {
     if (error.message.includes('API error 429')) {
       // Rate limit - implement backoff
-      await new Promise(resolve => setTimeout(resolve, 5000));
+      await new Promise((resolve) => setTimeout(resolve, 5000));
       return robustCursorOperation(); // Retry
     } else {
       throw error;
@@ -280,7 +287,7 @@ const config = {
   apiBaseUrl: process.env.CURSOR_API_URL,
   apiKey: process.env.CURSOR_API_KEY,
   timeout: parseInt(process.env.CURSOR_TIMEOUT) || 30,
-  maxRetries: parseInt(process.env.CURSOR_MAX_RETRIES) || 3
+  maxRetries: parseInt(process.env.CURSOR_MAX_RETRIES) || 3,
 };
 
 const client = new CursorClient(config);
@@ -297,7 +304,7 @@ class OptimizedCursorClient(CursorClient):
     def __init__(self, config):
         super().__init__(config)
         self.session_pool = None
-    
+
     async def __aenter__(self):
         # Create connection pool
         connector = aiohttp.TCPConnector(limit=100, limit_per_host=30)

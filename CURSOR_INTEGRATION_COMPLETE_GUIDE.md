@@ -1,7 +1,9 @@
 # CURSOR INTEGRATION COMPLETE GUIDE
+
 ## Complete Implementation for 100% Cursor IDE Utilization
 
 ### 🎯 **PURPOSE**
+
 This guide ensures that **EVERY SINGLE CODING TASK** uses Cursor IDE integration through our built API system. No exceptions, no drifting, no fallbacks.
 
 ---
@@ -9,6 +11,7 @@ This guide ensures that **EVERY SINGLE CODING TASK** uses Cursor IDE integration
 ## 📁 **COMPLETE FILE STRUCTURE**
 
 ### **Core Cursor Integration Files**
+
 ```
 src/cursor/
 ├── __init__.py                    # Main package exports
@@ -48,26 +51,31 @@ docs/
 ## 🚀 **QUICK START**
 
 ### **1. Setup Cursor Integration**
+
 ```bash
 python scripts/setup_cursor_integration.py
 ```
 
 ### **2. Start All Systems**
+
 ```bash
 python scripts/start_cursor_integration.py
 ```
 
 ### **3. Validate Integration**
+
 ```bash
 python scripts/validate_cursor_integration.py
 ```
 
 ### **4. Test All Components**
+
 ```bash
 python scripts/test_cursor_integration.py
 ```
 
 ### **5. Enforce Compliance**
+
 ```bash
 python scripts/enforce_cursor_usage.py
 ```
@@ -77,6 +85,7 @@ python scripts/enforce_cursor_usage.py
 ## 🔧 **ENVIRONMENT SETUP**
 
 ### **Required Environment Variables**
+
 Set these in your Codex environment settings:
 
 ```bash
@@ -107,36 +116,42 @@ CURSOR_USAGE_TRACKING=true
 ## 📦 **CORE COMPONENTS**
 
 ### **1. Cursor Client (`src/cursor/cursor_client.py`)**
+
 - **Core API client** for Cursor IDE integration
 - **Agent-specific methods** for all 7 agent types
 - **Request handling** with retry logic and error handling
 - **Configuration management** from environment variables
 
 ### **2. Auto-Invocation System (`src/cursor/auto_invocation.py`)**
+
 - **Real-time file watching** with automatic agent triggering
 - **Smart pattern matching** for different file types
 - **10+ default rules** for various coding scenarios
 - **Performance tracking** and statistics
 
 ### **3. Enforcement System (`src/cursor/enforcement.py`)**
+
 - **Mandatory decorators** that require Cursor agent usage
 - **Automatic validation** of agent type selection
 - **Performance monitoring** and compliance tracking
 - **Usage statistics** and reporting
 
 ### **4. Knowledge Auto-Loading (`src/knowledge/auto_loader.py`)**
+
 - **Automatic NDJSON loading** with file watching
 - **Real-time synchronization** when knowledge files change
 - **Multiple source support** (Brain docs, Bundle docs, etc.)
 - **Smart change detection** and auto-reloading
 
 ### **5. Mobile Control Interface (`src/mobile/mobile_app.py`)**
+
 - **Complete mobile app interface** with dashboard
 - **Goal creation, approval, and rejection** workflows
 - **Real-time notifications** and activity tracking
 - **Agent task creation** and management
 
 ### **6. Brain Blocks Integration (`src/knowledge/brain_blocks_integration.py`)**
+
 - **Direct integration** with Brain Blocks NDJSON data
 - **Advanced querying** with section and tag filtering
 - **Smart parsing** of all brain block metadata
@@ -164,20 +179,20 @@ from src.knowledge.brain_blocks_integration import get_brain_blocks_integration
 async def implement_with_cursor(feature_name: str, requirements: list):
     # 1. Start Cursor auto-invocation
     await start_cursor_auto_invocation([Path(".")])
-    
+
     # 2. Get auto-invoker
     auto_invoker = get_auto_invoker()
-    
+
     # 3. Determine agent type
     agent_type = determine_agent_type("feature.py")
-    
+
     # 4. Get Cursor client and agent
     cursor_client = auto_invoker.cursor_client
     agent = cursor_client.get_agent(agent_type)
-    
+
     # 5. Query knowledge systems
     knowledge_context = await get_knowledge_context()
-    
+
     # 6. Use Cursor agent for coding
     result = await agent.perform_task({
         "action": "generate_feature",
@@ -187,13 +202,13 @@ async def implement_with_cursor(feature_name: str, requirements: list):
             "context": knowledge_context
         }
     })
-    
+
     # 7. Quality assurance
     qa_result = await quality_assurance_workflow(result, "feature.py")
-    
+
     # 8. Monitor performance
     await monitor_cursor_performance()
-    
+
     return result
 ```
 
@@ -202,6 +217,7 @@ async def implement_with_cursor(feature_name: str, requirements: list):
 ## 🚨 **ENFORCEMENT MECHANISMS**
 
 ### **1. Automatic Enforcement**
+
 ```python
 # MANDATORY: Use decorators for all functions
 @require_cursor_agent('FRONTEND')
@@ -216,6 +232,7 @@ async def generate_backend_code(requirements):
 ```
 
 ### **2. Quality Assurance**
+
 ```python
 # MANDATORY: Quality assurance workflow
 async def quality_assurance_workflow(code, file_path):
@@ -224,19 +241,19 @@ async def quality_assurance_workflow(code, file_path):
     qa_result = await qa_agent.run_automated_reviews(code, [
         "security", "performance", "accessibility", "code_quality"
     ])
-    
+
     # 2. Knowledge Validation
     knowledge_result = await auto_loader.query_knowledge("code validation")
-    
+
     # 3. Brain Blocks Validation
     brain_result = await brain_blocks.query_brain_blocks(BrainBlockQuery(
         query="code best practices",
         limit=3
     ))
-    
+
     # 4. Mobile Compatibility Check
     mobile_result = await mobile_app.get_dashboard()
-    
+
     return {
         "qa": qa_result,
         "knowledge": knowledge_result,
@@ -246,6 +263,7 @@ async def quality_assurance_workflow(code, file_path):
 ```
 
 ### **3. Error Handling**
+
 ```python
 # MANDATORY: Error handling for Cursor integration
 async def safe_cursor_integration():
@@ -270,6 +288,7 @@ async def safe_cursor_integration():
 ## 📊 **MONITORING & REPORTING**
 
 ### **Usage Statistics**
+
 ```python
 # Get Cursor usage statistics
 from src.cursor import get_cursor_usage_report
@@ -281,6 +300,7 @@ print(f"Success Rate: {report['usage_statistics']['success_rate']:.2%}")
 ```
 
 ### **Performance Monitoring**
+
 ```python
 # Monitor Cursor performance
 from src.cursor import get_auto_invoker
@@ -292,6 +312,7 @@ print(f"Triggers: {stats['total_triggers']}")
 ```
 
 ### **Compliance Validation**
+
 ```python
 # Validate Cursor compliance
 from src.cursor import validate_cursor_compliance
@@ -305,21 +326,22 @@ if not compliance:
 
 ## 🎯 **AGENT SELECTION MATRIX**
 
-| File Type | Agent | Cursor Action | Required Integration |
-|-----------|-------|---------------|-------------------|
-| `.tsx`, `.jsx` | FRONTEND | `generate_components` | Knowledge + Brain Blocks |
-| `.py` | BACKEND | `generate_apis` | Knowledge + Brain Blocks |
-| `.md` | ARCHITECT | `generate_blueprint` | Knowledge + Brain Blocks |
-| `test_*.py` | QA | `run_automated_reviews` | Knowledge + Brain Blocks |
-| `.yml`, `.yaml` | CI/CD | `optimize_pipeline` | Knowledge + Brain Blocks |
-| `.ndjson` | KNOWLEDGE | `traverse_brain_blocks` | Brain Blocks + Mobile |
-| Any other | META | `arbitrate_qa_signals` | All systems |
+| File Type       | Agent     | Cursor Action           | Required Integration     |
+| --------------- | --------- | ----------------------- | ------------------------ |
+| `.tsx`, `.jsx`  | FRONTEND  | `generate_components`   | Knowledge + Brain Blocks |
+| `.py`           | BACKEND   | `generate_apis`         | Knowledge + Brain Blocks |
+| `.md`           | ARCHITECT | `generate_blueprint`    | Knowledge + Brain Blocks |
+| `test_*.py`     | QA        | `run_automated_reviews` | Knowledge + Brain Blocks |
+| `.yml`, `.yaml` | CI/CD     | `optimize_pipeline`     | Knowledge + Brain Blocks |
+| `.ndjson`       | KNOWLEDGE | `traverse_brain_blocks` | Brain Blocks + Mobile    |
+| Any other       | META      | `arbitrate_qa_signals`  | All systems              |
 
 ---
 
 ## 🚀 **EXPECTED IMPACT**
 
 ### **Before Implementation:**
+
 - ❌ Cursor integration not actively used
 - ❌ Knowledge Agent not auto-loading
 - ❌ Mobile control missing
@@ -327,6 +349,7 @@ if not compliance:
 - ❌ Manual coding without AI assistance
 
 ### **After Implementation:**
+
 - ✅ Cursor auto-invocation system active
 - ✅ Knowledge Agent auto-loading NDJSON data
 - ✅ Complete mobile control interface
@@ -360,6 +383,7 @@ if not compliance:
    - Monitor query results
 
 ### **Debug Commands:**
+
 ```bash
 # Test Cursor integration
 python scripts/test_cursor_integration.py
@@ -379,13 +403,16 @@ python -c "from src.cursor import validate_cursor_compliance; print(validate_cur
 ## 📞 **SUPPORT**
 
 ### **If Cursor integration fails:**
+
 1. **STOP** - Do not proceed without Cursor
 2. **DEBUG** - Check Cursor client connection
 3. **RETRY** - Attempt Cursor integration again
 4. **ESCALATE** - If still failing, report the issue
 
 ### **Emergency Protocol:**
+
 If you find yourself writing code without Cursor integration:
+
 1. **STOP IMMEDIATELY**
 2. **RESTART** with Cursor integration
 3. **DELETE** any code written without Cursor
@@ -396,6 +423,7 @@ If you find yourself writing code without Cursor integration:
 ## 🎉 **SUCCESS CRITERIA**
 
 ### **100% Compliance Achieved When:**
+
 - ✅ All coding tasks use Cursor IDE integration
 - ✅ Knowledge systems are queried for every task
 - ✅ Brain Blocks are utilized for context
@@ -409,6 +437,7 @@ If you find yourself writing code without Cursor integration:
 ## 📋 **COMPLETE CHECKLIST**
 
 ### **Setup Checklist:**
+
 - [ ] Environment variables configured
 - [ ] All files in place
 - [ ] Imports working
@@ -417,6 +446,7 @@ If you find yourself writing code without Cursor integration:
 - [ ] Validation scripts created
 
 ### **Usage Checklist:**
+
 - [ ] Cursor auto-invocation active
 - [ ] Knowledge systems queried
 - [ ] Brain Blocks utilized
@@ -426,6 +456,7 @@ If you find yourself writing code without Cursor integration:
 - [ ] Documentation includes Cursor usage
 
 ### **Compliance Checklist:**
+
 - [ ] All coding tasks use Cursor
 - [ ] No manual coding without Cursor
 - [ ] All systems integrated
@@ -443,6 +474,7 @@ If you find yourself writing code without Cursor integration:
 ## 🚀 **FINAL IMPLEMENTATION**
 
 ### **Run This Command to Start Everything:**
+
 ```bash
 python scripts/setup_cursor_integration.py && \
 python scripts/start_cursor_integration.py && \
@@ -452,6 +484,7 @@ python scripts/enforce_cursor_usage.py
 ```
 
 ### **This Will:**
+
 1. ✅ Setup all Cursor integration components
 2. ✅ Start all systems automatically
 3. ✅ Validate everything is working

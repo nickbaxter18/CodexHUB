@@ -1,4 +1,5 @@
 # Cursor Client Usage Examples
+
 ## U-DIG IT WebsiteOS Meta-Intelligence v4.3+
 
 This document provides comprehensive examples of how to use the Cursor clients to map your JSON configuration into actual API calls for full Codex system leverage.
@@ -13,7 +14,7 @@ const { CursorClient } = require('./cursor_client.js');
 // Initialize client
 const client = new CursorClient({
   apiBaseUrl: process.env.CURSOR_API_URL,
-  apiKey: process.env.CURSOR_API_KEY
+  apiKey: process.env.CURSOR_API_KEY,
 });
 
 // Generate code
@@ -25,8 +26,8 @@ async function generateCode() {
     context: {
       domain: 'user_management',
       styling: 'tailwind',
-      motion: true
-    }
+      motion: true,
+    },
   });
   console.log('Generated code:', result);
 }
@@ -65,19 +66,22 @@ asyncio.run(main())
 // JavaScript
 const architectAgent = client.getAgent('architect');
 
-const result = await architectAgent.integrateOmniLaws([
+const result = await architectAgent.integrateOmniLaws(
+  [
+    {
+      name: 'Visual Harmony Law',
+      rule: 'Maintain consistent spacing using 8px grid system',
+    },
+    {
+      name: 'Performance Law',
+      rule: 'All components must load within 200ms',
+    },
+  ],
   {
-    "name": "Visual Harmony Law",
-    "rule": "Maintain consistent spacing using 8px grid system"
-  },
-  {
-    "name": "Performance Law", 
-    "rule": "All components must load within 200ms"
+    systemContext: 'frontend_architecture',
+    currentImplementation: 'react_components',
   }
-], {
-  systemContext: 'frontend_architecture',
-  currentImplementation: 'react_components'
-});
+);
 ```
 
 ```python
@@ -90,7 +94,7 @@ result = await architect_agent.integrate_omni_laws([
         "rule": "Maintain consistent spacing using 8px grid system"
     },
     {
-        "name": "Performance Law", 
+        "name": "Performance Law",
         "rule": "All components must load within 200ms"
     }
 ], {
@@ -105,22 +109,25 @@ result = await architect_agent.integrate_omni_laws([
 // JavaScript - Generate React Component with Visual Refinement
 const frontendAgent = client.getAgent('frontend');
 
-const componentResult = await frontendAgent.generateReactComponent({
-  name: 'UserProfileCard',
-  props: ['user', 'onEdit', 'onDelete'],
-  styling: {
-    theme: 'modern',
-    colors: ['blue', 'gray', 'white'],
-    spacing: 'comfortable'
-  }
-}, {
-  brandGuidelines: {
-    primaryColor: '#3B82F6',
-    typography: 'Inter',
-    borderRadius: '8px'
+const componentResult = await frontendAgent.generateReactComponent(
+  {
+    name: 'UserProfileCard',
+    props: ['user', 'onEdit', 'onDelete'],
+    styling: {
+      theme: 'modern',
+      colors: ['blue', 'gray', 'white'],
+      spacing: 'comfortable',
+    },
   },
-  motionRequirements: ['hover', 'focus', 'loading']
-});
+  {
+    brandGuidelines: {
+      primaryColor: '#3B82F6',
+      typography: 'Inter',
+      borderRadius: '8px',
+    },
+    motionRequirements: ['hover', 'focus', 'loading'],
+  }
+);
 
 // Optimize existing UI
 const optimizationResult = await frontendAgent.optimizeUI('refinement_pass', currentCode);
@@ -164,11 +171,11 @@ const apiResult = await backendAgent.generateBoilerplate('user_api', {
       id: 'uuid',
       name: 'string',
       email: 'string',
-      createdAt: 'datetime'
-    }
+      createdAt: 'datetime',
+    },
   },
   validation: true,
-  authentication: 'jwt'
+  authentication: 'jwt',
 });
 
 // Generate type definitions
@@ -205,22 +212,23 @@ const qaAgent = client.getAgent('qa');
 
 const reviewResult = await qaAgent.runAutomatedReviews(sourceCode, [
   'accessibility',
-  'seo', 
+  'seo',
   'ux',
   'aesthetics',
-  'performance'
+  'performance',
 ]);
 
 // Propose accessibility fixes
-const accessibilityFixes = await qaAgent.proposeAccessibilityFixes(
-  componentCode, 
-  ['color_contrast', 'keyboard_navigation', 'screen_reader']
-);
+const accessibilityFixes = await qaAgent.proposeAccessibilityFixes(componentCode, [
+  'color_contrast',
+  'keyboard_navigation',
+  'screen_reader',
+]);
 
 // SEO optimizations
 const seoOptimizations = await qaAgent.suggestSEOOptimizations(pageCode, {
   targetKeywords: ['user dashboard', 'profile management'],
-  metaRequirements: ['title', 'description', 'og_tags']
+  metaRequirements: ['title', 'description', 'og_tags'],
 });
 ```
 
@@ -230,7 +238,7 @@ qa_agent = client.get_agent(AgentType.QA)
 
 review_result = await qa_agent.run_automated_reviews(source_code, [
     'accessibility',
-    'seo', 
+    'seo',
     'ux',
     'aesthetics',
     'performance'
@@ -238,7 +246,7 @@ review_result = await qa_agent.run_automated_reviews(source_code, [
 
 # Propose accessibility fixes
 accessibility_fixes = await qa_agent.propose_accessibility_fixes(
-    component_code, 
+    component_code,
     ['color_contrast', 'keyboard_navigation', 'screen_reader']
 )
 
@@ -258,14 +266,14 @@ const knowledgeAgent = client.getAgent('knowledge');
 const synthesisResult = await knowledgeAgent.traverseBrainBlocks(brainBlocks, {
   query: 'How to implement responsive design patterns',
   context: 'frontend_architecture',
-  depth: 'comprehensive'
+  depth: 'comprehensive',
 });
 
 // Summarize ndjson scaffolds
 const summaryResult = await knowledgeAgent.summarizeNdjsonScaffolds(ndjsonData, {
   outputFormat: 'structured_knowledge',
   includePatterns: true,
-  extractInsights: true
+  extractInsights: true,
 });
 ```
 
@@ -293,23 +301,29 @@ summary_result = await knowledge_agent.summarize_ndjson_scaffolds(ndjson_data, {
 // JavaScript - Meta Agent Coordination
 const metaAgent = client.getAgent('meta');
 
-const coordinationResult = await metaAgent.coordinateGeneration({
-  task: 'Build complete user management system',
-  requirements: ['frontend', 'backend', 'database', 'testing'],
-  constraints: ['performance', 'security', 'accessibility']
-}, {
-  architectContext: 'system_design',
-  frontendContext: 'component_architecture',
-  backendContext: 'api_design',
-  qaContext: 'quality_requirements'
-});
+const coordinationResult = await metaAgent.coordinateGeneration(
+  {
+    task: 'Build complete user management system',
+    requirements: ['frontend', 'backend', 'database', 'testing'],
+    constraints: ['performance', 'security', 'accessibility'],
+  },
+  {
+    architectContext: 'system_design',
+    frontendContext: 'component_architecture',
+    backendContext: 'api_design',
+    qaContext: 'quality_requirements',
+  }
+);
 
 // Accelerate reasoning for complex problems
-const reasoningResult = await metaAgent.accelerateReasoning({
-  problem: 'How to optimize large-scale component rendering',
-  context: 'react_performance',
-  constraints: ['memory_usage', 'render_time', 'user_experience']
-}, 'performance_optimization');
+const reasoningResult = await metaAgent.accelerateReasoning(
+  {
+    problem: 'How to optimize large-scale component rendering',
+    context: 'react_performance',
+    constraints: ['memory_usage', 'render_time', 'user_experience'],
+  },
+  'performance_optimization'
+);
 ```
 
 ```python
@@ -346,30 +360,30 @@ const visualRefinement = new VisualRefinementCursor(client);
 async function runVisualRefinementPipeline(code, brandGuidelines) {
   // 1. Compliance Pass
   const complianceResult = await visualRefinement.compliancePass(code, brandGuidelines);
-  
+
   // 2. Missed Opportunities Audit
   const opportunitiesResult = await visualRefinement.missedOpportunitiesAudit(code, [
     'color_cognition',
-    'typography', 
+    'typography',
     'layout',
-    'motion'
+    'motion',
   ]);
-  
+
   // 3. Refinement Pass
   const refinementResult = await visualRefinement.refinementPass(code, [
     'palette_optimization',
     'spacing_harmony',
-    'motion_polish'
+    'motion_polish',
   ]);
-  
+
   // 4. Elevation Pass
   const elevationResult = await visualRefinement.elevationPass(code, 'luxury_polish');
-  
+
   return {
     compliance: complianceResult,
     opportunities: opportunitiesResult,
     refinement: refinementResult,
-    elevation: elevationResult
+    elevation: elevationResult,
   };
 }
 ```
@@ -380,28 +394,28 @@ from cursor_client import VisualRefinementCursor
 
 async def run_visual_refinement_pipeline(code, brand_guidelines):
     visual_refinement = VisualRefinementCursor(client)
-    
+
     # 1. Compliance Pass
     compliance_result = await visual_refinement.compliance_pass(code, brand_guidelines)
-    
+
     # 2. Missed Opportunities Audit
     opportunities_result = await visual_refinement.missed_opportunities_audit(code, [
         'color_cognition',
-        'typography', 
+        'typography',
         'layout',
         'motion'
     ])
-    
+
     # 3. Refinement Pass
     refinement_result = await visual_refinement.refinement_pass(code, [
         'palette_optimization',
         'spacing_harmony',
         'motion_polish'
     ])
-    
+
     # 4. Elevation Pass
     elevation_result = await visual_refinement.elevation_pass(code, 'luxury_polish')
-    
+
     return {
         'compliance': compliance_result,
         'opportunities': opportunities_result,
@@ -418,22 +432,25 @@ async def run_visual_refinement_pipeline(code, brand_guidelines):
 // JavaScript - Complete Multi-Agent Workflow
 async function buildUserManagementSystem() {
   const metaAgent = client.getAgent('meta');
-  
+
   // Meta-Agent coordinates the entire process
-  const coordination = await metaAgent.coordinateGeneration({
-    task: 'Complete user management system',
-    requirements: ['authentication', 'profile_management', 'settings', 'dashboard'],
-    qualityStandards: ['accessibility', 'performance', 'security']
-  }, {
-    timeline: '2_weeks',
-    teamSize: '3_developers',
-    techStack: ['react', 'fastapi', 'postgresql']
-  });
-  
+  const coordination = await metaAgent.coordinateGeneration(
+    {
+      task: 'Complete user management system',
+      requirements: ['authentication', 'profile_management', 'settings', 'dashboard'],
+      qualityStandards: ['accessibility', 'performance', 'security'],
+    },
+    {
+      timeline: '2_weeks',
+      teamSize: '3_developers',
+      techStack: ['react', 'fastapi', 'postgresql'],
+    }
+  );
+
   // Execute coordinated plan
   for (const agentTask of coordination.agentTasks) {
     const agent = client.getAgent(agentTask.agent);
-    
+
     switch (agentTask.agent) {
       case 'frontend':
         await agent.generateReactComponent(agentTask.spec, agentTask.styling);
@@ -461,30 +478,30 @@ async function optimizeApplicationPerformance(appCode) {
     targetMetrics: ['speed', 'memory', 'bundle_size'],
     constraints: {
       maintainBackwardCompatibility: true,
-      preserveFunctionality: true
-    }
+      preserveFunctionality: true,
+    },
   });
-  
+
   // 2. Generate optimized code
   const optimizedCode = await client.refactorCode({
     sourceCode: appCode,
     refactoringType: 'performance_optimization',
     targetPattern: analysisResult.recommendedPatterns,
-    preserveBehavior: true
+    preserveBehavior: true,
   });
-  
+
   // 3. Generate performance tests
   const performanceTests = await client.generateTests({
     sourceCode: optimizedCode.refactoredCode,
     testTypes: ['performance', 'load', 'memory'],
     framework: 'jest',
-    coverage: 'comprehensive'
+    coverage: 'comprehensive',
   });
-  
+
   return {
     analysis: analysisResult,
     optimizedCode: optimizedCode,
-    tests: performanceTests
+    tests: performanceTests,
   };
 }
 ```
@@ -500,33 +517,33 @@ async function performSecurityAnalysis(codebase) {
     checkTypes: [
       'injection',
       'authentication',
-      'authorization', 
+      'authorization',
       'data_leaks',
       'dependencies',
-      'secrets_exposure'
-    ]
+      'secrets_exposure',
+    ],
   });
-  
+
   // Generate security fixes
   const securityFixes = await client.refactorCode({
     sourceCode: codebase,
     refactoringType: 'security_hardening',
     targetPattern: securityResult.recommendedFixes,
-    preserveBehavior: true
+    preserveBehavior: true,
   });
-  
+
   // Generate security tests
   const securityTests = await client.generateTests({
     sourceCode: securityFixes.refactoredCode,
     testTypes: ['security', 'penetration'],
     framework: 'jest',
-    coverage: 'security_focused'
+    coverage: 'security_focused',
   });
-  
+
   return {
     analysis: securityResult,
     fixes: securityFixes,
-    tests: securityTests
+    tests: securityTests,
   };
 }
 ```
@@ -572,22 +589,22 @@ CMD ["node", "cursor_client.js"]
 async function robustCursorOperation() {
   try {
     const client = new CursorClient();
-    
+
     const result = await client.generateCode({
       requirements: ['Create a secure login component'],
       language: 'javascript',
       framework: 'react',
       context: {
         securityLevel: 'high',
-        accessibility: 'wcag_aa'
-      }
+        accessibility: 'wcag_aa',
+      },
     });
-    
+
     return result;
   } catch (error) {
     if (error.message.includes('API error 429')) {
       // Rate limit exceeded - implement backoff
-      await new Promise(resolve => setTimeout(resolve, 5000));
+      await new Promise((resolve) => setTimeout(resolve, 5000));
       return robustCursorOperation(); // Retry
     } else if (error.message.includes('API error 401')) {
       // Authentication error
@@ -646,23 +663,23 @@ class CodexSystem {
     this.cursorClient = new CursorClient();
     this.visualRefinement = new VisualRefinementCursor(this.cursorClient);
   }
-  
+
   async executeWebsiteOSWorkflow(requirements) {
     // 1. Meta-Agent coordination
     const metaAgent = this.cursorClient.getAgent('meta');
     const coordination = await metaAgent.coordinateGeneration({
       task: 'Build omni-domain website',
       requirements: requirements,
-      qualityStandards: ['visual_refinement', 'accessibility', 'performance']
+      qualityStandards: ['visual_refinement', 'accessibility', 'performance'],
     });
-    
+
     // 2. Execute agent tasks
     const results = {};
     for (const task of coordination.agentTasks) {
       const agent = this.cursorClient.getAgent(task.agent);
       results[task.agent] = await this.executeAgentTask(agent, task);
     }
-    
+
     // 3. Visual refinement pipeline
     const refinedResults = {};
     for (const [agent, result] of Object.entries(results)) {
@@ -672,25 +689,28 @@ class CodexSystem {
         refinedResults[agent] = result;
       }
     }
-    
+
     // 4. Final QA pass
     const qaAgent = this.cursorClient.getAgent('qa');
-    const finalReview = await qaAgent.runAutomatedReviews(
-      refinedResults, 
-      ['accessibility', 'seo', 'ux', 'aesthetics', 'performance']
-    );
-    
+    const finalReview = await qaAgent.runAutomatedReviews(refinedResults, [
+      'accessibility',
+      'seo',
+      'ux',
+      'aesthetics',
+      'performance',
+    ]);
+
     return {
       coordination,
       results: refinedResults,
-      qaReview: finalReview
+      qaReview: finalReview,
     };
   }
-  
+
   async runVisualRefinement(code) {
     return await this.visualRefinement.elevationPass(code, 'luxury_polish');
   }
-  
+
   async executeAgentTask(agent, task) {
     // Implementation depends on agent type and task
     switch (task.type) {

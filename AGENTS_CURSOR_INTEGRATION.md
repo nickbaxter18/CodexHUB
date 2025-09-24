@@ -1,7 +1,9 @@
 # AGENTS CURSOR INTEGRATION GUIDE
+
 ## Complete Guide for All Agents Using Cursor IDE
 
 ### 🎯 **PURPOSE**
+
 This guide ensures all Codex agents are aware of and properly use Cursor IDE integration for every task.
 
 ---
@@ -9,6 +11,7 @@ This guide ensures all Codex agents are aware of and properly use Cursor IDE int
 ## 🚨 **MANDATORY PROTOCOL FOR ALL AGENTS**
 
 ### **STEP 1: ALWAYS START WITH CURSOR INTEGRATION**
+
 ```python
 # MANDATORY: Every agent must start with this
 import asyncio
@@ -37,11 +40,12 @@ asyncio.run(start_cursor_integration())
 ```
 
 ### **STEP 2: SELECT CORRECT CURSOR AGENT**
+
 ```python
 # MANDATORY: Select agent based on task type
 def select_cursor_agent(task_type: str, file_path: str = None) -> str:
     """Select correct Cursor agent for task."""
-    
+
     if task_type == "frontend" or (file_path and file_path.endswith(('.tsx', '.jsx', '.ts', '.js'))):
         return "FRONTEND"
     elif task_type == "backend" or (file_path and file_path.endswith(('.py', '.pyx'))):
@@ -69,7 +73,9 @@ def execute_task():
 ## 🎨 **FRONTEND AGENT CURSOR INTEGRATION**
 
 ### **Agent Type**: `FRONTEND`
+
 ### **File Types**: `.tsx`, `.jsx`, `.ts`, `.js`
+
 ### **Cursor Agent**: `FRONTEND`
 
 ```python
@@ -77,15 +83,15 @@ def execute_task():
 @require_cursor_agent(agent_type="FRONTEND")
 def generate_react_component(component_name: str, props: dict):
     """Generate React component using Cursor FRONTEND agent."""
-    
+
     # 1. Query knowledge systems for React patterns
     from src.knowledge.auto_loader import get_knowledge_entries
     knowledge_entries = await get_knowledge_entries()
-    
+
     # 2. Query brain blocks for component context
     from src.knowledge.brain_blocks_integration import query_brain_blocks
     brain_blocks = await query_brain_blocks()
-    
+
     # 3. Use mobile control for goal management
     from src.mobile.mobile_app import create_goal
     goal = await create_goal(
@@ -93,10 +99,10 @@ def generate_react_component(component_name: str, props: dict):
         description="Generate React component using Cursor IDE",
         priority="high"
     )
-    
+
     # 4. Generate component using Cursor FRONTEND agent
     # (This will be handled by the Cursor integration system)
-    
+
     return {
         "component": component_name,
         "props": props,
@@ -107,6 +113,7 @@ def generate_react_component(component_name: str, props: dict):
 ```
 
 ### **Frontend Agent Responsibilities:**
+
 - ✅ Generate React components using Cursor FRONTEND agent
 - ✅ Use Tailwind CSS for styling
 - ✅ Follow functional component patterns
@@ -119,7 +126,9 @@ def generate_react_component(component_name: str, props: dict):
 ## 🐍 **BACKEND AGENT CURSOR INTEGRATION**
 
 ### **Agent Type**: `BACKEND`
+
 ### **File Types**: `.py`, `.pyx`
+
 ### **Cursor Agent**: `BACKEND`
 
 ```python
@@ -127,15 +136,15 @@ def generate_react_component(component_name: str, props: dict):
 @require_cursor_agent(agent_type="BACKEND")
 def generate_python_api(endpoint: str, methods: list):
     """Generate Python API using Cursor BACKEND agent."""
-    
+
     # 1. Query knowledge systems for Python patterns
     from src.knowledge.auto_loader import get_knowledge_entries
     knowledge_entries = await get_knowledge_entries()
-    
+
     # 2. Query brain blocks for API context
     from src.knowledge.brain_blocks_integration import query_brain_blocks
     brain_blocks = await query_brain_blocks()
-    
+
     # 3. Use mobile control for goal management
     from src.mobile.mobile_app import create_goal
     goal = await create_goal(
@@ -143,10 +152,10 @@ def generate_python_api(endpoint: str, methods: list):
         description="Generate Python API using Cursor IDE",
         priority="high"
     )
-    
+
     # 4. Generate API using Cursor BACKEND agent
     # (This will be handled by the Cursor integration system)
-    
+
     return {
         "endpoint": endpoint,
         "methods": methods,
@@ -157,6 +166,7 @@ def generate_python_api(endpoint: str, methods: list):
 ```
 
 ### **Backend Agent Responsibilities:**
+
 - ✅ Generate Python APIs using Cursor BACKEND agent
 - ✅ Follow Python best practices
 - ✅ Query knowledge systems for Python patterns
@@ -168,7 +178,9 @@ def generate_python_api(endpoint: str, methods: list):
 ## 📚 **KNOWLEDGE AGENT CURSOR INTEGRATION**
 
 ### **Agent Type**: `KNOWLEDGE`
+
 ### **File Types**: `.md`, `.rst`, `.txt`
+
 ### **Cursor Agent**: `KNOWLEDGE`
 
 ```python
@@ -176,15 +188,15 @@ def generate_python_api(endpoint: str, methods: list):
 @require_cursor_agent(agent_type="KNOWLEDGE")
 def generate_documentation(topic: str, content_type: str):
     """Generate documentation using Cursor KNOWLEDGE agent."""
-    
+
     # 1. Query knowledge systems for documentation patterns
     from src.knowledge.auto_loader import get_knowledge_entries
     knowledge_entries = await get_knowledge_entries()
-    
+
     # 2. Query brain blocks for documentation context
     from src.knowledge.brain_blocks_integration import query_brain_blocks
     brain_blocks = await query_brain_blocks()
-    
+
     # 3. Use mobile control for goal management
     from src.mobile.mobile_app import create_goal
     goal = await create_goal(
@@ -192,10 +204,10 @@ def generate_documentation(topic: str, content_type: str):
         description="Generate documentation using Cursor IDE",
         priority="high"
     )
-    
+
     # 4. Generate documentation using Cursor KNOWLEDGE agent
     # (This will be handled by the Cursor integration system)
-    
+
     return {
         "topic": topic,
         "content_type": content_type,
@@ -206,6 +218,7 @@ def generate_documentation(topic: str, content_type: str):
 ```
 
 ### **Knowledge Agent Responsibilities:**
+
 - ✅ Generate documentation using Cursor KNOWLEDGE agent
 - ✅ Query knowledge systems for documentation patterns
 - ✅ Use brain blocks for documentation context
@@ -216,7 +229,9 @@ def generate_documentation(topic: str, content_type: str):
 ## 🧪 **QA AGENT CURSOR INTEGRATION**
 
 ### **Agent Type**: `QA`
+
 ### **File Types**: Test files, quality assurance
+
 ### **Cursor Agent**: `QA`
 
 ```python
@@ -224,15 +239,15 @@ def generate_documentation(topic: str, content_type: str):
 @require_cursor_agent(agent_type="QA")
 def generate_tests(test_type: str, coverage_requirements: dict):
     """Generate tests using Cursor QA agent."""
-    
+
     # 1. Query knowledge systems for testing patterns
     from src.knowledge.auto_loader import get_knowledge_entries
     knowledge_entries = await get_knowledge_entries()
-    
+
     # 2. Query brain blocks for testing context
     from src.knowledge.brain_blocks_integration import query_brain_blocks
     brain_blocks = await query_brain_blocks()
-    
+
     # 3. Use mobile control for goal management
     from src.mobile.mobile_app import create_goal
     goal = await create_goal(
@@ -240,10 +255,10 @@ def generate_tests(test_type: str, coverage_requirements: dict):
         description="Generate tests using Cursor IDE",
         priority="high"
     )
-    
+
     # 4. Generate tests using Cursor QA agent
     # (This will be handled by the Cursor integration system)
-    
+
     return {
         "test_type": test_type,
         "coverage_requirements": coverage_requirements,
@@ -254,6 +269,7 @@ def generate_tests(test_type: str, coverage_requirements: dict):
 ```
 
 ### **QA Agent Responsibilities:**
+
 - ✅ Generate tests using Cursor QA agent
 - ✅ Ensure test coverage requirements
 - ✅ Query knowledge systems for testing patterns
@@ -265,7 +281,9 @@ def generate_tests(test_type: str, coverage_requirements: dict):
 ## 🏗️ **ARCHITECT AGENT CURSOR INTEGRATION**
 
 ### **Agent Type**: `ARCHITECT`
+
 ### **File Types**: Architecture decisions, system design
+
 ### **Cursor Agent**: `ARCHITECT`
 
 ```python
@@ -273,15 +291,15 @@ def generate_tests(test_type: str, coverage_requirements: dict):
 @require_cursor_agent(agent_type="ARCHITECT")
 def design_system_architecture(requirements: dict, constraints: list):
     """Design system architecture using Cursor ARCHITECT agent."""
-    
+
     # 1. Query knowledge systems for architecture patterns
     from src.knowledge.auto_loader import get_knowledge_entries
     knowledge_entries = await get_knowledge_entries()
-    
+
     # 2. Query brain blocks for architecture context
     from src.knowledge.brain_blocks_integration import query_brain_blocks
     brain_blocks = await query_brain_blocks()
-    
+
     # 3. Use mobile control for goal management
     from src.mobile.mobile_app import create_goal
     goal = await create_goal(
@@ -289,10 +307,10 @@ def design_system_architecture(requirements: dict, constraints: list):
         description="Design system architecture using Cursor IDE",
         priority="high"
     )
-    
+
     # 4. Design architecture using Cursor ARCHITECT agent
     # (This will be handled by the Cursor integration system)
-    
+
     return {
         "requirements": requirements,
         "constraints": constraints,
@@ -303,6 +321,7 @@ def design_system_architecture(requirements: dict, constraints: list):
 ```
 
 ### **Architect Agent Responsibilities:**
+
 - ✅ Design system architecture using Cursor ARCHITECT agent
 - ✅ Query knowledge systems for architecture patterns
 - ✅ Use brain blocks for architecture context
@@ -313,7 +332,9 @@ def design_system_architecture(requirements: dict, constraints: list):
 ## 🚀 **CICD AGENT CURSOR INTEGRATION**
 
 ### **Agent Type**: `CICD`
+
 ### **File Types**: `.yml`, `.yaml`, `.json`
+
 ### **Cursor Agent**: `CICD`
 
 ```python
@@ -321,15 +342,15 @@ def design_system_architecture(requirements: dict, constraints: list):
 @require_cursor_agent(agent_type="CICD")
 def generate_pipeline(pipeline_type: str, stages: list):
     """Generate CI/CD pipeline using Cursor CICD agent."""
-    
+
     # 1. Query knowledge systems for CI/CD patterns
     from src.knowledge.auto_loader import get_knowledge_entries
     knowledge_entries = await get_knowledge_entries()
-    
+
     # 2. Query brain blocks for CI/CD context
     from src.knowledge.brain_blocks_integration import query_brain_blocks
     brain_blocks = await query_brain_blocks()
-    
+
     # 3. Use mobile control for goal management
     from src.mobile.mobile_app import create_goal
     goal = await create_goal(
@@ -337,10 +358,10 @@ def generate_pipeline(pipeline_type: str, stages: list):
         description="Generate CI/CD pipeline using Cursor IDE",
         priority="high"
     )
-    
+
     # 4. Generate pipeline using Cursor CICD agent
     # (This will be handled by the Cursor integration system)
-    
+
     return {
         "pipeline_type": pipeline_type,
         "stages": stages,
@@ -351,6 +372,7 @@ def generate_pipeline(pipeline_type: str, stages: list):
 ```
 
 ### **CI/CD Agent Responsibilities:**
+
 - ✅ Generate CI/CD pipelines using Cursor CICD agent
 - ✅ Query knowledge systems for CI/CD patterns
 - ✅ Use brain blocks for CI/CD context
@@ -361,6 +383,7 @@ def generate_pipeline(pipeline_type: str, stages: list):
 ## 🚨 **CRITICAL REQUIREMENTS FOR ALL AGENTS**
 
 ### **NEVER:**
+
 - ❌ Start coding without Cursor integration active
 - ❌ Use any agent other than Cursor agents
 - ❌ Skip knowledge system queries
@@ -370,6 +393,7 @@ def generate_pipeline(pipeline_type: str, stages: list):
 - ❌ Skip compliance validation
 
 ### **ALWAYS:**
+
 - ✅ Start with Cursor integration
 - ✅ Query knowledge systems
 - ✅ Use mobile control
@@ -384,6 +408,7 @@ def generate_pipeline(pipeline_type: str, stages: list):
 ## 🎯 **SUCCESS CRITERIA**
 
 ### **100% Cursor Integration Achieved When:**
+
 - ✅ All agents use Cursor IDE integration
 - ✅ Knowledge systems are queried by all agents
 - ✅ Mobile control is used by all agents
