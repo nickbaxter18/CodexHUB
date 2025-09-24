@@ -31,6 +31,8 @@ repos:
         exclude: pnpm-lock.yaml
         additional_dependencies:
           - tomli
+        args:
+          - --skip=**/package-lock.json
   - repo: local
     hooks:
       - id: markdownlint
