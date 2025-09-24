@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Probabilistic Runner Dashboard</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 2rem; background-color: #0f172a; color: #e2e8f0; }
+      h1 { color: #38bdf8; }
+      section { margin-bottom: 2rem; }
+      .card { background: #1e293b; padding: 1.5rem; border-radius: 0.75rem; box-shadow: 0 20px 25px -15px rgba(15, 23, 42, 0.7); }
+      .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+      .metric { background: #0f172a; padding: 1rem; border-radius: 0.5rem; text-align: center; }
+      table { width: 100%; border-collapse: collapse; }
+      th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid #334155; }
+      th { color: #38bdf8; }
+      .status { font-weight: 600; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Runner Dashboard</h1>
+      <p>Generated at {{ generated_at }}</p>
+    </header>
+    <section class="card">
+      <h2>Task Summary</h2>
+      <div class="metrics">
+        <div class="metric">
+          <div class="status">Total Tasks</div>
+          <div>{{ total_tasks }}</div>
+        </div>
+        <div class="metric">
+          <div class="status">Completed</div>
+          <div>{{ completed_tasks }}</div>
+        </div>
+        <div class="metric">
+          <div class="status">Failed</div>
+          <div>{{ failed_tasks }}</div>
+        </div>
+      </div>
+    </section>
+    <section class="card">
+      <h2>Knowledge & Ethics</h2>
+      <div class="metrics">
+        <div class="metric">
+          <div class="status">Knowledge Nodes</div>
+          <div>{{ knowledge_nodes }}</div>
+        </div>
+        <div class="metric">
+          <div class="status">Knowledge Edges</div>
+          <div>{{ knowledge_edges }}</div>
+        </div>
+        <div class="metric">
+          <div class="status">Fairness Threshold</div>
+          <div>{{ fairness_threshold }}</div>
+        </div>
+        <div class="metric">
+          <div class="status">Dynamic Threshold</div>
+          <div>{{ dynamic_fairness }}</div>
+        </div>
+        <div class="metric">
+          <div class="status">Collective Opt-In</div>
+          <div>{{ 'Enabled' if collective_opt_in else 'Disabled' }}</div>
+        </div>
+      </div>
+    </section>
+    <section class="card">
+      <h2>Active Plugins</h2>
+      {% if plugins %}
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Version</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for plugin in plugins %}
+          <tr>
+            <td>{{ plugin.name }}</td>
+            <td>{{ plugin.description }}</td>
+            <td>{{ plugin.version }}</td>
+            <td>{{ 'Enabled' if plugin.enabled else 'Disabled' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p>No plugins loaded.</p>
+      {% endif %}
+    </section>
+  </body>
+</html>
