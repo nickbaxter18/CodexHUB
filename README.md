@@ -62,6 +62,10 @@ consistency.
 ### 4. Quality checks
 
 ```bash
+make quality       # orchestrate Node, docs, and Python quality suites with metrics capture
+make quality-node  # run the Node.js subset with timing instrumentation
+make quality-docs  # run Markdown/YAML/editorconfig linting with metrics
+make quality-python # run pytest, governance validation, bandit, and pip audit with metrics
 make format        # format JavaScript/TypeScript via Prettier and Python via black/isort
 make lint          # run ESLint across Node workspaces
 make lint-python   # run flake8 across Python packages
@@ -70,10 +74,12 @@ make test          # execute JavaScript/TypeScript unit tests
 make test-python   # execute pytest suites
 make security      # run npm and pip security audits
 make cursor-status # emit Cursor automation health as JSON (non-zero exit on failure)
+python -m src.common.config_loader --json  # validate pipeline/governance/metrics bundles
 ```
 
-Each command is idempotent and suitable for CI usage; see `docs/usage.md` for additional
-workflow-specific helpers.
+Each command is idempotent and suitable for CI usage; the aggregated `make quality` target mirrors
+the GitHub Actions matrix and persists timing data under `results/performance/` for use with
+`scripts/codex_status.py`. See `docs/usage.md` for additional workflow-specific helpers.
 
 ## Documentation
 
@@ -94,4 +100,5 @@ hardening.
 ## Contributing
 
 Please review `CONTRIBUTING.md` and the checks listed above before opening a pull request. Run
-`pnpm test` and `python -m pytest` locally to keep the mixed Node/Python toolchain healthy.
+`make quality` (or the narrower `quality-*` targets) locally to keep the mixed Node/Python toolchain
+healthy.

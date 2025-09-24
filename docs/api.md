@@ -27,6 +27,8 @@ Response contains a `taskId` that can be polled via `/task-status`.
 Most Python functionality is exposed through modules or CLIs rather than persistent HTTP servers. Key entry points include:
 
 - `src/training/pipeline.py` – End-to-end model training orchestrator.
+- `src/performance/cli.py` – Utility for executing quality suites while persisting timing metrics to
+  `results/performance/`.
 - `src/inference/inference.py` – Prediction service with caching and concurrency controls.
 - `src/governance/privacy.py` / `src/governance/fairness.py` – Enforcement utilities used during CI and validation.
 

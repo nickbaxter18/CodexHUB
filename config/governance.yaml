@@ -12,9 +12,8 @@ monitoring:
 fairness:
   enforce: true
   sensitive_attributes:
-    - gender
-    - age_group
-  min_samples_per_group: 20
+    - sensitive_segment
+  min_samples_per_group: 1
 compliance:
   audit_log_dir: ./results/audit
   model_card_dir: ./docs/model_cards

@@ -11,7 +11,7 @@ env:
   PNPM_STORE_PATH: ${{ runner.temp }}/pnpm-store
 
 jobs:
-  quality:
+  node-quality:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -37,6 +37,67 @@ jobs:
       - name: Install Node.js dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Node quality suite
+        run: python -m src.performance.cli node-quality --output-dir results/performance/node
+
+      - name: Commitlint history
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            pnpm commitlint --from=${{ github.event.pull_request.base.sha }} --to=${{ github.event.pull_request.head.sha }}
+          else
+            pnpm commitlint --from=${{ github.sha }}~1 --to=${{ github.sha }}
+          fi
+
+      - name: Upload Node metrics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: node-quality-metrics
+          path: results/performance/node
+
+  docs-quality:
+    runs-on: ubuntu-latest
+    needs: node-quality
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Configure pnpm store
+        run: |
+          mkdir -p "$PNPM_STORE_PATH"
+          pnpm config set store-dir "$PNPM_STORE_PATH"
+
+      - name: Install Node.js dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Documentation quality suite
+        run: python -m src.performance.cli docs-quality --output-dir results/performance/docs
+
+      - name: Upload documentation metrics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs-quality-metrics
+          path: results/performance/docs
+
+  python-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -47,52 +108,27 @@ jobs:
       - name: Install Python tooling
         run: pip install -r requirements-dev.txt
 
-      - name: Validate governance configuration
-        run: python scripts/validate_configs.py
+      - name: Python quality suite
+        run: python -m src.performance.cli python-quality --output-dir results/performance/python
 
-      - name: TypeScript type check
-        run: pnpm typecheck
+      - name: Upload Python metrics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-quality-metrics
+          path: results/performance/python
 
-      - name: ESLint
-        run: pnpm lint
+  codex-status:
+    runs-on: ubuntu-latest
+    needs: [node-quality, docs-quality, python-quality]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Prettier check
-        run: pnpm check-format
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
 
-      - name: Stylelint
-        run: pnpm lint:css
-
-      - name: Markdown lint
-        run: pnpm lint:md
-
-      - name: YAML lint
-        run: pnpm lint:yaml
-
-      - name: Spellcheck
-        run: pnpm spellcheck
-
-      - name: EditorConfig enforcement
-        run: pnpm lint:editorconfig
-
-      - name: Vitest coverage
-        run: pnpm coverage
-
-      - name: Pytest coverage
-        run: pytest --cov=macro_system --cov=meta_agent --cov=qa
-
-      - name: Bandit security scan
-        run: bandit -q -r macro_system meta_agent qa -x macro_system/tests,meta_agent/tests,tests
-
-      - name: pip-audit
-        run: python -m pip_audit -r requirements-dev.txt
-
-      - name: pnpm audit
-        run: pnpm audit --audit-level=high
-
-      - name: Commitlint history
-        run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            pnpm commitlint --from=${{ github.event.pull_request.base.sha }} --to=${{ github.event.pull_request.head.sha }}
-          else
-            pnpm commitlint --from=${{ github.sha }}~1 --to=${{ github.sha }}
-          fi
+      - name: Render Codex status report
+        run: python scripts/codex_status.py

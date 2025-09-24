@@ -26,6 +26,8 @@ class DatasetSplits:
     x_validation: pd.DataFrame
     y_train: pd.Series
     y_validation: pd.Series
+    sensitive_train: pd.Series | None = None
+    sensitive_validation: pd.Series | None = None
 
 
 # SECTION 4: Core Logic / Implementation
@@ -47,6 +49,8 @@ def load_dataset(config: DatasetConfig) -> pd.DataFrame:
 
     feature_columns = config.feature_columns
     columns_to_use = feature_columns + [config.target_column]
+    if config.sensitive_attribute:
+        columns_to_use.append(config.sensitive_attribute)
     subset = frame.loc[:, columns_to_use].dropna()
     if subset.empty:
         raise ConfigValidationError("Dataset is empty after dropping NA rows")
@@ -60,6 +64,40 @@ def split_dataset(config: DatasetConfig, dataset: pd.DataFrame) -> DatasetSplits
     y_data = dataset[config.target_column]
 
     stratify_target = y_data if config.stratify else None
+    sensitive_data = (
+        dataset[config.sensitive_attribute]
+        if config.sensitive_attribute and config.sensitive_attribute in dataset
+        else None
+    )
+
+    if sensitive_data is not None:
+        try:
+            x_train, x_val, y_train, y_val, s_train, s_val = train_test_split(
+                x_data,
+                y_data,
+                sensitive_data,
+                test_size=config.validation_split,
+                random_state=config.random_state,
+                stratify=stratify_target,
+            )
+        except ValueError:
+            x_train, x_val, y_train, y_val, s_train, s_val = train_test_split(
+                x_data,
+                y_data,
+                sensitive_data,
+                test_size=config.validation_split,
+                random_state=config.random_state,
+                stratify=None,
+            )
+        return DatasetSplits(
+            x_train=x_train,
+            x_validation=x_val,
+            y_train=y_train,
+            y_validation=y_val,
+            sensitive_train=s_train,
+            sensitive_validation=s_val,
+        )
+
     try:
         x_train, x_val, y_train, y_val = train_test_split(
             x_data,
@@ -98,5 +136,7 @@ def _missing_required_columns(frame: pd.DataFrame, config: DatasetConfig) -> set
     """Identify any missing required columns for defensive validation."""
 
     required = set(config.feature_columns + [config.target_column])
+    if config.sensitive_attribute:
+        required.add(config.sensitive_attribute)
     present = set(frame.columns)
     return required.difference(present)
