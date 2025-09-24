@@ -67,6 +67,7 @@
       "budgets": {},
       "tests": ["full_suite"]
     },
+<<<<<<< HEAD
     "CICD": {
       "budgets": {
         "pipeline_success_rate": 0.95,
@@ -118,6 +119,42 @@
           ],
           "remediation_macros": ["::datasuite", "::perf-io"],
           "weight": 1.0
+=======
+    "Knowledge": {
+      "budgets": {
+        "results_found": 1,
+        "coverage_ratio": 0.02,
+        "latency_ms": 750
+      },
+      "tests": ["knowledge_store_health"],
+      "metrics": {
+        "results_found": {
+          "comparison": "gte",
+          "remediation_steps": [
+            "Expand Brain Blocks index or update retrieval prompts to increase recall.",
+            "Review query strategy and ensure domain synonyms are represented in the corpus."
+          ],
+          "remediation_macros": [],
+          "weight": 1.2
+        },
+        "coverage_ratio": {
+          "comparison": "gte",
+          "remediation_steps": [
+            "Backfill missing knowledge blocks for underserved topics.",
+            "Schedule corpus refresh to capture recent governance or design updates."
+          ],
+          "remediation_macros": [],
+          "weight": 1.0
+        },
+        "latency_ms": {
+          "comparison": "lte",
+          "remediation_steps": [
+            "Optimise knowledge store loading and enable caching for heavy sources.",
+            "Profile retrieval bottlenecks and parallelise parsing where safe."
+          ],
+          "remediation_macros": [],
+          "weight": 0.8
+>>>>>>> origin/codex/establish-repository-audit-process
         }
       }
     }

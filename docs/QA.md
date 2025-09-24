@@ -19,6 +19,7 @@
 | Backend    | API latency p95 ≤ 300 ms           | `pytest_unit`, `api_fuzz`, `contract`    |
 | Architect  | Dependency graph integrity         | `schema_validation`, `macro_dependency`  |
 | QA         | Holistic QA sign-off               | `full_suite`                             |
+| Knowledge  | ≥1 result per query, coverage ≥ 2 %, latency ≤ 750 ms | `knowledge_store_health`              |
 
 > **Test Execution Enforcement** – Agents must report the tests they executed. Missing any mandatory tests will trigger a `tests_required` arbitration decision and remediation guidance to run the outstanding checks. Task payloads surface `qa_tests_executed` and a JSON-safe `qa_evaluation_payload`, enabling Agent MD, macro orchestrators, and external dashboards to compare executed versus missing tests without Python-specific serialization.
 

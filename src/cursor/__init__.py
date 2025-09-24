@@ -20,10 +20,26 @@ from .cursor_client import (
     create_cursor_client
 )
 
+from .auto_invocation import (
+    CursorAutoInvoker,
+    AutoInvocationRule,
+    get_auto_invoker,
+    start_cursor_auto_invocation
+)
+
+from .enforcement import (
+    CursorEnforcementError,
+    enforce_cursor_integration,
+    require_cursor_agent,
+    validate_cursor_compliance,
+    get_cursor_usage_report
+)
+
 __version__ = "4.3.0"
 __author__ = "U-DIG IT Meta-Intelligence System"
 
 __all__ = [
+    # Core Cursor Client
     "CursorClient",
     "CursorConfig", 
     "CursorAPIError",
@@ -31,5 +47,18 @@ __all__ = [
     "RequestType",
     "RequestPayload",
     "VisualRefinementCursor",
-    "create_cursor_client"
+    "create_cursor_client",
+    
+    # Auto-Invocation System
+    "CursorAutoInvoker",
+    "AutoInvocationRule",
+    "get_auto_invoker",
+    "start_cursor_auto_invocation",
+    
+    # Enforcement System
+    "CursorEnforcementError",
+    "enforce_cursor_integration",
+    "require_cursor_agent",
+    "validate_cursor_compliance",
+    "get_cursor_usage_report"
 ]

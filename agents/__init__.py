@@ -12,6 +12,7 @@ SECTION: Exports / Public API
 """
 
 from .agent_base import Agent, AgentTaskError
+from .knowledge_agent import KnowledgeAgent, KnowledgeRecord, KnowledgeSearchResult, KnowledgeStore
 from .meta_agent import MetaAgent
 from .specialist_agents import (
     AgentTask,
@@ -27,6 +28,7 @@ from .specialist_agents import (
 
 __all__ = [
     "Agent",
+<<<<<<< HEAD
     "AgentTask",
     "AgentTaskError",
     "ArchitectAgent",
@@ -38,4 +40,12 @@ __all__ = [
     "MetaAgent",
     "QAAgent",
     "SpecialistAgent",
+=======
+    "AgentTaskError",
+    "KnowledgeAgent",
+    "KnowledgeRecord",
+    "KnowledgeSearchResult",
+    "KnowledgeStore",
+    "MetaAgent",
+>>>>>>> origin/codex/establish-repository-audit-process
 ]
