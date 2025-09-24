@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Dict, List
 
 from pydantic import BaseModel
@@ -27,7 +27,7 @@ def create_alert(channel: str, message: str, metadata: Dict[str, str] | None = N
         id=len(_ALERTS) + 1,
         channel=channel,
         message=message,
-        created_at=datetime.utcnow(),
+        created_at=datetime.now(UTC),
         metadata=metadata or {},
     )
     _ALERTS.append(alert)

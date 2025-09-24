@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any, Dict
 
 
@@ -33,7 +33,7 @@ class PricingAgent(BaseAgent):
         adjustment = (1 + occupancy / 10) - (100 - sustainability) / 200
         price = base_price * adjustment
         return AgentResult(
-            self.name, {"price": round(price, 2), "confidence": 0.82}, datetime.utcnow()
+            self.name, {"price": round(price, 2), "confidence": 0.82}, datetime.now(UTC)
         )
 
 
@@ -45,7 +45,9 @@ class MaintenanceAgent(BaseAgent):
         if payload.get("sensor_alerts", 0) > 5:
             severity = "high"
         return AgentResult(
-            self.name, {"severity": severity, "tasks": payload.get("tasks", [])}, datetime.utcnow()
+            self.name,
+            {"severity": severity, "tasks": payload.get("tasks", [])},
+            datetime.now(UTC),
         )
 
 
@@ -54,7 +56,7 @@ class RiskAgent(BaseAgent):
 
     async def run(self, payload: Dict[str, Any]) -> AgentResult:
         score = max(0.0, min(1.0, 0.5 + payload.get("esg_score", 0) / 200))
-        return AgentResult(self.name, {"risk_score": score}, datetime.utcnow())
+        return AgentResult(self.name, {"risk_score": score}, datetime.now(UTC))
 
 
 class ScreeningAgent(BaseAgent):
@@ -64,7 +66,7 @@ class ScreeningAgent(BaseAgent):
         credit = payload.get("credit_score", 680)
         history = payload.get("rental_history_years", 3)
         score = min(100, credit / 10 + history * 5)
-        return AgentResult(self.name, {"score": score}, datetime.utcnow())
+        return AgentResult(self.name, {"score": score}, datetime.now(UTC))
 
 
 class SustainabilityAgent(BaseAgent):
@@ -75,7 +77,7 @@ class SustainabilityAgent(BaseAgent):
         water = payload.get("water_liters", 800)
         waste = payload.get("waste_kg", 32)
         composite = max(0, 100 - (carbon / 10 + water / 50 + waste))
-        return AgentResult(self.name, {"esg_score": round(composite, 2)}, datetime.utcnow())
+        return AgentResult(self.name, {"esg_score": round(composite, 2)}, datetime.now(UTC))
 
 
 class SchedulingAgent(BaseAgent):
@@ -84,7 +86,7 @@ class SchedulingAgent(BaseAgent):
     async def run(self, payload: Dict[str, Any]) -> AgentResult:
         items = payload.get("items", [])
         ordered = sorted(items, key=lambda item: item.get("priority", 5))
-        return AgentResult(self.name, {"ordered": ordered}, datetime.utcnow())
+        return AgentResult(self.name, {"ordered": ordered}, datetime.now(UTC))
 
 
 class AgentRegistry:
