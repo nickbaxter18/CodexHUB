@@ -9,8 +9,8 @@ def test_pre_commit_config_contains_required_hooks() -> None:
     """Ensure pre-commit configuration references Python formatters and commitlint."""
 
     config = Path(".pre-commit-config.yaml").read_text(encoding="utf-8")
-    assert "black" in config
-    assert "isort" in config
+    assert "ruff" in config
+    assert "ruff-format" in config
     assert "commitlint" in config
 
 

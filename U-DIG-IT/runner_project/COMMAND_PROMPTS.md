@@ -107,7 +107,7 @@ runner_project/
 │   ├── test_api_endpoints.py  # Tests REST endpoints.
 │   └── … (stubs for unimplemented modules)
 ├── .husky/
-│   └── pre-commit              # Runs prettier/eslint/black using the runner’s command execution.
+│   └── pre-commit              # Runs prettier/eslint/ruff using the runner’s command execution.
 └── .gitignore
 ```
 

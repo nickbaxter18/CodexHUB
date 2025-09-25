@@ -1,16 +1,23 @@
-[tool.black]
+[tool.ruff]
 line-length = 100
-target-version = ["py311"]
+target-version = "py311"
+src = [
+    "src",
+    "packages/automation",
+    "scripts",
+    "agents",
+    "meta_agent",
+    "macro_system",
+    "qa_engine",
+]
 
-[tool.isort]
-profile = "black"
-line_length = 100
-combine_as_imports = true
-include_trailing_comma = true
+[tool.ruff.lint]
+select = ["E", "F", "B"]
+extend-select = ["W"]
+extend-ignore = ["E203"]
 
-[tool.flake8]
-max-line-length = 100
-extend-ignore = ["E203", "W503"]
+[tool.ruff.format]
+quote-style = "double"
 
 [tool.mypy]
 python_version = "3.11"

@@ -14,6 +14,12 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
+try:
+    from watchfiles import DefaultFilter, awatch
+except ImportError:  # pragma: no cover - optional dependency fallback
+    DefaultFilter = None  # type: ignore[assignment]
+    awatch = None  # type: ignore[assignment]
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from agents.specialist_agents import KnowledgeAgent  # noqa: E402
@@ -36,6 +42,30 @@ class KnowledgeSource:
     document_count: int = 0
     auto_reload: bool = True
     priority: int = 1
+
+
+if DefaultFilter is not None:
+
+    class _KnowledgeWatchFilter(DefaultFilter):
+        """Filter watch events to NDJSON files, respecting ignored directories."""
+
+        def __init__(self, ignored_dirs: set[str]):
+            super().__init__(ignore_dirs=tuple(ignored_dirs))
+
+        def __call__(self, change: tuple[int, str]) -> bool:  # type: ignore[override]
+            if not super().__call__(change):
+                return False
+
+            _, raw_path = change
+            return raw_path.endswith(".ndjson")
+
+else:  # pragma: no cover - executed only when watchfiles missing
+
+    class _KnowledgeWatchFilter:  # type: ignore[too-many-ancestors]
+        def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: D401
+            """Placeholder filter when watchfiles is unavailable."""
+
+            raise RuntimeError("watchfiles is required for knowledge watching")
 
 
 class KnowledgeAutoLoader:
@@ -165,18 +195,43 @@ class KnowledgeAutoLoader:
     async def _watch_for_changes(self) -> None:
         """Watch for changes in knowledge sources."""
 
+        if awatch is None or DefaultFilter is None:
+            await self._poll_for_changes()
+            return
+
+        watch_targets = self._resolve_watch_targets()
+        if not watch_targets:
+            await self._poll_for_changes()
+            return
+
+        watch_filter = _KnowledgeWatchFilter(self.ignored_directories)
+        debounce = self.watch_interval or 30
+
+        async for changes in awatch(*watch_targets, watch_filter=watch_filter, step=debounce):
+            if not self.is_running:
+                break
+
+            touched_sources = {
+                self._resolve_source_from_path(Path(changed_path)) for _, changed_path in changes
+            }
+
+            for source in filter(None, touched_sources):
+                if source.enabled and source.auto_reload:
+                    await self._load_source(source)
+
+    async def _poll_for_changes(self) -> None:
+        """Fallback polling when watchfiles is unavailable."""
+
         while self.is_running:
             try:
-                # Check for changes in all sources
                 for source in self.sources:
                     if source.enabled and source.auto_reload:
                         await self._check_source_changes(source)
 
-                # Wait before next check
                 await asyncio.sleep(self.watch_interval or 30)
 
-            except Exception as e:
-                logger.error(f"Error in change detection: {e}")
+            except Exception as exc:  # pragma: no cover - logging path
+                logger.error(f"Error in change detection: {exc}")
                 await asyncio.sleep(10)
 
     async def _check_source_changes(self, source: KnowledgeSource) -> None:
@@ -207,6 +262,33 @@ class KnowledgeAutoLoader:
 
         except Exception as e:
             logger.error(f"Error checking changes for {source.name}: {e}")
+
+    def _resolve_watch_targets(self) -> List[Path]:
+        """Determine which paths should be passed to the watcher."""
+
+        targets: List[Path] = []
+        for source in self.sources:
+            if not (source.enabled and source.auto_reload):
+                continue
+            if source.path.exists():
+                targets.append(source.path)
+        return targets
+
+    def _resolve_source_from_path(self, candidate: Path) -> Optional[KnowledgeSource]:
+        """Map a changed path back to its configured knowledge source."""
+
+        for source in self.sources:
+            if candidate == source.path:
+                return source
+
+            if source.path.is_dir():
+                try:
+                    if candidate.is_relative_to(source.path):
+                        return source
+                except ValueError:
+                    continue
+
+        return None
 
     def add_source(self, source: KnowledgeSource) -> None:
         """Add a new knowledge source."""

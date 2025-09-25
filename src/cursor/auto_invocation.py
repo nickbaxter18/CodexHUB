@@ -13,6 +13,12 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+try:
+    from watchfiles import DefaultFilter, awatch
+except ImportError:  # pragma: no cover - optional dependency fallback
+    DefaultFilter = None  # type: ignore[assignment]
+    awatch = None  # type: ignore[assignment]
+
 # Import Cursor client
 from .cursor_client import AgentType, CursorClient
 
@@ -33,6 +39,35 @@ class AutoInvocationRule:
     enabled: bool = True
     last_triggered: Optional[datetime] = None
     trigger_count: int = 0
+
+
+if DefaultFilter is not None:
+
+    class _CursorWatchFilter(DefaultFilter):
+        """Filter watch events down to the tracked file patterns."""
+
+        def __init__(self, patterns: List[str], ignored_dirs: set[str]):
+            super().__init__(ignore_dirs=tuple(ignored_dirs))
+            self._patterns = patterns
+
+        def __call__(self, change: tuple[int, str]) -> bool:  # type: ignore[override]
+            if not super().__call__(change):
+                return False
+
+            _, raw_path = change
+            path_obj = Path(raw_path)
+            if not path_obj.is_file():
+                return False
+
+            return any(path_obj.match(pattern) for pattern in self._patterns)
+
+else:  # pragma: no cover - executed only when watchfiles missing
+
+    class _CursorWatchFilter:  # type: ignore[too-many-ancestors]
+        def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: D401
+            """Placeholder filter when watchfiles is unavailable."""
+
+            raise RuntimeError("watchfiles is required for file watching")
 
 
 class CursorAutoInvoker:
@@ -202,19 +237,48 @@ class CursorAutoInvoker:
     async def _watch_for_changes(self) -> None:
         """Watch for file changes and trigger appropriate agents."""
 
+        if not self.watch_paths:
+            logger.info("No watch paths configured; skipping auto-invocation watcher")
+            return
+
+        if awatch is None or DefaultFilter is None:
+            await self._poll_for_changes()
+            return
+
+        watch_targets = [path for path in self.watch_paths if path.exists()]
+        if not watch_targets:
+            logger.info("Watch paths do not exist yet; falling back to polling")
+            await self._poll_for_changes()
+            return
+
+        watch_filter = _CursorWatchFilter(self.file_patterns, self.ignored_directories)
+        debounce = self.poll_interval or 1
+
+        async for changes in awatch(*watch_targets, watch_filter=watch_filter, step=debounce):
+            if not self.is_running:
+                break
+
+            changed_files = [
+                Path(changed_path) for _, changed_path in changes if Path(changed_path).is_file()
+            ]
+
+            if changed_files:
+                await self._process_changes(changed_files)
+
+    async def _poll_for_changes(self) -> None:
+        """Fallback polling loop when watchfiles isn't available."""
+
         while self.is_running:
             try:
-                # Check for file changes
                 changed_files = await self._detect_changes()
 
                 if changed_files:
                     await self._process_changes(changed_files)
 
-                # Wait before next check
                 await asyncio.sleep(self.poll_interval or 5)
 
-            except Exception as e:
-                logger.error(f"Error in change detection: {e}")
+            except Exception as exc:  # pragma: no cover - logging path
+                logger.error(f"Error in change detection: {exc}")
                 await asyncio.sleep(5)
 
     async def _detect_changes(self) -> List[Path]:
