@@ -185,7 +185,7 @@ CodexHUB demonstrates a **comprehensive multi-agent architecture** with extensiv
 
 ### **🔧 Recommended Actions:**
 
-1. **Install Dependencies**: `pip install aiohttp watchdog pydantic`
+1. **Install Dependencies**: `pip install aiohttp watchfiles pydantic`
 2. **Configure Environment**: Ensure CURSOR_API_KEY is set in Codex environment
 3. **Test Integration**: Run `python scripts/simple_cursor_startup.py` for validation
 4. **Monitor Performance**: Use performance monitoring for optimization

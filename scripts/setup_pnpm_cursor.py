@@ -5,11 +5,9 @@ Configures pnpm workspace and dependencies for Cursor integration.
 """
 
 import json
-import os
 import subprocess
 import sys
 from pathlib import Path
-from typing import Dict, Any, List
 
 
 def check_pnpm_installed():
@@ -45,7 +43,7 @@ def install_pnpm_dependencies():
             return False
 
         # Install Cursor-specific dependencies
-        cursor_deps = ["aiohttp@^3.9.0", "watchdog@^3.0.0", "pydantic@^2.5.0"]
+        cursor_deps = ["aiohttp@^3.9.0", "watchfiles@^0.24.0", "pydantic@^2.5.0"]
 
         for dep in cursor_deps:
             result = subprocess.run(["pnpm", "add", dep], capture_output=True, text=True)
