@@ -1,25 +1,25 @@
 {
   "stage": "pre-commit",
   "exitCode": 0,
-  "startedAt": "2025-09-25T19:46:02+00:00Z",
-  "endedAt": "2025-09-25T19:46:49+00:00Z",
-  "durationSeconds": 47.0,
+  "startedAt": "2025-09-25T21:47:40+00:00Z",
+  "endedAt": "2025-09-25T21:52:54+00:00Z",
+  "durationSeconds": 314.0,
   "commands": [
     {
       "command": "pnpm lint-staged",
-      "startedAt": "2025-09-25T19:46:02+00:00Z",
-      "endedAt": "2025-09-25T19:46:07+00:00Z",
+      "startedAt": "2025-09-25T21:47:40+00:00Z",
+      "endedAt": "2025-09-25T21:47:45+00:00Z",
       "durationSeconds": 5.0,
       "exitCode": 0
     },
     {
       "command": "python -m pre_commit run --hook-stage commit --show-diff-on-failure",
-      "startedAt": "2025-09-25T19:46:07+00:00Z",
-      "endedAt": "2025-09-25T19:46:49+00:00Z",
-      "durationSeconds": 42.0,
+      "startedAt": "2025-09-25T21:47:45+00:00Z",
+      "endedAt": "2025-09-25T21:52:54+00:00Z",
+      "durationSeconds": 309.0,
       "exitCode": 0
     }
   ],
   "failedCommand": null,
-  "generatedAt": "2025-09-25T19:46:50.174500+00:00"
+  "generatedAt": "2025-09-25T21:52:55.978667+00:00"
 }

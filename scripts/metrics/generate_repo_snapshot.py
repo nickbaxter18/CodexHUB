@@ -6,16 +6,44 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
+import os
 import re
-from collections import defaultdict
+from collections import Counter, defaultdict
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Sequence
+from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 
 ROOT = Path(__file__).resolve().parents[2]
 RESULTS_DIR = ROOT / "results" / "metrics"
 DEFAULT_GRAPH_PATH = RESULTS_DIR / "repo-graph.json"
 DEFAULT_MERMAID_PATH = RESULTS_DIR / "repo-graph.mmd"
+DEFAULT_SUMMARY_PATH = RESULTS_DIR / "repo-graph-summary.md"
+SKIP_DIR_NAMES = {
+    ".context-bundle",
+    ".git",
+    ".husky",
+    ".pnpm",
+    "node_modules",
+    "results",
+    "dist",
+    "build",
+    "__pycache__",
+    ".ruff_cache",
+    ".mypy_cache",
+}
+GOVERNANCE_FILES = {"AGENT.md": "agent", "AGENTS.md": "agents"}
+QUALITY_CONFIG_NAMES = {
+    ".pre-commit-config.yaml": "pre_commit",
+    "pyproject.toml": "python_tooling",
+    "package.json": "node_package",
+    "pnpm-workspace.yaml": "pnpm_workspace",
+    "turbo.json": "turbo_pipeline",
+    "eslint.config.mjs": "eslint",
+    "ruff.toml": "ruff",
+    "cspell.json": "spellcheck",
+    "requirements.txt": "python_requirements",
+    "requirements-dev.txt": "python_requirements",
+}
 
 
 @dataclass
@@ -72,6 +100,8 @@ def resolve_workspace_members(patterns: Sequence[str]) -> Dict[str, Path]:
     for pattern in patterns:
         for path in ROOT.glob(pattern):
             if path.is_dir():
+                if path.name == "__pycache__":
+                    continue
                 key = path.name
                 if key in members:
                     key = f"{path.parent.name}/{path.name}"
@@ -144,6 +174,59 @@ def collect_python_packages() -> Dict[str, Path]:
     for name, path in extras.items():
         packages.setdefault(name, path)
     return {name: path for name, path in packages.items() if path.exists()}
+
+
+def iter_repository_files() -> Iterable[Tuple[Path, Sequence[str]]]:
+    for root, dirs, files in os.walk(ROOT):
+        root_path = Path(root)
+        if root_path == ROOT:
+            relative_parts: Sequence[str] = ()
+        else:
+            relative_parts = root_path.relative_to(ROOT).parts
+        if any(part in SKIP_DIR_NAMES for part in relative_parts):
+            dirs[:] = []
+            continue
+        dirs[:] = [name for name in dirs if name not in SKIP_DIR_NAMES]
+        yield root_path, files
+
+
+def collect_governance_artifacts() -> List[Dict[str, str]]:
+    artifacts: List[Dict[str, str]] = []
+    for directory, files in iter_repository_files():
+        relevant = set(files) & set(GOVERNANCE_FILES.keys())
+        if not relevant:
+            continue
+        for filename in sorted(relevant):
+            path = directory / filename
+            relative_path = path.relative_to(ROOT)
+            artifacts.append(
+                {
+                    "path": str(relative_path),
+                    "scope": str(relative_path.parent) or ".",
+                    "kind": GOVERNANCE_FILES[filename],
+                }
+            )
+    return sorted(artifacts, key=lambda item: item["path"])
+
+
+def collect_quality_configs() -> List[Dict[str, str]]:
+    configs: List[Dict[str, str]] = []
+    for directory, files in iter_repository_files():
+        for filename in files:
+            config_type = QUALITY_CONFIG_NAMES.get(filename)
+            if not config_type:
+                continue
+            path = (directory / filename).relative_to(ROOT)
+            configs.append(
+                {
+                    "path": str(path),
+                    "type": config_type,
+                }
+            )
+    deduped: Dict[str, Dict[str, str]] = {}
+    for config in configs:
+        deduped[config["path"]] = config
+    return sorted(deduped.values(), key=lambda item: item["path"])
 
 
 def scan_python_imports(
@@ -255,6 +338,8 @@ def build_graph() -> dict:
     edges_list = edges
 
     mermaid = compose_mermaid(nodes_list, edges_list)
+    governance_artifacts = collect_governance_artifacts()
+    quality_configs = collect_quality_configs()
 
     return {
         "generatedAt": dt.datetime.now(dt.timezone.utc).isoformat(),
@@ -267,27 +352,149 @@ def build_graph() -> dict:
         "pythonPackages": sorted(
             {key: str(path.relative_to(ROOT)) for key, path in python_packages.items()}.items()
         ),
+        "governanceArtifacts": governance_artifacts,
+        "qualityConfigs": quality_configs,
     }
 
 
-def write_outputs(graph: dict, graph_path: Path, mermaid_path: Path) -> None:
+def summarise_graph(graph: dict) -> str:
+    nodes = graph.get("nodes", [])
+    edges = graph.get("edges", [])
+
+    node_types = Counter(node.get("type", "unknown") for node in nodes)
+    dependency_edges = [edge for edge in edges if edge.get("relation") == "depends_on"]
+    import_edges = [edge for edge in edges if edge.get("relation", "").startswith("imports")]
+
+    top_dependencies = Counter(edge["target"] for edge in dependency_edges)
+    top_imports = Counter(edge["target"] for edge in import_edges)
+
+    def format_table(counter: Counter[str]) -> str:
+        if not counter:
+            return "_None captured in latest snapshot._"
+        lines = ["| Target | References |", "| --- | ---: |"]
+        for identifier, count in counter.most_common(10):
+            lines.append(f"| `{identifier}` | {count} |")
+        return "\n".join(lines)
+
+    lines = [
+        "# Workspace Knowledge Graph Summary",
+        "",
+        f"Generated on **{graph.get('generatedAt', 'unknown')}**.",
+        "",
+        "## Node Composition",
+        "",
+        "| Type | Count |",
+        "| --- | ---: |",
+    ]
+
+    for node_type, count in sorted(node_types.items(), key=lambda item: item[0]):
+        lines.append(f"| {node_type} | {count} |")
+
+    lines.extend(
+        [
+            "",
+            f"Total edges tracked: **{len(edges)}**",
+            "",
+            "## Top Workspace Package Dependencies",
+            "",
+            format_table(top_dependencies),
+            "",
+            "## Top Python Package Imports",
+            "",
+            format_table(top_imports),
+            "",
+            "## Workspace Members",
+            "",
+        ]
+    )
+
+    workspace_members = graph.get("workspaceMembers", [])
+    if workspace_members:
+        lines.append("| Key | Path |")
+        lines.append("| --- | --- |")
+        for key, path in workspace_members:
+            lines.append(f"| `{key}` | `{path}` |")
+    else:
+        lines.append("_No pnpm workspace members detected._")
+
+    python_packages = graph.get("pythonPackages", [])
+    lines.extend(
+        [
+            "",
+            "## Python Packages",
+            "",
+        ]
+    )
+    if python_packages:
+        lines.append("| Package | Path |")
+        lines.append("| --- | --- |")
+        for package, path in python_packages:
+            lines.append(f"| `{package}` | `{path}` |")
+    else:
+        lines.append("_No Python packages detected._")
+
+    governance_artifacts = graph.get("governanceArtifacts", [])
+    lines.extend(
+        [
+            "",
+            "## Governance Artifacts",
+            "",
+        ]
+    )
+    if governance_artifacts:
+        lines.append("| Kind | Scope | Path |")
+        lines.append("| --- | --- | --- |")
+        for artifact in governance_artifacts:
+            kind = artifact.get("kind", "unknown")
+            scope = artifact.get("scope", ".")
+            path = artifact.get("path", "")
+            lines.append(f"| {kind} | `{scope}` | `{path}` |")
+    else:
+        lines.append("_No governance artifacts detected._")
+
+    quality_configs = graph.get("qualityConfigs", [])
+    lines.extend(
+        [
+            "",
+            "## Quality Configuration Files",
+            "",
+        ]
+    )
+    if quality_configs:
+        lines.append("| Type | Path |")
+        lines.append("| --- | --- |")
+        for config in quality_configs:
+            lines.append(f"| {config.get('type', 'unknown')} | `{config.get('path', '')}` |")
+    else:
+        lines.append("_No quality configuration files detected._")
+
+    lines.append("")
+
+    return "\n".join(lines)
+
+
+def write_outputs(graph: dict, graph_path: Path, mermaid_path: Path, summary_path: Path) -> None:
     graph_path.parent.mkdir(parents=True, exist_ok=True)
     with graph_path.open("w", encoding="utf-8") as handle:
         json.dump(graph, handle, indent=2)
     mermaid_path.parent.mkdir(parents=True, exist_ok=True)
     mermaid_path.write_text(graph["mermaid"] + "\n", encoding="utf-8")
+    summary_path.parent.mkdir(parents=True, exist_ok=True)
+    summary_path.write_text(summarise_graph(graph), encoding="utf-8")
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--graph-path", type=Path, default=DEFAULT_GRAPH_PATH)
     parser.add_argument("--mermaid-path", type=Path, default=DEFAULT_MERMAID_PATH)
+    parser.add_argument("--summary-path", type=Path, default=DEFAULT_SUMMARY_PATH)
     args = parser.parse_args(argv)
 
     graph = build_graph()
-    write_outputs(graph, args.graph_path, args.mermaid_path)
+    write_outputs(graph, args.graph_path, args.mermaid_path, args.summary_path)
     print(f"Graph written to {args.graph_path}")
     print(f"Mermaid snapshot written to {args.mermaid_path}")
+    print(f"Summary written to {args.summary_path}")
     return 0
 
 

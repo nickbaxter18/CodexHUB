@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2025-09-25T19:37:57.615586+00:00",
+  "generatedAt": "2025-09-25T21:46:28.917686+00:00",
   "nodes": [
     {
       "id": "agents",
@@ -177,5 +177,100 @@
       "src",
       "src"
     ]
+  ],
+  "governanceArtifacts": [
+    {
+      "path": "AGENT.md",
+      "scope": ".",
+      "kind": "agent"
+    },
+    {
+      "path": "AGENTS.md",
+      "scope": ".",
+      "kind": "agents"
+    },
+    {
+      "path": "apps/editor/AGENTS.md",
+      "scope": "apps/editor",
+      "kind": "agents"
+    }
+  ],
+  "qualityConfigs": [
+    {
+      "path": ".pre-commit-config.yaml",
+      "type": "pre_commit"
+    },
+    {
+      "path": "U-DIG-IT/runner_project/pyproject.toml",
+      "type": "python_tooling"
+    },
+    {
+      "path": "apps/editor/package.json",
+      "type": "node_package"
+    },
+    {
+      "path": "codex-meta-intelligence/package.json",
+      "type": "node_package"
+    },
+    {
+      "path": "cspell.json",
+      "type": "spellcheck"
+    },
+    {
+      "path": "eslint.config.mjs",
+      "type": "eslint"
+    },
+    {
+      "path": "google-news-drive-sync/ui/package.json",
+      "type": "node_package"
+    },
+    {
+      "path": "package.json",
+      "type": "node_package"
+    },
+    {
+      "path": "pnpm-workspace.yaml",
+      "type": "pnpm_workspace"
+    },
+    {
+      "path": "pyproject.toml",
+      "type": "python_tooling"
+    },
+    {
+      "path": "rentalos-ai/package.json",
+      "type": "node_package"
+    },
+    {
+      "path": "rentalos-ai/requirements.txt",
+      "type": "python_requirements"
+    },
+    {
+      "path": "rentalos-ai/src/frontend/package.json",
+      "type": "node_package"
+    },
+    {
+      "path": "requirements-dev.txt",
+      "type": "python_requirements"
+    },
+    {
+      "path": "requirements.txt",
+      "type": "python_requirements"
+    },
+    {
+      "path": "src/cursor/package.json",
+      "type": "node_package"
+    },
+    {
+      "path": "src/knowledge/package.json",
+      "type": "node_package"
+    },
+    {
+      "path": "src/mobile/package.json",
+      "type": "node_package"
+    },
+    {
+      "path": "turbo.json",
+      "type": "turbo_pipeline"
+    }
   ]
 }

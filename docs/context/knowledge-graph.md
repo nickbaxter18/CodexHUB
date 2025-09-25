@@ -1,11 +1,36 @@
 # Knowledge Graph Snapshot
 
-_Last updated: 2025-09-25_
+_Last updated: 2025-09-27 (adds governance and quality config indexing)_
 
 The repository graph is generated automatically by `scripts/metrics/generate_repo_snapshot.py` and
 stored in `results/metrics/repo-graph.json` (JSON) and
 `results/metrics/repo-graph.mmd` (Mermaid). Re-run the script whenever packages or
 services move so the visualisation and downstream tooling remain consistent.
+
+> **Update — 2025-09-27:** The Markdown digest now lists every `AGENT.md` and
+> `AGENTS.md` file plus key lint/build configuration so audit teams can trace
+> enforcement scope without traversing the tree manually. Use the new
+> "Governance Artifacts" and "Quality Configuration Files" tables to verify
+> coverage before running compliance checks.
+
+> **Update — 2025-09-26:** The snapshot generator now also writes
+> `results/metrics/repo-graph-summary.md`, a Markdown digest with node counts, top
+> dependencies, and current workspace membership. Use it when preparing audit notes
+> or when you need a quick overview without parsing the raw JSON artefact.
+
+> **Update — 2025-09-25:** The snapshot generator now ignores workspace members named
+> `__pycache__` to keep cache directories out of the knowledge graph. Regenerate the
+> artefacts after pulling this change so your local manifest matches the cleaned
+> workspace inventory.
+
+## Quick summary access
+
+- `python scripts/metrics/generate_repo_snapshot.py` — refreshes all graph outputs.
+- `results/metrics/repo-graph-summary.md` — latest Markdown digest with node
+  composition, governance inventory, and config coverage; suitable for incident
+  reviews or knowledge bundle exports.
+- `scripts/fetch-context.sh` — bundles the docs above into `.context-bundle/` so
+  downstream agents can ingest the graph narrative alongside the raw data.
 
 ```mermaid
 graph TD
