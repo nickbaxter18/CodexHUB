@@ -170,6 +170,12 @@ bundle as `context-bundle.tar.gz` so agents can download a single artifact.
 
 ## Automated Quality Gates
 
+codex/codify-project-improvements-and-upgrades-pgjoca
+Husky manages the local Git hooks and delegates linting, formatting, unit tests, and security
+scans through `scripts/run-quality-gates.sh`. The pre-commit hook wraps `lint-staged` and the Python
+pre-commit suite (which includes pnpm tests and pytest), while the pre-push hook executes linting,
+format checks, pnpm tests, type-checking, pytest, Cursor compliance validation, Semgrep (SAST), and a
+full-history Gitleaks scan. Commit message validation is enforced via the `commit-msg` hook.>>> main
 
 To refresh the hooks after cloning or when tooling changes:
 
@@ -181,6 +187,16 @@ pnpm run prepare
 To run the same checks manually (for example, on CI agents without Husky), invoke:
 
 ```bash
+codex/codify-project-improvements-and-upgrades-pgjoca
+scripts/run-quality-gates.sh pre-commit
+scripts/run-quality-gates.sh pre-push
+```
+
+Set `CURSOR_SKIP_VALIDATE=true` (or `1`) when you deliberately need to bypass Cursor validation—for
+example on ephemeral CI runners that do not have the Cursor requirements installed. Keep the toggle
+off in day-to-day development so regressions surface early.
+
+
 
 Secret scanning can be executed on demand across the entire Git history with either the Husky
 pre-push hook or a standalone command:
