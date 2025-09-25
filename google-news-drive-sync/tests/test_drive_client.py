@@ -1,6 +1,7 @@
 import pytest
 
-from src.drive_client import DriveClient, DriveClientError
+from src.drive_client import DriveClient, DriveClientError, TokenStorage
+from src.utils import TokenEncryptor
 
 
 class FakeFiles:
@@ -75,7 +76,8 @@ def test_drive_client_creates_folder_and_uploads(tmp_path):
     def factory(path, scopes):
         return service
 
-    client = DriveClient(str(creds), service_factory=factory)
+    token_storage = TokenStorage(tmp_path / "token.bin")
+    client = DriveClient(str(creds), service_factory=factory, token_storage=token_storage)
     client.authenticate()
     folder_id = client.get_or_create_folder("News")
     file_id = client.upload_document(folder_id, "file.md", b"content")
@@ -83,3 +85,32 @@ def test_drive_client_creates_folder_and_uploads(tmp_path):
     assert folder_id == "created-id"
     assert file_id == "created-id"
     assert service.files().created
+
+
+def test_token_storage_roundtrip(tmp_path):
+    storage_path = tmp_path / "token.enc"
+    encryptor = TokenEncryptor.from_password("secret")
+    storage = TokenStorage(storage_path, encryptor=encryptor)
+
+    storage.save("token-value")
+    assert storage_path.exists()
+    assert storage.load() == "token-value"
+
+    storage.clear()
+    assert not storage_path.exists()
+
+
+def test_drive_client_token_helpers(tmp_path):
+    creds = tmp_path / "creds.json"
+    creds.write_text("{}")
+    storage = TokenStorage(tmp_path / "token.bin")
+
+    client = DriveClient(str(creds), service_factory=service_factory, token_storage=storage)
+    client.authenticate()
+
+    assert client.load_token() is None
+    client.store_token("abc")
+    assert storage.load() == "abc"
+
+    client.clear_token()
+    assert storage.load() is None

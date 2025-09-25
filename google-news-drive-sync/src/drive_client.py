@@ -6,11 +6,45 @@ import logging
 from pathlib import Path
 from typing import Any, Callable, Dict, Optional
 
+from .utils import TokenEncryptor
+
 logger = logging.getLogger(__name__)
 
 
 class DriveClientError(RuntimeError):
     """Raised when Drive interactions fail."""
+
+
+class TokenStorage:
+    """Persist OAuth tokens with optional encryption."""
+
+    def __init__(
+        self,
+        path: str | Path,
+        *,
+        encryptor: TokenEncryptor | None = None,
+    ) -> None:
+        self.path = Path(path)
+        self.encryptor = encryptor
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+
+    def save(self, token: str) -> None:
+        data = token.encode("utf-8")
+        if self.encryptor is not None:
+            data = self.encryptor.encrypt(data)
+        self.path.write_bytes(data)
+
+    def load(self) -> Optional[str]:
+        if not self.path.exists():
+            return None
+        data = self.path.read_bytes()
+        if self.encryptor is not None:
+            data = self.encryptor.decrypt(data)
+        return data.decode("utf-8")
+
+    def clear(self) -> None:
+        if self.path.exists():
+            self.path.unlink()
 
 
 def _default_service_factory(credentials_path: str, scopes: list[str]):
@@ -38,6 +72,7 @@ class DriveClient:
         *,
         scopes: Optional[list[str]] = None,
         service_factory: Callable[[str, list[str]], Any] | None = None,
+        token_storage: TokenStorage | None = None,
     ) -> None:
         self.credentials_path = credentials_path
         default_scope = "https://www.googleapis.com/auth/drive.file"
@@ -45,6 +80,7 @@ class DriveClient:
         factory = service_factory or _default_service_factory
         self._service_factory = factory
         self._service: Any | None = None
+        self._token_storage = token_storage
 
     def authenticate(self) -> None:
         logger.debug(
@@ -112,8 +148,27 @@ class DriveClient:
             "name": filename,
             "parents": [folder_id],
         }
-        request = files.create(body=metadata, media_body=media_body, fields="id")
+        request = files.create(
+            body=metadata,
+            media_body=media_body,
+            fields="id",
+        )
         created = request.execute()
         file_id = created["id"]
         logger.debug("Uploaded file %s (%s)", filename, file_id)
         return file_id
+
+    def load_token(self) -> Optional[str]:
+        if self._token_storage is None:
+            return None
+        return self._token_storage.load()
+
+    def store_token(self, token: str) -> None:
+        if self._token_storage is None:
+            logger.debug("Token storage not configured; skipping token persistence")
+            return
+        self._token_storage.save(token)
+
+    def clear_token(self) -> None:
+        if self._token_storage is not None:
+            self._token_storage.clear()

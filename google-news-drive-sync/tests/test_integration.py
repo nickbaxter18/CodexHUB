@@ -18,7 +18,7 @@ def test_run_once_flow(monkeypatch):
         )
     ]
 
-    monkeypatch.setattr(main_module, "fetch_news", mock.Mock(return_value=articles))
+    monkeypatch.setattr(main_module, "fetch_all_articles", mock.AsyncMock(return_value=articles))
     monkeypatch.setattr(
         main_module,
         "create_document",
@@ -47,10 +47,15 @@ def test_run_once_flow(monkeypatch):
         "news_api": {"api_key": "key", "topics": ["tech"], "base_url": "url"},
         "document": {"format": "markdown"},
         "drive": {"folder_name": "News", "oauth_credentials_path": "creds.json"},
+        "cache": {"enabled": False},
+        "scheduler": {"enabled": False},
+        "secrets": {},
+        "repository": {"enabled": False},
     }
 
     monkeypatch.setattr(main_module, "load_config", mock.Mock(return_value=config))
     monkeypatch.setattr(main_module, "setup_logging", mock.Mock())
+    monkeypatch.setattr(main_module, "load_env_file", mock.Mock())
 
     with mock.patch("pathlib.Path.exists", return_value=True):
         main_module.main(["--config", "config/config.yaml", "--once"])
