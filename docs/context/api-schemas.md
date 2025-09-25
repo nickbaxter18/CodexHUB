@@ -1,6 +1,6 @@
 # API Schemas & Data Models
 
-_Last updated: 2024-11-23_
+_Last updated: 2024-12-04_
 
 ## HTTP Services
 
@@ -17,14 +17,12 @@ for the TypeScript JSON schema script) and document it here.
 
 ## Shared Data Models
 
-- **Agent Capability Registry (`codex-meta-intelligence/src/registry`)**: Each capability exports a
-  `CapabilityDefinition` typed via `src/shared/types.ts`. Update the registry index when adding new
-  capabilities and ensure the knowledge graph references the new node.
-- **Macro Definitions (`macro_system/definitions`)**: YAML-based macros parsed via
-  `macro_system/src/loader.ts`. Validate with `yamllint` and document preconditions/outputs in this
-  file to keep the automation catalog synchronised.
-- **QA Checklists (`qa_engine/checklists`)**: Markdown checklists consumed by the QA engine. Use
-  consistent headings so the context fetch script can parse them.
+| Domain                    | File(s) / Schema                                  | Notes                                                                                                      |
+| ------------------------- | ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Agent Capability Registry | `codex-meta-intelligence/src/registry/*.ts`       | Each capability exports a `CapabilityDefinition`; mirror updates in `docs/context/knowledge-graph.md`.     |
+| Macro Definitions         | `macro_system/definitions/*.yml`                  | Validate via `python -m yamllint` and ensure inputs/outputs are documented alongside automation pipelines. |
+| QA Checklists             | `qa_engine/checklists/**/*.md`                    | Keep headings standard (`## Preconditions`, `## Steps`, `## Verification`) so context bundler can parse.   |
+| Security Policies         | `SECURITY.md`, `.github/workflows/security-*.yml` | Record remediation SLAs and scanner configurations to keep automation-pipeline heuristics accurate.        |
 
 ## Validation & Tooling
 
@@ -32,3 +30,5 @@ for the TypeScript JSON schema script) and document it here.
   ensure the JSON files remain consistent.
 - Use Zod or TypeScript interfaces when bridging typed and untyped layers. Record shared types in
   `packages/automation/src/types.ts` and update the knowledge graph accordingly.
+- Capture schema revisions in `results/metrics/latest.json` by rerunning
+  `scripts/metrics/collect_metrics.py --skip-commands` so downstream tooling notices version shifts.

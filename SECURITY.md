@@ -7,13 +7,13 @@ manageable for the engineering team.
 
 ## Scanner Coverage
 
-| Scanner                                  | When It Runs                                                              | Scope                                                            | Output Location                                             |
-| ---------------------------------------- | ------------------------------------------------------------------------- | ---------------------------------------------------------------- | ----------------------------------------------------------- |
-| **CodeQL**                               | Weekly on `main`, every pull request, and on-demand via workflow dispatch | Full repository analysis for JavaScript/TypeScript and Python    | GitHub Security → Code Scanning Alerts                      |
-| **Semgrep (incremental)**                | Every pull request                                                        | Only files changed in the PR compared against the base branch    | GitHub Security → Code Scanning Alerts + PR summary comment |
-| **Snyk Code**                            | Weekly schedule when `SNYK_TOKEN` secret is configured                    | Full repository scan with proprietary rules                      | GitHub Security → Code Scanning Alerts                      |
-| **Dependency, secret, and audit checks** | Every pull request + weekly schedule                                      | `pnpm audit`, `pip audit`, Bandit, TruffleHog, dependency review | GitHub Actions log + PR annotations                         |
-| **Gitleaks**                             | Weekly scheduled workflow + manual (`pnpm run scan:secrets`) invocations  | Full Git history using `scripts/scan-secrets.sh`                 | `results/security/gitleaks-report.*`                        |
+| Scanner                                  | When It Runs                                                              | Scope                                                                     | Output Location                                             |
+| ---------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| **CodeQL**                               | Weekly on `main`, every pull request, and on-demand via workflow dispatch | Full repository analysis for JavaScript/TypeScript and Python             | GitHub Security → Code Scanning Alerts                      |
+| **Semgrep (incremental)**                | Every pull request                                                        | Only files changed in the PR compared against the base branch             | GitHub Security → Code Scanning Alerts + PR summary comment |
+| **Snyk Code**                            | Weekly schedule when `SNYK_TOKEN` secret is configured                    | Full repository scan with proprietary rules                               | GitHub Security → Code Scanning Alerts                      |
+| **Dependency, secret, and audit checks** | Every pull request + weekly schedule                                      | `pnpm audit`, `pip audit`, Bandit, dependency review, Husky pre-push gate | GitHub Actions log + PR annotations                         |
+| **Gitleaks**                             | Weekly scheduled workflow + manual (`pnpm run scan:secrets`) invocations  | Full Git history using `scripts/scan-secrets.sh`                          | `results/security/gitleaks-report.*`                        |
 
 ### Scheduling Strategy
 
@@ -82,9 +82,22 @@ Developers should stay alert for the following issues when working in this codeb
 ### CodeQL and Snyk Full Scans
 
 - Full scans may take longer and run asynchronously. Monitor the weekly workflow run for any
-  regressions introduced since the last scan.
+  regressions introduced since the last scan. Use the "Download SARIF" button to archive results in
+  `results/security/` when deep dives are required.
 - When the Snyk token is configured, results are uploaded as SARIF and surfaced in the same
   dashboard as CodeQL alerts for a unified triage experience.
+
+### Interpreting CodeQL Findings
+
+1. Expand the alert to review the call stack and data-flow trace. CodeQL highlights the
+   "source" and "sink" to show how untrusted input reaches a dangerous API.
+2. Cross-reference the impacted file with the relevant runbook in `docs/context/automation-pipeline.md`
+   to determine remediation priority. Security issues inherit the SLA table published there.
+3. If CodeQL suggests an automated fix, stage it in a dedicated branch and run
+   `scripts/run-quality-gates.sh pre-push` before requesting review. Attach the SARIF snippet to the
+   PR description so reviewers can verify the alert is resolved.
+4. When suppressing a false positive, add a justification comment (`// codeql[rule-id]: reason`) and
+   document the rationale in `results/ai-review/log.json` for audit purposes.
 
 ## Manual Review Checklist
 
@@ -110,4 +123,20 @@ is available.
 
 ### Secret Scanning Playbook
 
-Use `scripts/scan-secrets.sh [output_dir] [extra gitleaks args...]` to run ad-hoc scans. The script automatically selects a local gitleaks binary when available or falls back to the official Docker image. Provide `--redact` for reports that omit secret contents when sharing outside the security team. When the scheduled GitHub Actions job detects a leak, rotate the affected credential immediately, purge it from git history if necessary (e.g., via `git filter-repo`), and replace the usage with environment variables or your chosen secret manager before closing the alert.
+Use `scripts/scan-secrets.sh [output_dir] [extra gitleaks args...]` to run ad-hoc scans. The helper
+walks the entire Git history (`--log-opts="--all"`) and emits SARIF/JSON so alerts can be uploaded to
+GitHub Security. Provide `--redact` for reports that omit secret contents when sharing outside the
+security team.
+
+Remediation workflow:
+
+1. Immediately rotate the credential in the upstream system (cloud provider, SaaS integration, etc.).
+2. Purge exposed values from Git history using `git filter-repo` or `git filter-branch` and force-push
+   to invalidate cached clones. The `scripts/scan-secrets.sh` output lists file paths and commits to
+   target.
+3. Replace secrets with environment variables or managed secret stores. Update `.env.example` and
+   related documentation to reflect the new variable name.
+4. Record the incident in `results/security/remediation-log.md` (create if absent) with date,
+   credential name, remediation owner, and follow-up tasks.
+5. Re-run `scripts/run-quality-gates.sh pre-push` to ensure the leak has been eliminated before
+   merging.

@@ -1,6 +1,6 @@
 # Getting Started Guide
 
-_Last updated: 2024-11-23_
+_Last updated: 2024-12-04_
 
 This guide summarises the minimum steps required to prepare a local development environment or a
 fresh CI runner for CodexHUB.
@@ -25,11 +25,9 @@ python scripts/auto_setup_cursor.py  # optional: ensures Cursor integration
 Run these commands locally before opening a pull request. They mirror the automated Husky pipeline.
 
 ```bash
-pnpm lint
-pnpm test
-pnpm run typecheck
-pnpm run scan:secrets      # gitleaks full-history scan
+scripts/run-quality-gates.sh pre-push   # runs lint, format check, tests, Semgrep, Gitleaks
 pnpm turbo run build --filter=...
+python scripts/metrics/collect_metrics.py --skip-commands  # refresh governance snapshot
 ```
 
 ## CI & Deployment

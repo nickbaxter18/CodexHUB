@@ -56,6 +56,12 @@ repos:
         language: system
         pass_filenames: false
         stages: [pre-commit]
+      - id: python-pytest
+        name: python pytest suite
+        entry: python -m pytest
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
       - id: secret-scan
         name: gitleaks full scan
         entry: pnpm run scan:secrets -- --report-format json
