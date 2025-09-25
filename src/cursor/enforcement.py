@@ -281,7 +281,7 @@ async def _execute_with_cursor_agent(
         _global_enforcement.log_cursor_usage(
             agent_type, "execute_function", _get_file_path_from_context(), False
         )
-        raise CursorEnforcementError(f"Cursor agent execution failed: {e}")
+        raise CursorEnforcementError(f"Cursor agent execution failed: {e}") from e
 
 
 def _execute_with_cursor_agent_sync(
@@ -321,7 +321,7 @@ def _execute_with_cursor_agent_sync(
         _global_enforcement.log_cursor_usage(
             agent_type, "execute_function", _get_file_path_from_context(), False
         )
-        raise CursorEnforcementError(f"Cursor agent execution failed: {e}")
+        raise CursorEnforcementError(f"Cursor agent execution failed: {e}") from e
 
 
 def validate_cursor_compliance() -> bool:

@@ -55,7 +55,7 @@ async def validate_integration():
         # Validate brain blocks integration
         print("6. Validating brain blocks integration...")
         brain_blocks = get_brain_blocks_integration()
-        print("✅ Brain blocks integration accessible")
+        print(f"✅ Brain blocks integration accessible ({len(brain_blocks)} blocks)")
 
         print("🎉 All Cursor integration components validated successfully!")
         return True

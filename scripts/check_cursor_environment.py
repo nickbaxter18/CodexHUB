@@ -107,7 +107,7 @@ def test_cursor_connection():
             api_key=os.getenv("CURSOR_API_KEY", ""),
         )
 
-        client = CursorClient(config)
+        _client = CursorClient(config)
 
         # Test connection
         print("✅ Cursor client created successfully")
