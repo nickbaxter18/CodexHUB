@@ -37,7 +37,7 @@ def scrub_text(text: str, config: PrivacyConfig) -> str:
 
     patterns = _compile_patterns(config)
     scrubbed = text
-    for name, pattern in patterns.items():
+    for _name, pattern in patterns.items():
         scrubbed = pattern.sub(REDACTION_TOKEN, scrubbed)
     return scrubbed
 

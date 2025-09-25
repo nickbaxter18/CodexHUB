@@ -8,7 +8,6 @@ import asyncio
 import json
 import sys
 from pathlib import Path
-from typing import Dict, Any, List
 
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
@@ -16,13 +15,10 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 # Import all Cursor components
 from src.cursor import (
     CursorClient,
-    CursorConfig,
     AgentType,
-    CursorAutoInvoker,
     AutoInvocationRule,
     get_auto_invoker,
     start_cursor_auto_invocation,
-    enforce_cursor_integration,
     require_cursor_agent,
     validate_cursor_compliance,
     get_cursor_usage_report,
@@ -63,7 +59,7 @@ async def test_cursor_client():
         ]
 
         for agent_type in agent_types:
-            agent = client.get_agent(agent_type)
+            client.get_agent(agent_type)
             print(f"✅ {agent_type.value} agent accessible")
 
         return True
@@ -147,7 +143,7 @@ async def test_knowledge_integration():
 
         # Test brain blocks integration
         brain_blocks = get_brain_blocks_integration()
-        print("✅ Brain blocks integration accessible")
+        print(f"✅ Brain blocks integration accessible ({len(brain_blocks)} blocks)")
 
         return True
 
@@ -300,7 +296,7 @@ async def main():
     test_results["full_integration"] = await test_full_integration()
 
     # Generate report
-    report = await generate_integration_report()
+    await generate_integration_report()
 
     # Summary
     print("\n📊 INTEGRATION TEST RESULTS:")

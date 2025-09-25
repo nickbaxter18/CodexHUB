@@ -7,9 +7,7 @@ Automatically runs when Codex starts a new task to ensure Cursor IDE is used.
 import asyncio
 import os
 import sys
-import time
 from pathlib import Path
-from typing import Dict, Any, List
 
 # Add src to path for imports
 current_dir = Path(__file__).parent.parent
@@ -60,8 +58,6 @@ async def start_cursor_integration():
             start_cursor_auto_invocation,
             get_auto_invoker,
             validate_cursor_compliance,
-            enforce_cursor_integration,
-            require_cursor_agent,
         )
         from knowledge.auto_loader import start_knowledge_auto_loading
         from mobile.mobile_app import start_mobile_app
@@ -224,11 +220,10 @@ async def main():
 
     # Setup mobile control
     try:
-        goal = await setup_mobile_control()
+        _goal = await setup_mobile_control()
         print("✅ Mobile control setup completed")
     except Exception as e:
         print(f"⚠️ Mobile control error: {e}")
-        goal = None
 
     # Enforce Cursor usage
     try:

@@ -4,15 +4,13 @@ Knowledge Agent Bootstrap Script
 Auto-loads NDJSON knowledge sources into the Knowledge agent for immediate use.
 """
 
-import json
 import sys
 from pathlib import Path
-from typing import List, Dict, Any
 
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from agents.specialist_agents import KnowledgeAgent, KnowledgeDocument
+from agents.specialist_agents import KnowledgeAgent
 from qa.qa_engine import QAEngine
 from qa.qa_event_bus import QAEventBus
 

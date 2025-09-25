@@ -32,7 +32,7 @@ aiohttp_stub.ClientSession = _DummySession
 aiohttp_stub.ClientTimeout = _DummyTimeout
 sys.modules.setdefault("aiohttp", aiohttp_stub)
 
-from src.cursor import cli
+from src.cursor import cli  # noqa: E402
 
 
 def test_validate_exit_codes(monkeypatch: pytest.MonkeyPatch) -> None:
