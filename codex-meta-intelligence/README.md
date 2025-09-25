@@ -9,6 +9,7 @@ Codex Meta-Intelligence is a multi-agent operating system for software developme
 - Agent framework with context-aware execution, AGENTS.md parsing and message bus hooks.
 - Knowledge, memory, protocol and context services providing deterministic behaviour and documentation.
 - QA, CI/CD, foresight, security, analytics and integration modules prepared for Stage 2 enhancements.
+- Cursor integration runtime with automated compliance checks, knowledge auto-loading and mobile goal orchestration.
 
 ## Getting Started
 
@@ -22,11 +23,14 @@ pnpm build
 
 1. Modify or extend modules under `src/`.
 2. Update relevant specification markdown files when behaviour changes.
-3. Run quality gates:
+3. If working through Cursor, start the integration runtime:
+   - `pnpm ts-node src/cursor/index.ts` (for scripted automation)
+   - or invoke `startCursorAutoInvocation` from custom tooling.
+4. Run quality gates:
    - `pnpm lint`
    - `pnpm test`
    - `pnpm typecheck`
-4. Execute `./build.sh` to run stage tasks and optionally promote to the next stage.
+5. Execute `./build.sh` to run stage tasks and optionally promote to the next stage.
 
 ## Testing
 

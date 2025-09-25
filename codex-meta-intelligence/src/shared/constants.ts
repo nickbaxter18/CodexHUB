@@ -17,3 +17,4 @@ export const QA_SEVERITY_ORDER: Record<'info' | 'warning' | 'error', number> = {
 
 export const DEFAULT_CACHE_CAPACITY = 256;
 export const DEFAULT_CACHE_TTL_MS = 10 * 60 * 1000;
+export const DEFAULT_CURSOR_MONITOR_INTERVAL_MS = 5 * 1000;

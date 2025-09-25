@@ -24,6 +24,7 @@ repos:
           - tomli
         args:
           - --skip=**/package-lock.json
+          - --ignore-words-list=afterAll,afterEach
   - repo: local
     hooks:
       - id: markdownlint
