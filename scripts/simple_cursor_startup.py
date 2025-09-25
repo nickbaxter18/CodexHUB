@@ -90,7 +90,7 @@ def check_python_dependencies():
 
     print("🐍 Checking Python Dependencies...")
 
-    required_packages = ["aiohttp", "watchdog", "pydantic"]
+    required_packages = ["aiohttp", "watchfiles", "pydantic"]
     missing_packages = []
 
     for package in required_packages:

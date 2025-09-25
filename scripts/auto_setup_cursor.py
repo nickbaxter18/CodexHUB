@@ -72,12 +72,21 @@ async def auto_start_cursor_integration() -> bool:
                 validate_cursor_compliance,
             )
         except ModuleNotFoundError as exc:
-            print("⚠️ Cursor integration package is unavailable.")
-            print("   Skipping auto-start until the package is installed.")
-            print(f"   Details: {exc}")
+            missing_module = getattr(exc, "name", str(exc))
+            print("⚠️ Cursor integration dependency is unavailable.")
+            print(
+                "   Install required Python packages with: "
+                "python -m pip install -r cursor/requirements-cursor.txt"
+            )
+            print("   Skipping auto-start until the dependency is installed.")
+            print(f"   Missing module: {missing_module}")
             return False
         except ImportError as exc:  # pragma: no cover - defensive logging
             print("⚠️ Failed to import Cursor integration dependencies.")
+            print(
+                "   Verify Python requirements via "
+                "python -m pip install -r cursor/requirements-cursor.txt"
+            )
             print("   Skipping auto-start until the package issues are resolved.")
             print(f"   Details: {exc}")
             return False

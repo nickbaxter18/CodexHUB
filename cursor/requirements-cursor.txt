@@ -5,7 +5,7 @@
 aiohttp>=3.9.0
 
 # File watching for auto-invocation
-watchdog>=3.0.0
+watchfiles>=0.24.0
 
 # Data validation for Cursor requests
 pydantic>=2.5.0

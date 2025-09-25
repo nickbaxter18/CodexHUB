@@ -94,7 +94,7 @@ packages:
 {
   "dependencies": {
     "aiohttp": "^3.9.0",      # Async HTTP client for Cursor API
-    "watchdog": "^3.0.0",     # File watching for auto-invocation
+    "watchfiles": "^0.24.0",   # File watching for auto-invocation
     "pydantic": "^2.5.0"      # Data validation for Cursor requests
   }
 }
