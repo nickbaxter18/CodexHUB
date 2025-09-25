@@ -9,6 +9,8 @@ export enum AgentRole {
   OPERATOR = 'operator',
 }
 
+export type CursorAgentType = 'FRONTEND' | 'BACKEND' | 'KNOWLEDGE' | 'QA' | 'CICD' | 'ARCHITECT';
+
 export interface AgentConfig {
   id: string;
   role: AgentRole;
@@ -124,6 +126,16 @@ export interface KnowledgeResponse {
   blocks: Array<{ block: KnowledgeBlock; score: number }>;
 }
 
+export interface BrainBlock extends KnowledgeBlock {
+  sections: string[];
+  tags: string[];
+}
+
+export interface BrainBlockQuery {
+  search?: string;
+  tags?: string[];
+}
+
 export interface MemoryRecord {
   id: string;
   agentId: string;
@@ -224,6 +236,34 @@ export interface TraceSpan {
   startTime: number;
   endTime?: number;
   attributes: Record<string, JsonValue>;
+}
+
+export interface CursorComplianceCheck {
+  name: string;
+  passed: boolean;
+  message: string;
+}
+
+export interface CursorComplianceReport {
+  compliance: number;
+  checks: CursorComplianceCheck[];
+  details: Record<string, JsonValue>;
+}
+
+export interface MobileGoalInput {
+  title: string;
+  description: string;
+  priority?: 'low' | 'medium' | 'high';
+}
+
+export interface MobileGoal {
+  id: string;
+  title: string;
+  description: string;
+  priority: 'low' | 'medium' | 'high';
+  status: 'pending' | 'approved' | 'completed';
+  createdAt: string;
+  updatedAt: string;
 }
 
 export type JsonSchema = JsonObject;
