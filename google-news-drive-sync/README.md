@@ -9,11 +9,14 @@ folder for downstream consumption by analytics teams, AI researchers and automat
 - Asynchronously fetches headlines from NewsAPI with per-topic concurrency.
 - Aggregates RSS feeds alongside API responses, deduplicates the combined results and records them in a SQLite repository.
 - Plugin loader discovers custom fetchers at runtime so new sources can be added without touching core code.
-- FastAPI dashboard exposes `/articles`, `/sources`, `/status`, `/metrics` and `/health` endpoints for downstream systems.
+- FastAPI dashboard exposes `/articles`, `/sources`, `/status`, `/metrics` and `/health` endpoints for downstream systems with
+  API-key authentication and adaptive rate limiting.
 - React-based UI (under `ui/`) provides a searchable, accessible feed for analysts and stakeholders.
 - Persists seen articles and stores pipeline metrics to drive both deduplication and observability dashboards.
 - Encrypts optional Drive tokens at rest and loads secrets from environment variables or `.env` files.
 - Uses APScheduler (with a thread-based fallback) for recurring or cron-based synchronisation.
+- Executes plugins inside sandboxed subprocesses with configurable timeouts and worker ceilings to contain untrusted code.
+- Emits latency histograms and repository depth gauges for Prometheus scraping alongside traditional counters.
 
 ## Project Structure
 
@@ -106,6 +109,10 @@ The API surfaces:
 - `GET /metrics` – Prometheus-formatted metrics.
 - `GET /health` – Lightweight health probe for orchestrators.
 
+All endpoints except `/health` require the caller to send an `X-API-Key` header that matches one of the values configured under
+`server.auth.api_keys`. Requests are also throttled by the in-memory limiter driven by `server.rate_limit`, ensuring the
+dashboard remains resilient to abusive traffic.
+
 ### Web UI
 
 The React dashboard in `ui/` consumes the API and renders a searchable news feed with accessible components:
@@ -140,6 +147,8 @@ orchestrators.
 - Store API keys and OAuth credentials outside version control (e.g., environment variables, `.env` files excluded from commits or secret managers).
 - Provide a `TOKEN_ENCRYPTION_KEY` environment variable (or configure `secrets.encryption_key`) to encrypt stored Drive tokens.
 - Respect the terms of service for the news API and Google Drive while limiting article volume to stay within rate limits and storage budgets.
+- Rotate the API keys listed in `server.auth.api_keys` regularly and tailor the rate-limit thresholds to the throughput expected by each downstream integration.
+- Keep third-party plugins confined to the sandboxed executor (`plugins.sandbox`) so misbehaving code cannot impact the primary pipeline.
 
 ## Future Enhancements
 

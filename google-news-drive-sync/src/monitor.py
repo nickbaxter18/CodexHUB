@@ -3,10 +3,14 @@
 from __future__ import annotations
 
 import logging
-from collections import Counter
+from collections import Counter, defaultdict, deque
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Dict, Optional
+from statistics import mean
+from threading import Lock
+from time import perf_counter
+from typing import ContextManager, Dict, Iterator, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -23,6 +27,8 @@ class MonitoringSnapshot:
     last_run_started: Optional[datetime] = None
     last_run_completed: Optional[datetime] = None
     last_status: str = "idle"
+    latency: Dict[str, Dict[str, float]] = field(default_factory=dict)
+    queue_depth: Dict[str, float] = field(default_factory=dict)
 
 
 class MonitoringClient:
@@ -37,29 +43,79 @@ class MonitoringClient:
         self._last_run_started: datetime | None = None
         self._last_run_completed: datetime | None = None
         self._last_status: str = "idle"
+        self._latencies: Dict[str, List[float]] = defaultdict(list)
+        self._queue_samples: deque[int] = deque(maxlen=50)
+        self._lock = Lock()
 
     def record_articles(self, source: str, count: int) -> None:
-        self._articles_processed += count
-        self._sources[source] += count
+        with self._lock:
+            self._articles_processed += count
+            self._sources[source] += count
         logger.debug("Recorded %s articles from %s", count, source)
 
     def record_error(self, source: str, error: Exception) -> None:
-        self._errors += 1
+        with self._lock:
+            self._errors += 1
         logger.error("Error in source %s: %s", source, error)
 
     def start_run(self) -> None:
-        self._last_run_started = datetime.utcnow()
-        self._last_status = "running"
+        with self._lock:
+            self._last_run_started = datetime.utcnow()
+            self._last_status = "running"
 
     def complete_run(self, *, status: str = "success") -> None:
-        self._runs += 1
-        self._last_run_completed = datetime.utcnow()
-        self._last_status = status
+        with self._lock:
+            self._runs += 1
+            self._last_run_completed = datetime.utcnow()
+            self._last_status = status
 
     def record_document_upload(self) -> None:
-        self._documents_uploaded += 1
+        with self._lock:
+            self._documents_uploaded += 1
+
+    def record_latency(self, label: str, seconds: float) -> None:
+        if seconds < 0:
+            return
+        with self._lock:
+            self._latencies[label].append(seconds)
+
+    def track_latency(self, label: str) -> ContextManager[None]:
+        """Context manager that records elapsed time under *label*."""
+
+        @contextmanager
+        def _tracker() -> Iterator[None]:
+            start = perf_counter()
+            try:
+                yield
+            finally:
+                self.record_latency(label, perf_counter() - start)
+
+        return _tracker()
+
+    def record_queue_depth(self, depth: int) -> None:
+        if depth < 0:
+            return
+        with self._lock:
+            self._queue_samples.append(depth)
 
     def snapshot(self) -> MonitoringSnapshot:
+        latency_stats = {
+            label: {
+                "count": float(len(samples)),
+                "avg": float(mean(samples)) if samples else 0.0,
+                "p95": float(_percentile(samples, 0.95)),
+            }
+            for label, samples in self._latencies.items()
+        }
+        queue_depth: Dict[str, float] = {}
+        if self._queue_samples:
+            samples = list(self._queue_samples)
+            queue_depth = {
+                "latest": float(samples[-1]),
+                "max": float(max(samples)),
+                "avg": float(mean(samples)),
+            }
+
         return MonitoringSnapshot(
             articles_processed=self._articles_processed,
             errors=self._errors,
@@ -69,15 +125,18 @@ class MonitoringClient:
             last_run_started=self._last_run_started,
             last_run_completed=self._last_run_completed,
             last_status=self._last_status,
+            latency=latency_stats,
+            queue_depth=queue_depth,
         )
 
     def emit(self) -> None:
         snap = self.snapshot()
         logger.info(
-            "Metrics - articles: %s, errors: %s, sources: %s",
+            "Metrics - articles: %s, errors: %s, sources: %s, latency: %s",
             snap.articles_processed,
             snap.errors,
             snap.source_counts,
+            snap.latency,
         )
 
     def metrics(self) -> Dict[str, object]:
@@ -95,6 +154,8 @@ class MonitoringClient:
             else None,
             "last_status": snap.last_status,
             "source_counts": snap.source_counts,
+            "latency": snap.latency,
+            "queue_depth": snap.queue_depth,
         }
 
     def render_prometheus(self) -> str:
@@ -120,7 +181,25 @@ class MonitoringClient:
                 ("gnds_last_run_completed_timestamp " f"{snap.last_run_completed.timestamp()}")
             )
         lines.append(f'gnds_last_status{{status="{snap.last_status}"}} 1')
+        for label, stats in snap.latency.items():
+            total = stats.get("avg", 0.0) * stats.get("count", 0.0)
+            count = int(stats.get("count", 0))
+            lines.append(f'gnds_latency_seconds_sum{{stage="{label}"}} {total}')
+            lines.append(f'gnds_latency_seconds_count{{stage="{label}"}} {count}')
+            p95 = stats.get("p95", 0.0)
+            lines.append(f'gnds_latency_seconds_p95{{stage="{label}"}} {p95}')
+        if snap.queue_depth:
+            lines.append(f"gnds_repository_queue_depth {snap.queue_depth.get('latest', 0.0)}")
+            lines.append(f"gnds_repository_queue_depth_max {snap.queue_depth.get('max', 0.0)}")
         return "\n".join(lines)
+
+
+def _percentile(samples: List[float], percentile: float) -> float:
+    if not samples:
+        return 0.0
+    ordered = sorted(samples)
+    index = max(0, min(len(ordered) - 1, int(round(percentile * (len(ordered) - 1)))))
+    return ordered[index]
 
 
 __all__ = ["MonitoringClient", "MonitoringSnapshot"]
