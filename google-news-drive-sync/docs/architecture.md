@@ -47,11 +47,14 @@ Stage 3 completes the evolution into a user-facing system with pluggable source
 1. **Article Repository** – `src/article_repository.py` persists article metadata to SQLite so both the document formatter and
    dashboard can reuse the same canonical dataset.
 2. **Plugin Loader** – `src/plugin_manager.py` and `src/plugins/` dynamically discover Python-based news sources. Administrators
-   can add new sources by dropping modules onto the filesystem or referencing importable packages in configuration.
-3. **Monitoring Upgrades** – `src/monitor.py` now tracks pipeline runs, document uploads and renders Prometheus metrics for
-   `/metrics` scraping. Metrics are consumed by the dashboard and exported for observability stacks.
+   can add new sources by dropping modules onto the filesystem or referencing importable packages in configuration. Stage 3 adds
+   subprocess-based sandboxing with configurable timeouts to contain failures and untrusted code.
+3. **Monitoring Upgrades** – `src/monitor.py` now tracks pipeline runs, latency histograms, repository depth and document uploads,
+   rendering Prometheus metrics for `/metrics` scraping. Metrics are consumed by the dashboard and exported for observability
+   stacks.
 4. **FastAPI Server** – `src/server.py` exposes REST endpoints and health probes that surface aggregated articles, source
-   listings and monitoring data. `src/main.py` can launch the server in parallel with the scheduler via the `--serve` flag.
+   listings and monitoring data. Requests are authenticated via API keys and throttled with an in-memory rate limiter. `src.main`
+   can launch the server in parallel with the scheduler via the `--serve` flag.
 5. **Web Dashboard** – `ui/` hosts a React + Tailwind UI offering search, filtering, keyboard navigation and high-contrast
    theming for accessibility. Components consume the FastAPI endpoints and present a responsive news experience.
 

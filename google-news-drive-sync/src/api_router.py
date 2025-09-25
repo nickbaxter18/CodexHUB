@@ -133,11 +133,26 @@ async def fetch_all_articles(
         )
         if plugins:
             plugin_settings = plugin_cfg.get("settings", {})
+            sandbox_cfg = plugin_cfg.get("sandbox", {})
+            sandbox_enabled = sandbox_cfg.get("enabled", True)
+            timeout_value = sandbox_cfg.get("timeout_seconds", 30)
+            try:
+                timeout_seconds = float(timeout_value)
+            except (TypeError, ValueError):
+                timeout_seconds = 30.0
+            max_workers_cfg = sandbox_cfg.get("max_workers")
+            try:
+                max_workers = int(max_workers_cfg) if max_workers_cfg is not None else None
+            except (TypeError, ValueError):
+                max_workers = None
             plugin_articles = await execute_plugins(
                 plugins,
                 plugin_settings,
                 cache=cache,
                 monitor=monitor,
+                sandbox=sandbox_enabled,
+                timeout=timeout_seconds,
+                max_workers=max_workers,
             )
             articles.extend(plugin_articles)
 
