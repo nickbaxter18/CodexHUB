@@ -1,20 +1,26 @@
-import pytest
-import requests
+import asyncio
 
-from src.news_fetcher import NewsFetcherError, fetch_news
+import pytest
+
+from src.news_fetcher import fetch_news, fetch_news_async
 
 
 class FakeResponse:
-    def __init__(self, status_code, payload):
-        self.status_code = status_code
+    def __init__(self, status, payload):
+        self.status = status
         self._payload = payload
 
-    def raise_for_status(self):
-        if self.status_code >= 400:
-            raise requests.HTTPError(f"HTTP {self.status_code}")
+    async def __aenter__(self):
+        return self
 
-    def json(self):
+    async def __aexit__(self, exc_type, exc, tb):
+        return False
+
+    async def json(self):
         return self._payload
+
+    async def text(self):  # pragma: no cover - only used when raising errors
+        return "error"
 
 
 class FakeSession:
@@ -22,7 +28,7 @@ class FakeSession:
         self._responses = responses
         self.calls = 0
 
-    def get(self, *args, **kwargs):  # noqa: D401 - behave like requests.Session.get
+    def get(self, *args, **kwargs):  # noqa: D401 - mimic aiohttp session
         response = self._responses[self.calls]
         self.calls += 1
         return response
@@ -47,7 +53,7 @@ def test_fetch_news_collects_articles():
     ]
     session = FakeSession(responses)
 
-    articles = fetch_news("key", {"pageSize": 5}, session=session)
+    articles = asyncio.run(fetch_news_async("key", {"pageSize": 5}, session=session))
 
     assert len(articles) == 1
     article = articles[0]
@@ -56,12 +62,15 @@ def test_fetch_news_collects_articles():
     assert article.url == "https://example.com"
 
 
-def test_fetch_news_handles_rate_limit():
+def test_fetch_news_handles_rate_limit(caplog):
     responses = [FakeResponse(429, {})]
     session = FakeSession(responses)
 
-    with pytest.raises(NewsFetcherError):
-        fetch_news("key", {}, session=session)
+    with caplog.at_level("ERROR"):
+        articles = asyncio.run(fetch_news_async("key", {}, session=session))
+
+    assert articles == []
+    assert any("Rate limit" in message for message in caplog.text.splitlines())
 
 
 def test_fetch_news_requires_api_key():
@@ -89,6 +98,6 @@ def test_fetch_news_skips_invalid_payload():
     ]
     session = FakeSession(responses)
 
-    articles = fetch_news("key", {}, session=session)
+    articles = asyncio.run(fetch_news_async("key", {}, session=session))
     assert len(articles) == 1
     assert articles[0].title == "Valid"

@@ -12,6 +12,11 @@ news_api:
   page_size: 20
   max_articles: 50
 
+sources:
+  rss:
+    - 'https://hnrss.org/frontpage'
+  rss_limit_per_feed: 10
+
 document:
   format: markdown
   timezone: UTC
@@ -19,6 +24,35 @@ document:
 drive:
   folder_name: 'Shared News Feed'
   oauth_credentials_path: 'credentials.json'
+  token_storage_path: '../cache/drive_token.enc'
 
 scheduler:
+  enabled: true
   update_interval_minutes: 180
+  timezone: UTC
+  cron: null
+
+cache:
+  path: '../cache/articles.db'
+  retention_days: 14
+
+repository:
+  enabled: true
+  path: '../cache/articles.db'
+
+plugins:
+  enabled: false
+  packages:
+    - 'src.plugins.sample_plugin'
+  paths: []
+  settings:
+    sample:
+      enabled: false
+
+server:
+  host: '127.0.0.1'
+  port: 8000
+
+secrets:
+  env_file: '../.env'
+  encryption_key_env: 'TOKEN_ENCRYPTION_KEY'
