@@ -34,3 +34,26 @@ jobs:
         run: python -m pip_audit -r requirements-dev.txt
       - name: Bandit
         run: bandit -q -r macro_system meta_agent qa -x macro_system/tests,meta_agent/tests,tests
+
+      - name: Check for Snyk token
+        id: snyk_token
+        run: |
+          if [ -n "${{ secrets.SNYK_TOKEN }}" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Snyk code scan
+        if: steps.snyk_token.outputs.available == 'true'
+        uses: snyk/actions/node@0.4.0
+        with:
+          command: code test --sarif-file-output=snyk-code.sarif
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      - name: Upload Snyk SARIF
+        if: steps.snyk_token.outputs.available == 'true'
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: snyk-code.sarif
