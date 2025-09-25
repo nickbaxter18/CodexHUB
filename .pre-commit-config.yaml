@@ -25,6 +25,24 @@ repos:
         args:
           - --skip=**/package-lock.json
           - --ignore-words-list=afterAll,afterEach
+  - repo: https://github.com/zricethezav/gitleaks
+    rev: v8.18.4
+    hooks:
+      - id: gitleaks
+        name: gitleaks (staged diff)
+        args:
+          - --log-opts=--unified=0
+        stages: [pre-commit]
+  - repo: https://github.com/semgrep/semgrep
+    rev: v1.80.0
+    hooks:
+      - id: semgrep
+        name: semgrep security audit
+        args:
+          - --config
+          - p/security-audit
+        stages: [pre-commit]
+        pass_filenames: false
   - repo: local
     hooks:
       - id: markdownlint
@@ -32,6 +50,18 @@ repos:
         entry: pnpm exec markdownlint --config .markdownlint.json
         language: system
         files: '\\.(md|mdx)$'
+      - id: pnpm-test
+        name: pnpm test suite
+        entry: pnpm test
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+      - id: secret-scan
+        name: gitleaks full scan
+        entry: pnpm run scan:secrets -- --report-format json
+        language: system
+        pass_filenames: false
+        stages: [manual]
       - id: commitlint
         name: commitlint
         entry: pnpm commitlint --edit "$1"

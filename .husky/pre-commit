@@ -1,4 +1,3 @@
 #!/bin/sh
 
-pnpm lint-staged
-python -m pre_commit run --hook-stage commit --show-diff-on-failure
+pnpm run precommit:run
