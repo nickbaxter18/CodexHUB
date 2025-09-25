@@ -121,27 +121,33 @@ make test          # execute JavaScript/TypeScript unit tests
 make test-python   # execute pytest suites
 make security      # run npm and pip security audits
 make cursor-status # emit Cursor automation health as JSON (non-zero exit on failure)
+scripts/run-quality-gates.sh pre-push   # Husky-equivalent gate (lint, format, tests, Semgrep, Gitleaks)
+python scripts/metrics/collect_metrics.py --skip-commands  # refresh governance metrics snapshot
 python -m src.common.config_loader --json  # validate pipeline/governance/metrics bundles
 python -m src.performance.cli node-quality --skip "pnpm audit" --max-workers 2  # targeted quality run
 ```
 
 Each command is idempotent and suitable for CI usage; the aggregated `make quality` target mirrors
-the GitHub Actions matrix and persists timing data under `results/performance/` for use with
-`scripts/codex_status.py`. See `docs/usage.md` for additional workflow-specific helpers.
+the GitHub Actions matrix and now persists timing data under `results/metrics/` (for cross-language
+durations) and `results/performance/` (for Cursor agents). See `docs/usage.md` and
+`docs/context/continuous-improvement.md` for additional workflow-specific helpers.
 
 ### 7. Fetch repository context
 
-Use the Context Hub to gather a curated snapshot of architecture and governance docs for humans or
-automated agents. The fetch script copies the latest guidance into a portable bundle:
+Use the Context Hub to gather a curated snapshot of architecture, Cursor mandates, and governance
+docs for humans or automated agents. The fetch script copies the latest guidance into a portable
+bundle:
 
 ```bash
-./scripts/fetch-context.sh .context-bundle
+./scripts/fetch-context.sh .context-bundle --archive
 ls .context-bundle
 cat .context-bundle/context-manifest.json
+ls .context-bundle.tar.gz
 ```
 
 Update the documents under `docs/context/` whenever new architecture patterns or runbooks are
-introduced so the exported bundle remains authoritative.
+introduced so the exported bundle remains authoritative. The optional archive flag packages the
+bundle as `context-bundle.tar.gz` so agents can download a single artifact.
 
 ## Documentation
 
@@ -152,10 +158,15 @@ introduced so the exported bundle remains authoritative.
 - [API Reference](docs/api.md) – Available endpoints and CLI commands.
 - [Architecture](docs/architecture.md) – High-level diagrams and module responsibilities.
 - [Governance](docs/GOVERNANCE.md) – Fairness, privacy, and compliance controls.
+- [Context Hub](docs/context/README.md) – Aggregated design patterns, onboarding runbooks, automation playbooks, and AI review procedures.
 
 ## Automated Quality Gates
 
-Husky manages the local Git hooks and delegates linting, formatting, unit tests, and security scans through `pnpm run precommit:run`. The hook executes `lint-staged`, the Python pre-commit suite, Semgrep (SAST), Gitleaks (secret scanning), and the Node.js test runner before every commit. Commit message validation is enforced via the `commit-msg` hook.
+Husky manages the local Git hooks and delegates linting, formatting, unit tests, and security
+scans through `scripts/run-quality-gates.sh`. The pre-commit hook wraps `lint-staged` and the Python
+pre-commit suite (which includes pnpm tests and pytest), while the pre-push hook executes linting,
+format checks, pnpm tests, type-checking, pytest, Cursor compliance validation, Semgrep (SAST), and a
+full-history Gitleaks scan. Commit message validation is enforced via the `commit-msg` hook.
 
 To refresh the hooks after cloning or when tooling changes:
 
@@ -167,18 +178,24 @@ pnpm run prepare
 To run the same checks manually (for example, on CI agents without Husky), invoke:
 
 ```bash
-pnpm run precommit:run
+scripts/run-quality-gates.sh pre-commit
+scripts/run-quality-gates.sh pre-push
 ```
 
-Secret scanning can be executed on demand across the entire Git history with:
+Set `CURSOR_SKIP_VALIDATE=true` (or `1`) when you deliberately need to bypass Cursor validation—for
+example on ephemeral CI runners that do not have the Cursor requirements installed. Keep the toggle
+off in day-to-day development so regressions surface early.
+
+Secret scanning can be executed on demand across the entire Git history with either the Husky
+pre-push hook or a standalone command:
 
 ```bash
 pnpm run scan:secrets            # writes SARIF to results/security/gitleaks-report.sarif
 ```
 
 The scheduled GitHub Actions security workflow now executes the same `scripts/scan-secrets.sh`
-wrapper weekly and uploads the SARIF report alongside audit, Bandit, and Snyk scans so leaked
-credentials are surfaced even when developers forget to run the hook locally.
+wrapper weekly and uploads the SARIF report alongside audit, Bandit, CodeQL, and Snyk scans so
+leaked credentials are surfaced even when developers forget to run the hook locally.
 
 Set `GITLEAKS_TOKEN` or configure Docker if you prefer running the official container image. Semgrep rules come from the `p/security-audit` policy; customise via `.semgrep.yml` if the default set is too noisy.
 

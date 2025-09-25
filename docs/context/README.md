@@ -9,14 +9,18 @@ sources when available, and highlight how to apply the guidance in day-to-day de
 
 ## Directory Map
 
-| File                        | Description                                                               |
-| --------------------------- | ------------------------------------------------------------------------- |
-| `design-patterns.md`        | Canonical implementation patterns and anti-patterns for the codebase.     |
-| `best-practices.md`         | Consolidated coding, testing, security, and operational practices.        |
-| `api-schemas.md`            | High-level view of public APIs, shared data models, and validation flows. |
-| `getting-started.md`        | Quick-start instructions for local setup, builds, and deployments.        |
-| `knowledge-graph.md`        | Machine-readable summary of major subsystems and their dependencies.      |
-| `continuous-improvement.md` | Metrics, reporting cadence, and guidance for sustaining repo health.      |
+| File                           | Description                                                                |
+| ------------------------------ | -------------------------------------------------------------------------- |
+| `design-patterns.md`           | Canonical implementation patterns, reusable components, and anti-patterns. |
+| `best-practices.md`            | Consolidated coding, testing, security, and operational practices.         |
+| `api-schemas.md`               | High-level view of public APIs, shared data models, and validation flows.  |
+| `getting-started.md`           | Quick-start onboarding instructions for local setup and CI parity.         |
+| `knowledge-graph.md`           | Machine-readable summary of major subsystems and their dependencies.       |
+| `continuous-improvement.md`    | Metrics, reporting cadence, and guidance for sustaining repo health.       |
+| `automation-pipeline.md`       | End-to-end scan→diagnose→fix orchestration blueprint.                      |
+| `ai-assisted-review.md`        | Procedures for configuring AI reviewers and logging decision outcomes.     |
+| `monorepo-strategy.md`         | Evaluation of Turbo/Nx/Bazel adoption paths and workspace segmentation.    |
+| `multi-agent-orchestration.md` | Future-state coordination model across knowledge, scanning, and QA roles.  |
 
 ### Maintenance Rules
 
@@ -25,3 +29,5 @@ sources when available, and highlight how to apply the guidance in day-to-day de
   fetch script can package canonical references.
 - Note the version or date of last revision at the top of long-lived documents to help agents
   decide when to refresh their cached knowledge.
+- Regenerate the bundle with `scripts/fetch-context.sh --archive` after substantial updates so
+  automated reviewers consume the latest knowledge pack.

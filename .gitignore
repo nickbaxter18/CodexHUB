@@ -7,7 +7,17 @@ dist/
 __pycache__/
 coverage/
 .pytest_cache/
-results/
+results/*
+!results/metrics/
+!results/metrics/.gitkeep
+!results/security/
+!results/security/remediation-log.md
+!results/ai-review/
+!results/ai-review/README.md
+!results/improvements/
+!results/improvements/log.md
+!results/automation/
+!results/automation/README.md
 Brain docs cleansed .ndjson/
 Bundle cleansed .ndjson/
 pnpm-debug.log

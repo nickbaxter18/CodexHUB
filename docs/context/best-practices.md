@@ -1,6 +1,6 @@
 # Best Practices
 
-_Last updated: 2024-11-23_
+_Last updated: 2024-12-04_
 
 ## Coding Standards
 
@@ -24,11 +24,14 @@ _Last updated: 2024-11-23_
 
 ## Security & Compliance
 
-- Run `pnpm run scan:secrets` before pushing to perform a full-history gitleaks scan.
+- Run `scripts/run-quality-gates.sh pre-push` (or the equivalent pnpm script) before sharing
+  branches; it executes linting, formatting, Node/Python tests, Semgrep, and Gitleaks scans.
 - Review CodeQL and Semgrep alerts on every PR. Document mitigation steps for accepted risks in
   `SECURITY.md` or link to follow-up tickets.
 - Store credentials exclusively in environment variables (`.env.example` documents expected
   variables). Use secret managers in production deployments.
+- Capture remediation and AI review outcomes in `results/security/` and `results/ai-review/` so the
+  governance loop in `docs/context/automation-pipeline.md` stays data-driven.
 
 ## Operational Practices
 
@@ -37,3 +40,5 @@ _Last updated: 2024-11-23_
 - Prefer `pnpm` scripts over raw binaries to ensure consistent tool versions.
 - Keep context documentation updated when APIs, workflows, or quality gates change so that the
   fetch script distributes accurate guidance to downstream agents.
+- Update `results/metrics/latest.json` via `scripts/metrics/collect_metrics.py` after major changes
+  to capture build/test duration deltas and remediation cadence.
