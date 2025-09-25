@@ -176,6 +176,10 @@ Secret scanning can be executed on demand across the entire Git history with:
 pnpm run scan:secrets            # writes SARIF to results/security/gitleaks-report.sarif
 ```
 
+The scheduled GitHub Actions security workflow now executes the same `scripts/scan-secrets.sh`
+wrapper weekly and uploads the SARIF report alongside audit, Bandit, and Snyk scans so leaked
+credentials are surfaced even when developers forget to run the hook locally.
+
 Set `GITLEAKS_TOKEN` or configure Docker if you prefer running the official container image. Semgrep rules come from the `p/security-audit` policy; customise via `.semgrep.yml` if the default set is too noisy.
 
 ## Security Notes

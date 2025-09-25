@@ -35,6 +35,14 @@ jobs:
       - name: Bandit
         run: bandit -q -r macro_system meta_agent qa -x macro_system/tests,meta_agent/tests,tests
 
+      - name: Run Gitleaks secret scan
+        run: bash scripts/scan-secrets.sh --report-format sarif --report-path results/security/gitleaks-report.sarif
+
+      - name: Upload Gitleaks SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: results/security/gitleaks-report.sarif
+
       - name: Check for Snyk token
         id: snyk_token
         run: |

@@ -13,7 +13,7 @@ manageable for the engineering team.
 | **Semgrep (incremental)**                | Every pull request                                                        | Only files changed in the PR compared against the base branch    | GitHub Security → Code Scanning Alerts + PR summary comment |
 | **Snyk Code**                            | Weekly schedule when `SNYK_TOKEN` secret is configured                    | Full repository scan with proprietary rules                      | GitHub Security → Code Scanning Alerts                      |
 | **Dependency, secret, and audit checks** | Every pull request + weekly schedule                                      | `pnpm audit`, `pip audit`, Bandit, TruffleHog, dependency review | GitHub Actions log + PR annotations                         |
-| **Gitleaks**                             | Manual (`pnpm run scan:secrets`) + optional CI invocation                 | Full Git history using `scripts/scan-secrets.sh`                 | `results/security/gitleaks-report.*`                        |
+| **Gitleaks**                             | Weekly scheduled workflow + manual (`pnpm run scan:secrets`) invocations  | Full Git history using `scripts/scan-secrets.sh`                 | `results/security/gitleaks-report.*`                        |
 
 ### Scheduling Strategy
 
@@ -110,4 +110,4 @@ is available.
 
 ### Secret Scanning Playbook
 
-Use `scripts/scan-secrets.sh [output_dir] [extra gitleaks args...]` to run ad-hoc scans. The script automatically selects a local gitleaks binary when available or falls back to the official Docker image. Provide `--redact` for reports that omit secret contents when sharing outside the security team.
+Use `scripts/scan-secrets.sh [output_dir] [extra gitleaks args...]` to run ad-hoc scans. The script automatically selects a local gitleaks binary when available or falls back to the official Docker image. Provide `--redact` for reports that omit secret contents when sharing outside the security team. When the scheduled GitHub Actions job detects a leak, rotate the affected credential immediately, purge it from git history if necessary (e.g., via `git filter-repo`), and replace the usage with environment variables or your chosen secret manager before closing the alert.
