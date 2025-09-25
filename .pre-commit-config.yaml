@@ -5,6 +5,11 @@ repos:
       - id: ruff
         args: ['--line-length=100', '--target-version=py311']
       - id: ruff-format
+  - repo: https://github.com/zricethezav/gitleaks
+    rev: v8.18.4
+    hooks:
+      - id: gitleaks
+        args: ['protect', '--staged', '--no-banner']
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: v3.1.0
     hooks:
@@ -37,3 +42,8 @@ repos:
         entry: pnpm commitlint --edit "$1"
         language: system
         stages: [commit-msg]
+      - id: validate-configs
+        name: validate configuration schemas
+        entry: python scripts/validate_configs.py
+        language: system
+        pass_filenames: false

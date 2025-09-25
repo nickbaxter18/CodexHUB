@@ -35,7 +35,14 @@ If you want to hydrate optional pnpm workspaces (for example the Next.js editor)
 
 ## 5. Configure environment variables
 
-Create a `.env` file (or export variables in your shell) with the following keys:
+Start from the example that matches your workflow:
+
+- `.env.example` – minimal defaults with all automation disabled.
+- `.env.cursor-first.example` – enables Cursor integrations, knowledge ingestion, and telemetry.
+
+Regenerate both files with `pnpm run env:example` after introducing new variables so the templates
+and documentation stay in sync. Create a `.env` file (or export variables in your shell) with the
+following keys:
 
 | Variable                         | Description                                                                                                     |
 | -------------------------------- | --------------------------------------------------------------------------------------------------------------- |
