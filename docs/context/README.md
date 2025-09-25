@@ -9,13 +9,14 @@ sources when available, and highlight how to apply the guidance in day-to-day de
 
 ## Directory Map
 
-| File                 | Description                                                               |
-| -------------------- | ------------------------------------------------------------------------- |
-| `design-patterns.md` | Canonical implementation patterns and anti-patterns for the codebase.     |
-| `best-practices.md`  | Consolidated coding, testing, security, and operational practices.        |
-| `api-schemas.md`     | High-level view of public APIs, shared data models, and validation flows. |
-| `getting-started.md` | Quick-start instructions for local setup, builds, and deployments.        |
-| `knowledge-graph.md` | Machine-readable summary of major subsystems and their dependencies.      |
+| File                        | Description                                                               |
+| --------------------------- | ------------------------------------------------------------------------- |
+| `design-patterns.md`        | Canonical implementation patterns and anti-patterns for the codebase.     |
+| `best-practices.md`         | Consolidated coding, testing, security, and operational practices.        |
+| `api-schemas.md`            | High-level view of public APIs, shared data models, and validation flows. |
+| `getting-started.md`        | Quick-start instructions for local setup, builds, and deployments.        |
+| `knowledge-graph.md`        | Machine-readable summary of major subsystems and their dependencies.      |
+| `continuous-improvement.md` | Metrics, reporting cadence, and guidance for sustaining repo health.      |
 
 ### Maintenance Rules
 
