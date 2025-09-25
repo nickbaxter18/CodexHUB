@@ -11,7 +11,7 @@ env:
   PNPM_STORE_PATH: ${{ runner.temp }}/pnpm-store
 
 jobs:
-  node-quality:
+  js-and-docs-quality:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -40,6 +40,9 @@ jobs:
       - name: Node quality suite
         run: python -m src.performance.cli node-quality --output-dir results/performance/node
 
+      - name: Documentation quality suite
+        run: python -m src.performance.cli docs-quality --output-dir results/performance/docs
+
       - name: Commitlint history
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
@@ -54,36 +57,6 @@ jobs:
         with:
           name: node-quality-metrics
           path: results/performance/node
-
-  docs-quality:
-    runs-on: ubuntu-latest
-    needs: node-quality
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-          run_install: false
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
-
-      - name: Configure pnpm store
-        run: |
-          mkdir -p "$PNPM_STORE_PATH"
-          pnpm config set store-dir "$PNPM_STORE_PATH"
-
-      - name: Install Node.js dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Documentation quality suite
-        run: python -m src.performance.cli docs-quality --output-dir results/performance/docs
 
       - name: Upload documentation metrics
         if: always()
@@ -108,6 +81,9 @@ jobs:
       - name: Install Python tooling
         run: pip install -r requirements-dev.txt
 
+      - name: Validate environment configurations
+        run: python -m src.common.config_loader --env .env.example --env config/environments/ci.env --env config/environments/development.env --json
+
       - name: Python quality suite
         run: python -m src.performance.cli python-quality --output-dir results/performance/python
 
@@ -120,7 +96,7 @@ jobs:
 
   codex-status:
     runs-on: ubuntu-latest
-    needs: [node-quality, docs-quality, python-quality]
+    needs: [js-and-docs-quality, python-quality]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
