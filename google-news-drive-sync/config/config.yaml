@@ -1,0 +1,24 @@
+# Example configuration for Google News Drive Sync.
+# Populate this file with real API keys and credentials in your local environment only.
+
+news_api:
+  api_key: 'YOUR_NEWS_API_KEY'
+  base_url: 'https://newsapi.org/v2/top-headlines'
+  topics:
+    - technology
+    - science
+  language: en
+  country: us
+  page_size: 20
+  max_articles: 50
+
+document:
+  format: markdown
+  timezone: UTC
+
+drive:
+  folder_name: 'Shared News Feed'
+  oauth_credentials_path: 'credentials.json'
+
+scheduler:
+  update_interval_minutes: 180
