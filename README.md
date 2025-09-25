@@ -129,6 +129,20 @@ Each command is idempotent and suitable for CI usage; the aggregated `make quali
 the GitHub Actions matrix and persists timing data under `results/performance/` for use with
 `scripts/codex_status.py`. See `docs/usage.md` for additional workflow-specific helpers.
 
+### 7. Fetch repository context
+
+Use the Context Hub to gather a curated snapshot of architecture and governance docs for humans or
+automated agents. The fetch script copies the latest guidance into a portable bundle:
+
+```bash
+./scripts/fetch-context.sh .context-bundle
+ls .context-bundle
+cat .context-bundle/context-manifest.json
+```
+
+Update the documents under `docs/context/` whenever new architecture patterns or runbooks are
+introduced so the exported bundle remains authoritative.
+
 ## Documentation
 
 - [Setup Guide](docs/setup.md) – System requirements, environment bootstrapping, and dependency
@@ -138,6 +152,31 @@ the GitHub Actions matrix and persists timing data under `results/performance/` 
 - [API Reference](docs/api.md) – Available endpoints and CLI commands.
 - [Architecture](docs/architecture.md) – High-level diagrams and module responsibilities.
 - [Governance](docs/GOVERNANCE.md) – Fairness, privacy, and compliance controls.
+
+## Automated Quality Gates
+
+Husky manages the local Git hooks and delegates linting, formatting, unit tests, and security scans through `pnpm run precommit:run`. The hook executes `lint-staged`, the Python pre-commit suite, Semgrep (SAST), Gitleaks (secret scanning), and the Node.js test runner before every commit. Commit message validation is enforced via the `commit-msg` hook.
+
+To refresh the hooks after cloning or when tooling changes:
+
+```bash
+pnpm install
+pnpm run prepare
+```
+
+To run the same checks manually (for example, on CI agents without Husky), invoke:
+
+```bash
+pnpm run precommit:run
+```
+
+Secret scanning can be executed on demand across the entire Git history with:
+
+```bash
+pnpm run scan:secrets            # writes SARIF to results/security/gitleaks-report.sarif
+```
+
+Set `GITLEAKS_TOKEN` or configure Docker if you prefer running the official container image. Semgrep rules come from the `p/security-audit` policy; customise via `.semgrep.yml` if the default set is too noisy.
 
 ## Security Notes
 

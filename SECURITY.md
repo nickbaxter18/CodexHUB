@@ -7,12 +7,13 @@ manageable for the engineering team.
 
 ## Scanner Coverage
 
-| Scanner                                  | When It Runs                                                | Scope                                                            | Output Location                                             |
-| ---------------------------------------- | ----------------------------------------------------------- | ---------------------------------------------------------------- | ----------------------------------------------------------- |
-| **CodeQL**                               | Scheduled weekly on `main`, on-demand via workflow dispatch | Full repository analysis for JavaScript/TypeScript and Python    | GitHub Security → Code Scanning Alerts                      |
-| **Semgrep (incremental)**                | Every pull request                                          | Only files changed in the PR compared against the base branch    | GitHub Security → Code Scanning Alerts + PR summary comment |
-| **Snyk Code**                            | Weekly schedule when `SNYK_TOKEN` secret is configured      | Full repository scan with proprietary rules                      | GitHub Security → Code Scanning Alerts                      |
-| **Dependency, secret, and audit checks** | Every pull request + weekly schedule                        | `pnpm audit`, `pip audit`, Bandit, TruffleHog, dependency review | GitHub Actions log + PR annotations                         |
+| Scanner                                  | When It Runs                                                              | Scope                                                            | Output Location                                             |
+| ---------------------------------------- | ------------------------------------------------------------------------- | ---------------------------------------------------------------- | ----------------------------------------------------------- |
+| **CodeQL**                               | Weekly on `main`, every pull request, and on-demand via workflow dispatch | Full repository analysis for JavaScript/TypeScript and Python    | GitHub Security → Code Scanning Alerts                      |
+| **Semgrep (incremental)**                | Every pull request                                                        | Only files changed in the PR compared against the base branch    | GitHub Security → Code Scanning Alerts + PR summary comment |
+| **Snyk Code**                            | Weekly schedule when `SNYK_TOKEN` secret is configured                    | Full repository scan with proprietary rules                      | GitHub Security → Code Scanning Alerts                      |
+| **Dependency, secret, and audit checks** | Every pull request + weekly schedule                                      | `pnpm audit`, `pip audit`, Bandit, TruffleHog, dependency review | GitHub Actions log + PR annotations                         |
+| **Gitleaks**                             | Manual (`pnpm run scan:secrets`) + optional CI invocation                 | Full Git history using `scripts/scan-secrets.sh`                 | `results/security/gitleaks-report.*`                        |
 
 ### Scheduling Strategy
 
@@ -33,7 +34,8 @@ Developers should stay alert for the following issues when working in this codeb
 - **Insecure deserialization:** Avoid `eval`, `exec`, or `pickle` on untrusted data. Prefer
   safe parsers (e.g., `json.loads`) with schema validation.
 - **Improper secrets handling:** Do not commit credentials or tokens. Use environment
-  variables or secret managers. Automated secret scanning runs on each PR.
+  variables or secret managers. Automated secret scanning runs on each PR and you can perform
+  manual sweeps with `pnpm run scan:secrets` before sharing high-risk branches.
 - **Insecure defaults in configuration:** New configuration files should set secure defaults,
   enforce timeouts, and document how to override safely.
 
@@ -105,3 +107,7 @@ If you discover a vulnerability, please follow the responsible disclosure practi
 `SECURITY_CONTACT.md` (or contact the security team at security@example.com if running in an
 enterprise environment). Do not open public issues that describe exploitable flaws until a fix
 is available.
+
+### Secret Scanning Playbook
+
+Use `scripts/scan-secrets.sh [output_dir] [extra gitleaks args...]` to run ad-hoc scans. The script automatically selects a local gitleaks binary when available or falls back to the official Docker image. Provide `--redact` for reports that omit secret contents when sharing outside the security team.
