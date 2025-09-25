@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from src.cache import ArticleCache
 from src.news_fetcher import NewsArticle
@@ -31,7 +31,7 @@ def test_cache_prunes_expired_entries(tmp_path):
     old = make_article(
         "https://example.com/old",
         "Old",
-        published_at=datetime.utcnow() - timedelta(days=2),
+        published_at=datetime.now(timezone.utc) - timedelta(days=2),
     )
     cache.record([old])
     cache.record([])  # trigger retention cleanup
