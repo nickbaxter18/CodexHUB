@@ -60,7 +60,7 @@ Run the consolidated suite with:
 scripts/run_tests.sh
 ```
 
-This script executes `pytest -q`, `mypy`, `flake8`, frontend `pnpm test`, ESLint, Prettier,
+This script executes `pytest -q`, `mypy`, `ruff`, frontend `pnpm test`, ESLint, Prettier,
 Playwright smoke tests, fairness/ESG suites, and Cursor compliance checks. CI pipelines
 invoke the same command to guarantee parity between local and automated runs.
 
@@ -69,7 +69,7 @@ invoke the same command to guarantee parity between local and automated runs.
 - **Coverage Targets:** Backend ≥ 90% statement coverage, frontend ≥ 85%, fairness/ESG
   scenarios 100% of documented edge cases. Coverage deltas are tracked per module to
   highlight regressions.
-- **Static Analysis Budgets:** `mypy` and `flake8` warnings fail the build. ESLint is
+- **Static Analysis Budgets:** `mypy` and `ruff` warnings fail the build. ESLint is
   configured with strict accessibility, security, and React hooks rules. `cspell` protects
   product terminology.
 - **Performance Budgets:** Automated checks validate that key workflows (pricing,

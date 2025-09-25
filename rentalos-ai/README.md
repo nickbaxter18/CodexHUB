@@ -159,7 +159,7 @@ infrastructure in future iterations.
 
 ## Quality, Testing & Compliance
 
-- **Python:** `pytest -q` for backend unit and integration suites; `mypy` and `flake8`
+- **Python:** `pytest -q` for backend unit and integration suites; `mypy` and `ruff`
   guard type and style contracts.
 - **Frontend:** `pnpm test` executes Vitest suites; `pnpm lint` and `pnpm format` keep
   TypeScript and Tailwind consistent.

@@ -52,7 +52,26 @@ reference and avoid committing secrets.
 Knowledge ingestion watchers are now opt-in: leave `KNOWLEDGE_WATCH_INTERVAL` blank to skip polling
 and set it to a positive number to enable background reloads.
 
-### 3. Run services
+#### Cursor automation presets
+
+- **Minimal (default)** – keep all Cursor toggles disabled (`CURSOR_AUTO_INVOCATION_ENABLED=false`,
+  `KNOWLEDGE_AUTO_LOAD=false`, etc.) and rely on manual commands when you need automation.
+- **Cursor-first** – start from `config/environments/cursor.env` or set the Cursor toggles in your
+  `.env` to `true` to enable continuous knowledge syncing, auto-invocation, and mobile controls.
+
+### 3. Manage knowledge datasets
+
+Store optional NDJSON bundles under `data/knowledge/` so they can be pruned independently of the
+repository history. The default configuration looks for:
+
+- `Brain docs cleansed .ndjson`
+- `Bundle cleansed .ndjson`
+- `data/knowledge/*.ndjson`
+
+When sharing the project, keep the directory structure but omit large datasets unless a teammate
+explicitly needs them.
+
+### 4. Run services
 
 - **Express scaffolding**: `pnpm run dev` or `pnpm start` starts the Node entry point on port `4000`.
 - **Editor health server**: `node backend/health-test.js` exposes `/health-test`, `/cursor-agent`,
@@ -61,7 +80,7 @@ and set it to a positive number to enable background reloads.
   e.g. `python -m src.training.pipeline` or `python -m src.inference.service`. Detailed workflows
   live in `docs/usage.md`.
 
-### 4. Cursor automation CLI
+### 5. Cursor automation CLI
 
 The consolidated CLI exposes all Cursor-focused automation through a single entry point:
 
@@ -74,16 +93,16 @@ python -m src.cursor.cli rules                         # review auto-invocation 
 
 Existing `pnpm run cursor:*` scripts now forward to this CLI.
 
-### 5. Quality checks
+### 6. Quality checks
 
 ```bash
 make quality       # orchestrate Node, docs, and Python quality suites with metrics capture
 make quality-node  # run the Node.js subset with timing instrumentation
 make quality-docs  # run Markdown/YAML/editorconfig linting with metrics
 make quality-python # run pytest, governance validation, bandit, and pip audit with metrics
-make format        # format JavaScript/TypeScript via Prettier and Python via black/isort
+make format        # format JavaScript/TypeScript via Prettier and Python via Ruff
 make lint          # run ESLint across Node workspaces
-make lint-python   # run flake8 across Python packages
+make lint-python   # run Ruff across Python packages
 make typecheck     # run mypy against the expanded strict configuration
 make test          # execute JavaScript/TypeScript unit tests
 make test-python   # execute pytest suites

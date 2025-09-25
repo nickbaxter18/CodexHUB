@@ -1,5 +1,6 @@
 packages:
   - 'apps/*'
+  - 'packages/*'
   - 'rentalos-ai'
   - 'src/cursor'
   - 'src/knowledge'

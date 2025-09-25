@@ -50,7 +50,7 @@
 
 - Libraries: `mlflow`, `pydantic`, `pandas`, `numpy`, `scikit-learn`, `pyyaml`.
 - Testing: `pytest` with tmp paths and fixtures for mlflow file-backed store.
-- Formatting: `black`, `isort`, `flake8` (already configured in repo).
+- Formatting: `ruff format` + `ruff check` (already configured in repo).
 
 ## Risk & Mitigation Notes
 

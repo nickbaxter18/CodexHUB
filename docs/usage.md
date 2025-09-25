@@ -53,6 +53,8 @@ Knowledge auto-loading is coordinated through `src/knowledge/auto_loader.py`.
 - `KNOWLEDGE_NDJSON_PATHS` overrides the default NDJSON search paths.
 - `KNOWLEDGE_WATCH_INTERVAL` controls how frequently sources are rescanned (leave blank or set to `0` to disable).
 - Ignored directories include `.git`, `node_modules`, `cache`, and `__pycache__` to keep scans lightweight.
+- When `watchfiles` is available the loader listens for filesystem events; otherwise it falls back to
+  periodic scans.
 
 To trigger a manual reload in code:
 
@@ -60,7 +62,7 @@ To trigger a manual reload in code:
 from src.knowledge.auto_loader import get_auto_loader
 
 auto_loader = get_auto_loader()
-await auto_loader._load_all_sources()  # Called within an event loop
+await auto_loader.refresh_all_sources()  # Called within an event loop
 ```
 
 ## Cursor auto-invocation

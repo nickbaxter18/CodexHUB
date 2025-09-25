@@ -6,9 +6,11 @@ import argparse
 import hashlib
 import json
 import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
+from subprocess import CalledProcessError
 from typing import Any, Sequence
 from venv import EnvBuilder
 
@@ -77,10 +79,23 @@ def _bootstrap_node(*, frozen: bool, state: dict[str, Any] | None) -> dict[str, 
         print("Node dependencies already up to date – skipping pnpm install")
         return {"fingerprint": fingerprint, "frozen": frozen}
 
-    args = ["pnpm", "install"]
+    install_args = ["pnpm", "install"]
     if frozen:
-        args.append("--frozen-lockfile")
-    _run(args)
+        install_args.append("--frozen-lockfile")
+
+    fetch_args = ["pnpm", "fetch"]
+    if frozen:
+        fetch_args.append("--frozen-lockfile")
+
+    offline_args = [*install_args, "--offline"]
+
+    try:
+        _run(fetch_args)
+        _run(offline_args)
+    except CalledProcessError:
+        print("Offline pnpm install failed – retrying with online install")
+        _run(install_args)
+
     _run(["pnpm", "exec", "husky", "install"])
     return {"fingerprint": fingerprint, "frozen": frozen}
 
@@ -119,11 +134,25 @@ def _bootstrap_python(
         return {"fingerprint": fingerprint, "extras": extras}
 
     python = _ensure_virtualenv(venv_path)
-    _run([str(python), "-m", "pip", "install", "-r", "requirements.txt"])
-    if extras:
-        _run([str(python), "-m", "pip", "install", "-r", "requirements-dev.txt"])
+    _sync_python_dependencies(python, extras=extras)
     _run([str(python), "-m", "pre_commit", "install"])
     return {"fingerprint": fingerprint, "extras": extras}
+
+
+def _sync_python_dependencies(python: Path, *, extras: bool) -> None:
+    """Synchronise Python dependencies using uv when available."""
+
+    requirements = ["requirements.txt"]
+    if extras:
+        requirements.append("requirements-dev.txt")
+
+    uv_executable = shutil.which("uv")
+    if uv_executable:
+        _run([uv_executable, "pip", "sync", "--python", str(python), *requirements])
+        return
+
+    for requirement in requirements:
+        _run([str(python), "-m", "pip", "install", "--upgrade", "-r", requirement])
 
 
 def parse_args(argv: Sequence[str] | None) -> argparse.Namespace:

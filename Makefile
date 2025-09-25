@@ -17,15 +17,14 @@ lint:
 	pnpm run lint
 
 lint-python:
-	python -m flake8 src packages/automation scripts
+        python -m ruff check src packages/automation scripts agents meta_agent macro_system qa_engine
 
 typecheck:
 	python -m mypy
 
 format:
-	pnpm run format
-	python -m black src packages/automation scripts agents meta_agent macro_system qa_engine
-	python -m isort src packages/automation scripts agents meta_agent macro_system qa_engine
+        pnpm run format
+        python -m ruff format src packages/automation scripts agents meta_agent macro_system qa_engine
 
 security:
 	pnpm run audit:js
@@ -41,20 +40,22 @@ test-python:
 	python -m pytest
 
 quality:
-	python -m src.performance.cli quality || { \
-	pnpm run lint && \
-	python -m pytest && \
-	python -m mypy; \
-	}
+        python -m src.performance.cli quality || { \
+        pnpm run lint && \
+        python -m ruff check src packages/automation scripts agents meta_agent macro_system qa_engine && \
+        python -m pytest && \
+        python -m mypy; \
+        }
 
 quality-node:
 	python -m src.performance.cli node-quality || pnpm run lint
 
 quality-python:
-	python -m src.performance.cli python-quality || { \
-	python -m pytest && \
-	python -m mypy; \
-	}
+        python -m src.performance.cli python-quality || { \
+        python -m ruff check src packages/automation scripts agents meta_agent macro_system qa_engine && \
+        python -m pytest && \
+        python -m mypy; \
+        }
 
 quality-docs:
 	python -m src.performance.cli docs-quality || pnpm run lint:md

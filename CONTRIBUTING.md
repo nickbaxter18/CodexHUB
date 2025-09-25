@@ -15,6 +15,6 @@
 - Privacy policies live in `config/governance.yaml`; any changes must include documentation updates and test coverage in `tests/compliance`.
 
 ## Code Quality
-- Use Black, isort, and Flake8 configurations defined in `pyproject.toml`.
+- Use Ruff (`python -m ruff format` / `python -m ruff check`) as configured in `pyproject.toml`.
 - Ensure no secrets are committed; use environment variables for production URIs.
 - Update `CHANGELOG.md`, `ARCHITECTURE.md`, `SECURITY.md`, and `docs/GOVERNANCE.md` when introducing new governance-relevant functionality.

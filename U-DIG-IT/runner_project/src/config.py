@@ -50,7 +50,7 @@ class AppConfig(BaseSettings):
             "pwd",
             "git",
             "pytest",
-            "black",
+            "ruff",
             "python",
             "echo",
         ]
