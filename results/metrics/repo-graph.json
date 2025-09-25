@@ -1,0 +1,181 @@
+{
+  "generatedAt": "2025-09-25T19:37:57.615586+00:00",
+  "nodes": [
+    {
+      "id": "agents",
+      "label": "agents",
+      "type": "python",
+      "path": "agents"
+    },
+    {
+      "id": "apps/editor",
+      "label": "agents.md",
+      "type": "app",
+      "path": "apps/editor"
+    },
+    {
+      "id": "codex-meta-intelligence",
+      "label": "codex-meta-intelligence",
+      "type": "service",
+      "path": "codex-meta-intelligence"
+    },
+    {
+      "id": "macro_system",
+      "label": "macro_system",
+      "type": "python",
+      "path": "macro_system"
+    },
+    {
+      "id": "meta_agent",
+      "label": "meta_agent",
+      "type": "python",
+      "path": "meta_agent"
+    },
+    {
+      "id": "packages/automation",
+      "label": "automation",
+      "type": "library",
+      "path": "packages/automation"
+    },
+    {
+      "id": "qa_engine",
+      "label": "qa_engine",
+      "type": "python",
+      "path": "qa_engine"
+    },
+    {
+      "id": "rentalos-ai",
+      "label": "rentalos-ai",
+      "type": "misc",
+      "path": "rentalos-ai"
+    },
+    {
+      "id": "scripts",
+      "label": "scripts",
+      "type": "python",
+      "path": "scripts"
+    },
+    {
+      "id": "src",
+      "label": "src",
+      "type": "python",
+      "path": "src"
+    },
+    {
+      "id": "src/cursor",
+      "label": "@codexhub/cursor-integration",
+      "type": "core",
+      "path": "src/cursor"
+    },
+    {
+      "id": "src/knowledge",
+      "label": "@codexhub/knowledge-integration",
+      "type": "core",
+      "path": "src/knowledge"
+    },
+    {
+      "id": "src/mobile",
+      "label": "@codexhub/mobile-integration",
+      "type": "core",
+      "path": "src/mobile"
+    }
+  ],
+  "edges": [
+    {
+      "source": "src",
+      "target": "agents",
+      "relation": "imports"
+    },
+    {
+      "source": "packages/automation",
+      "target": "macro_system",
+      "relation": "imports(9)"
+    },
+    {
+      "source": "packages/automation",
+      "target": "agents",
+      "relation": "imports"
+    },
+    {
+      "source": "packages/automation",
+      "target": "meta_agent",
+      "relation": "imports(13)"
+    },
+    {
+      "source": "scripts",
+      "target": "src",
+      "relation": "imports(27)"
+    },
+    {
+      "source": "scripts",
+      "target": "agents",
+      "relation": "imports"
+    },
+    {
+      "source": "agents",
+      "target": "packages/automation",
+      "relation": "imports(6)"
+    }
+  ],
+  "mermaid": "graph TD\n  agents[agents]\n  apps_editor[agents.md]\n  codex-meta-intelligence[codex-meta-intelligence]\n  macro_system[macro_system]\n  meta_agent[meta_agent]\n  packages_automation[automation]\n  qa_engine[qa_engine]\n  rentalos-ai[rentalos-ai]\n  scripts[scripts]\n  src[src]\n  src_cursor[@codexhub/cursor-integration]\n  src_knowledge[@codexhub/knowledge-integration]\n  src_mobile[@codexhub/mobile-integration]\n  src -->|imports| agents\n  packages_automation -->|imports(9)| macro_system\n  packages_automation -->|imports| agents\n  packages_automation -->|imports(13)| meta_agent\n  scripts -->|imports(27)| src\n  scripts -->|imports| agents\n  agents -->|imports(6)| packages_automation",
+  "workspaceMembers": [
+    [
+      "automation",
+      "packages/automation"
+    ],
+    [
+      "codex-meta-intelligence",
+      "codex-meta-intelligence"
+    ],
+    [
+      "cursor",
+      "src/cursor"
+    ],
+    [
+      "editor",
+      "apps/editor"
+    ],
+    [
+      "knowledge",
+      "src/knowledge"
+    ],
+    [
+      "mobile",
+      "src/mobile"
+    ],
+    [
+      "rentalos-ai",
+      "rentalos-ai"
+    ]
+  ],
+  "pythonPackages": [
+    [
+      "agents",
+      "agents"
+    ],
+    [
+      "macro_system",
+      "macro_system"
+    ],
+    [
+      "meta_agent",
+      "meta_agent"
+    ],
+    [
+      "packages/automation",
+      "packages/automation"
+    ],
+    [
+      "qa_engine",
+      "qa_engine"
+    ],
+    [
+      "scripts",
+      "scripts"
+    ],
+    [
+      "src",
+      "src"
+    ]
+  ]
+}
