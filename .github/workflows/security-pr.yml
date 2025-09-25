@@ -36,3 +36,33 @@ jobs:
             --only-verified
             --fail
             .
+
+  semgrep-incremental:
+    name: Incremental SAST
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+      security-events: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch base branch
+        run: git fetch origin ${{ github.event.pull_request.base.ref }}
+
+      - name: Semgrep diff scan
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: p/security-audit
+          baseline-ref: origin/${{ github.event.pull_request.base.ref }}
+          generateSarif: true
+          sarif: semgrep.sarif
+
+      - name: Upload Semgrep results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: semgrep.sarif
