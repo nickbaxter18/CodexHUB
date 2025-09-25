@@ -1,0 +1,11 @@
+[
+  {
+    "timestamp": "2025-09-25T19:33:21.006322+00:00",
+    "agent": "cursor-meta",
+    "source": "scripts/run-quality-gates.sh",
+    "summary": "Initialized AI review ledger with automated quality gate instrumentation",
+    "accepted": 0,
+    "rejected": 0,
+    "notes": "Linked quality gate telemetry to AI review governance; pending live suggestions."
+  }
+]

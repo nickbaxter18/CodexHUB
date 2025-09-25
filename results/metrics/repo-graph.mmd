@@ -1,0 +1,21 @@
+graph TD
+  agents[agents]
+  apps_editor[agents.md]
+  codex-meta-intelligence[codex-meta-intelligence]
+  macro_system[macro_system]
+  meta_agent[meta_agent]
+  packages_automation[automation]
+  qa_engine[qa_engine]
+  rentalos-ai[rentalos-ai]
+  scripts[scripts]
+  src[src]
+  src_cursor[@codexhub/cursor-integration]
+  src_knowledge[@codexhub/knowledge-integration]
+  src_mobile[@codexhub/mobile-integration]
+  src -->|imports| agents
+  packages_automation -->|imports(9)| macro_system
+  packages_automation -->|imports| agents
+  packages_automation -->|imports(13)| meta_agent
+  scripts -->|imports(27)| src
+  scripts -->|imports| agents
+  agents -->|imports(6)| packages_automation
