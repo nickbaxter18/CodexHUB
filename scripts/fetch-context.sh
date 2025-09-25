@@ -61,11 +61,15 @@ CONTEXT_PATHS=(
   "scripts/fetch-context.sh"
   "scripts/scan-secrets.sh"
   "scripts/auto_setup_cursor.py"
+  "scripts/metrics/generate_repo_snapshot.py"
   "package.json"
   "pnpm-workspace.yaml"
   "turbo.json"
   ".pre-commit-config.yaml"
   ".husky"
+  "results/metrics/repo-graph.json"
+  "results/metrics/repo-graph.mmd"
+  "results/metrics/repo-graph-summary.md"
 )
 
 if [[ ! "$OUTPUT_DIR" = /* ]]; then
