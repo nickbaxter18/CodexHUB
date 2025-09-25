@@ -1,6 +1,6 @@
 # Design Patterns & Anti-Patterns
 
-_Last updated: 2024-11-23_
+_Last updated: 2024-12-04_
 
 ## Preferred Architectural Patterns
 

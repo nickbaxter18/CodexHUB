@@ -2,7 +2,44 @@
 set -euo pipefail
 
 ROOT_DIR=$(git rev-parse --show-toplevel)
-OUTPUT_DIR=${1:-"$ROOT_DIR/.context-bundle"}
+OUTPUT_DIR="$ROOT_DIR/.context-bundle"
+CREATE_ARCHIVE=false
+ARCHIVE_PATH=""
+
+POSITIONAL_SET=false
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --archive)
+      CREATE_ARCHIVE=true
+      shift
+      ;;
+    --archive-path)
+      CREATE_ARCHIVE=true
+      ARCHIVE_PATH=${2:-}
+      shift 2 || true
+      ;;
+    --archive-path=*)
+      CREATE_ARCHIVE=true
+      ARCHIVE_PATH="${1#*=}"
+      shift
+      ;;
+    *)
+      if [[ "$POSITIONAL_SET" = false ]]; then
+        OUTPUT_DIR="$1"
+        POSITIONAL_SET=true
+        shift
+      else
+        echo "Unexpected argument: $1" >&2
+        exit 1
+      fi
+      ;;
+  esac
+done
+
+if [[ -z "$ARCHIVE_PATH" && "$CREATE_ARCHIVE" = true ]]; then
+  ARCHIVE_PATH="$OUTPUT_DIR.tar.gz"
+fi
 
 CONTEXT_PATHS=(
   "AGENT.md"
@@ -26,6 +63,14 @@ CONTEXT_PATHS=(
   ".husky"
 )
 
+if [[ ! "$OUTPUT_DIR" = /* ]]; then
+  OUTPUT_DIR="$ROOT_DIR/${OUTPUT_DIR#./}"
+fi
+
+if [[ -n "$ARCHIVE_PATH" && ! "$ARCHIVE_PATH" = /* ]]; then
+  ARCHIVE_PATH="$ROOT_DIR/${ARCHIVE_PATH#./}"
+fi
+
 rm -rf "$OUTPUT_DIR"
 mkdir -p "$OUTPUT_DIR"
 
@@ -34,6 +79,10 @@ MANIFEST="$OUTPUT_DIR/context-manifest.json"
   echo '{'
   echo '  "generatedAt": '"\"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\""','
   echo '  "root": '"\"$ROOT_DIR\""','
+  echo '  "outputDir": '"\"$OUTPUT_DIR\""','
+  if [[ "$CREATE_ARCHIVE" = true ]]; then
+    echo '  "archivePath": '"\"$ARCHIVE_PATH\""','
+  fi
   echo '  "files": ['
 } >"$MANIFEST"
 
@@ -70,6 +119,12 @@ done
 echo '' >>"$MANIFEST"
 echo '  ]' >>"$MANIFEST"
 echo '}' >>"$MANIFEST"
+
+if [[ "$CREATE_ARCHIVE" = true ]]; then
+  mkdir -p "$(dirname "$ARCHIVE_PATH")"
+  tar -czf "$ARCHIVE_PATH" -C "$OUTPUT_DIR" .
+  echo "Context archive created at: $ARCHIVE_PATH"
+fi
 
 echo "Context bundle created at: $OUTPUT_DIR"
 echo "Manifest written to: $MANIFEST"
