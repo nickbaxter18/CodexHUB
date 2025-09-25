@@ -3,6 +3,7 @@ import type { MacroContext, MetaStateSnapshot, MetaTask } from '../shared/types.
 import { MetaAgentMonitor } from './monitor.js';
 import { MetaAgentScheduler } from './scheduler.js';
 import { MetaAgentState } from './state.js';
+import { metricsRegistry, tracingService } from '../shared/runtime.js';
 
 export class MetaAgent {
   private readonly state: MetaAgentState;
@@ -74,15 +75,44 @@ export class MetaAgent {
           continue;
         }
         this.monitor.recordTaskStarted(task);
+        const span = tracingService.startSpan('metaagent.processTask', {
+          taskId: task.id,
+          macro: task.macroName,
+          priority: task.priority,
+        });
+        const startedAt = Date.now();
         // eslint-disable-next-line no-await-in-loop
         const result = await this.scheduler.executeTask(task, context);
         this.state.completeTask(task.id, result);
         this.monitor.recordTaskCompleted(result);
+        tracingService.endSpan(span.id, {
+          status: result.success ? 'success' : 'error',
+          durationMs: Date.now() - startedAt,
+        });
+        metricsRegistry.record({
+          name: 'metaagent_task_duration_ms',
+          labels: { macro: task.macroName, success: String(result.success) },
+          value: Date.now() - startedAt,
+          timestamp: Date.now(),
+        });
+        metricsRegistry.record({
+          name: 'metaagent_tasks_total',
+          labels: { macro: task.macroName, outcome: result.success ? 'success' : 'error' },
+          value: 1,
+          timestamp: Date.now(),
+        });
         this.contexts.delete(task.id);
       }
     } finally {
       this.processing = false;
       this.monitor.recordHeartbeat();
+      const snapshot = this.state.getSnapshot();
+      metricsRegistry.record({
+        name: 'metaagent_queue_depth',
+        labels: { state: 'queued' },
+        value: snapshot.queued.length,
+        timestamp: Date.now(),
+      });
     }
   }
 }

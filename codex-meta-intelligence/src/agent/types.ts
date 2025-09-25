@@ -77,6 +77,10 @@ export const agentMessageSchema = buildValidator<AgentMessage>({
         createdAt: { type: 'string' },
         source: { type: 'string' },
         version: { type: 'string' },
+        guidelinePaths: {
+          type: 'array',
+          items: { type: 'string' },
+        },
       },
     },
   },

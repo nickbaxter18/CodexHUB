@@ -10,8 +10,13 @@ export class KnowledgeService {
     return this.store.storeBlock(block);
   }
 
+  upsertBlock(block: KnowledgeBlock): KnowledgeBlock {
+    validateKnowledgeBlock(block);
+    return this.store.upsertBlock(block);
+  }
+
   ingestBlocks(blocks: KnowledgeBlock[]): KnowledgeBlock[] {
-    return blocks.map((block) => this.storeBlock(block));
+    return blocks.map((block) => this.upsertBlock(block));
   }
 
   fetchBlock(id: string): KnowledgeBlock | undefined {

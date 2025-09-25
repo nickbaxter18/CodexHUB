@@ -24,20 +24,30 @@ run_stage_one() {
     echo "Primary pnpm install command failed, falling back to workspace install" >&2
     CI=1 pnpm install
   fi
-  pnpm lint
-  pnpm test
-  pnpm typecheck
-  pnpm build
+
+  pnpm --filter codex-meta-intelligence lint
+  pnpm --filter codex-meta-intelligence test
+  pnpm --filter codex-meta-intelligence typecheck
+  pnpm --filter codex-meta-intelligence build
 }
 
 run_stage_two() {
-  echo "Stage 2 tasks are not yet implemented. Prepare advanced integrations before promoting." >&2
-  exit 2
+  echo "Executing Stage 2 validation tasks"
+  echo "-----------------------------------"
+  cd "$PROJECT_ROOT"
+
+  pnpm --filter codex-meta-intelligence test -- --runTestsByPath tests/core.spec.ts
+  pnpm --filter codex-meta-intelligence test -- --runTestsByPath tests/cursor.integration.spec.ts
+  pnpm --filter codex-meta-intelligence build
 }
 
 run_stage_three() {
-  echo "Stage 3 tasks are not yet implemented. Complete prior stages first." >&2
-  exit 3
+  echo "Executing Stage 3 resilience checks"
+  echo "-----------------------------------"
+  cd "$PROJECT_ROOT"
+
+  pnpm --filter codex-meta-intelligence test -- --runInBand
+  pnpm --filter codex-meta-intelligence lint
 }
 
 advance_stage() {

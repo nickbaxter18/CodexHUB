@@ -4,6 +4,7 @@ import { setTimeout as delay } from 'node:timers/promises';
 import {
   AgentRole,
   type AgentConfig,
+  type AgentGuidelines,
   type AgentMessage,
   type AgentResult,
 } from '../shared/types.js';
@@ -11,6 +12,14 @@ import { generateId, nowIso, type JsonValue } from '../shared/utils.js';
 import { DEFAULT_AGENT_TIMEOUT_MS } from '../shared/constants.js';
 import { AgentGuidelineReader } from './reader.js';
 import { validateAgentConfig, validateAgentMessage, validateAgentResult } from './types.js';
+import {
+  contextOrchestrator,
+  knowledgeService,
+  memoryService,
+  metricsRegistry,
+  qaEngine,
+  tracingService,
+} from '../shared/runtime.js';
 
 interface AgentEvents {
   start: [AgentMessage];
@@ -41,13 +50,19 @@ export abstract class BaseAgent extends EventEmitter<AgentEvents> {
 
   async handleMessage(message: AgentMessage): Promise<AgentResult> {
     const validatedMessage = validateAgentMessage(message);
+    const span = tracingService.startSpan('agent.handle', {
+      agentId: this.config.id,
+      role: this.config.role,
+      macroId: validatedMessage.macroId,
+      taskId: validatedMessage.taskId,
+    });
     const acquired = await this.acquireSlot();
     if (!acquired) {
       throw new Error(`Agent ${this.config.id} failed to acquire execution slot`);
     }
 
     try {
-      const mergedGuidelines = await this.reader.mergeGuidelines(validatedMessage.metadata.source);
+      const mergedGuidelines = await this.mergeGuidelines(validatedMessage);
       const enrichedMessage: AgentMessage = {
         ...validatedMessage,
         guidelines: mergedGuidelines,
@@ -68,6 +83,9 @@ export abstract class BaseAgent extends EventEmitter<AgentEvents> {
       });
       await this.afterExecute(enrichedMessage, validatedResult);
       this.emit('finish', validatedResult);
+      this.persistResult(enrichedMessage, validatedResult);
+      this.recordMetrics('success', validatedResult.durationMs);
+      tracingService.endSpan(span.id, { status: 'success', durationMs: validatedResult.durationMs });
       return validatedResult;
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
@@ -82,10 +100,79 @@ export abstract class BaseAgent extends EventEmitter<AgentEvents> {
         durationMs: 0,
         error: err.stack,
       };
+      this.persistResult(validatedMessage, failure);
+      this.recordMetrics('error', 0);
+      tracingService.endSpan(span.id, { status: 'error', error: err.message });
       return failure;
     } finally {
       this.releaseSlot();
     }
+  }
+
+  private async mergeGuidelines(message: AgentMessage): Promise<AgentGuidelines> {
+    const fileGuidelines = await this.reader.mergeGuidelines(
+      Array.isArray((message.metadata as Record<string, unknown>).guidelinePaths)
+        ? ((message.metadata as Record<string, unknown>).guidelinePaths as string[])
+        : message.metadata.source
+    );
+    return this.mergeGuidelineSets(fileGuidelines, message.guidelines);
+  }
+
+  private mergeGuidelineSets(
+    left: AgentGuidelines,
+    right: AgentGuidelines
+  ): AgentGuidelines {
+    const mergeLists = (a: string[], b: string[]): string[] => {
+      const ordered: string[] = [];
+      const seen = new Set<string>();
+      for (const list of [a, b]) {
+        for (const item of list) {
+          if (!seen.has(item)) {
+            ordered.push(item);
+            seen.add(item);
+          }
+        }
+      }
+      return ordered;
+    };
+    return {
+      environment: mergeLists(left.environment, right.environment),
+      testing: mergeLists(left.testing, right.testing),
+      coding: mergeLists(left.coding, right.coding),
+      logging: mergeLists(left.logging, right.logging),
+      pullRequests: mergeLists(left.pullRequests, right.pullRequests),
+    };
+  }
+
+  private persistResult(message: AgentMessage, result: AgentResult): void {
+    const payload = JSON.parse(
+      JSON.stringify({
+        message,
+        result,
+      })
+    ) as JsonValue;
+    memoryService.store({
+      agentId: this.config.id,
+      timestamp: nowIso(),
+      dataType: 'agent-result',
+      payload,
+      tags: [this.config.role, message.macroId],
+    });
+  }
+
+  private recordMetrics(outcome: 'success' | 'error', durationMs: number): void {
+    metricsRegistry.record({
+      name: 'agent_execution_total',
+      labels: { agentId: this.config.id, role: this.config.role, outcome },
+      value: 1,
+      timestamp: Date.now(),
+    });
+    metricsRegistry.record({
+      name: 'agent_execution_duration_ms',
+      labels: { agentId: this.config.id, role: this.config.role },
+      value: durationMs,
+      timestamp: Date.now(),
+    });
   }
 
   private async acquireSlot(): Promise<boolean> {
@@ -139,20 +226,29 @@ export class FrontendAgent extends BaseAgent {
   }
 
   protected async execute(message: AgentMessage): Promise<AgentResult> {
-    const summary = `Generated UI plan for task ${message.taskId}`;
+    const contextSummary = contextOrchestrator.compose(AgentRole.FRONTEND, message.context);
+    const recommendations = [
+      'Use responsive grid layouts with accessible contrast ratios',
+      'Validate Tailwind tokens against U-DIG IT styling cognition',
+    ];
+    if (message.guidelines.testing.length > 0) {
+      recommendations.push(`Prepare to execute: ${message.guidelines.testing.join(', ')}`);
+    }
+    const summary = contextSummary
+      ? `Generated UI plan for task ${message.taskId} using ${message.context.length} context packet(s).`
+      : `Generated UI plan for task ${message.taskId} with limited context.`;
     const artifacts: Record<string, JsonValue> = {
-      recommendations: [
-        'Use responsive grid layout with accessible contrast ratios',
-        'Apply motion grammar micro-interactions for state changes',
-      ],
+      recommendations,
+      contextSummary,
       guidelines: JSON.parse(JSON.stringify(message.guidelines)) as JsonValue,
     };
+    const issues = contextSummary ? [] : ['Context summary unavailable; verify context coverage.'];
     return {
       taskId: message.taskId,
-      status: 'success',
+      status: issues.length ? 'error' : 'success',
       summary,
       artifacts,
-      issues: [],
+      issues,
       contextUpdates: message.context,
       durationMs: 50,
     };
@@ -165,19 +261,28 @@ export class BackendAgent extends BaseAgent {
   }
 
   protected async execute(message: AgentMessage): Promise<AgentResult> {
-    const summary = `Produced backend scaffolding for ${message.taskId}`;
+    const packets = contextOrchestrator.retrieve({
+      taskId: message.taskId,
+      role: AgentRole.BACKEND,
+      keywords: ['api', 'backend'],
+      limit: 5,
+    });
+    const endpoints = packets.packets.map((packet) => ({
+      method: 'GET',
+      path: `/${packet.id.split('_')[0] ?? 'health'}`,
+      description: packet.summary || 'Generated from context packet',
+    }));
+    if (endpoints.length === 0) {
+      endpoints.push({
+        method: 'GET',
+        path: '/health',
+        description: 'Default health check endpoint',
+      });
+    }
+    const summary = `Produced backend scaffolding for ${message.taskId} with ${endpoints.length} endpoint suggestion(s).`;
     const artifacts: Record<string, JsonValue> = {
-      apiDesign: JSON.parse(
-        JSON.stringify({
-          endpoints: [
-            {
-              method: 'GET',
-              path: '/health',
-              description: 'Health check endpoint generated by BackendAgent',
-            },
-          ],
-        })
-      ) as JsonValue,
+      apiDesign: JSON.parse(JSON.stringify({ endpoints })) as JsonValue,
+      retrievalRationale: packets.rationale,
     };
     return {
       taskId: message.taskId,
@@ -197,12 +302,29 @@ export class KnowledgeAgent extends BaseAgent {
   }
 
   protected async execute(message: AgentMessage): Promise<AgentResult> {
-    const artifacts: Record<string, JsonValue> = {
-      knowledgeUpdate: message.context.map((packet) => ({
-        packetId: packet.id,
-        summary: packet.summary,
-      })),
-    };
+    const upserts = message.context.map((packet) => {
+      const block = knowledgeService.upsertBlock({
+        id: packet.id,
+        content: packet.content,
+        metadata: {
+          author: (packet.metadata.author as string) ?? 'system',
+          timestamp: packet.createdAt,
+          tags: Array.isArray(packet.metadata.tags)
+            ? (packet.metadata.tags as string[])
+            : [],
+          citations: Array.isArray(packet.metadata.citations)
+            ? (packet.metadata.citations as string[])
+            : [],
+          source: packet.source,
+          reliabilityScore: Number(packet.metadata.reliabilityScore ?? 0.5),
+        },
+        links: Array.isArray(packet.metadata.links)
+          ? (packet.metadata.links as string[])
+          : undefined,
+      });
+      return { id: block.id, tags: block.metadata.tags };
+    });
+    const artifacts: Record<string, JsonValue> = { knowledgeUpdate: upserts };
     return {
       taskId: message.taskId,
       status: 'success',
@@ -221,16 +343,63 @@ export class QAAgent extends BaseAgent {
   }
 
   protected async execute(message: AgentMessage): Promise<AgentResult> {
-    const issues = message.context.length === 0 ? ['No context provided for QA'] : [];
+    const rawPayload = message.payload;
+    const payload =
+      rawPayload && typeof rawPayload === 'object' && !Array.isArray(rawPayload)
+        ? (rawPayload as Record<string, JsonValue>)
+        : {};
+    const technicalPayload = payload.technical;
+    const technical =
+      technicalPayload && typeof technicalPayload === 'object' && !Array.isArray(technicalPayload)
+        ? (technicalPayload as Record<string, JsonValue>)
+        : {};
+    const toNumber = (value: JsonValue | undefined, fallback = 0): number => {
+      if (typeof value === 'number') {
+        return value;
+      }
+      if (typeof value === 'string') {
+        const parsed = Number(value);
+        return Number.isNaN(parsed) ? fallback : parsed;
+      }
+      return fallback;
+    };
+    const coverage = toNumber(technical.coverage, 0.85);
+    const qaResult = qaEngine.runQA({
+      aesthetic: {
+        palette: [
+          { name: 'Primary', contrastRatio: 4.5 },
+          { name: 'Secondary', contrastRatio: 4.6 },
+        ],
+        typographyScale: [1, 1.25, 1.6],
+        motionDensity: 0.3,
+      },
+      narrative: {
+        tone: 'empathetic',
+        coherenceScore: 0.9,
+        fairnessScore: 0.95,
+      },
+      technical: {
+        lintErrors: toNumber(technical.lintErrors),
+        testFailures: toNumber(technical.testFailures),
+        coverage,
+      },
+    });
+    const summary = qaResult.success ? 'QA checks passed' : 'QA issues detected';
+    const artifacts: Record<string, JsonValue> = {
+      executedChecks: message.guidelines.testing,
+      issues: JSON.parse(JSON.stringify(qaResult.issues)) as JsonValue,
+    };
     return {
       taskId: message.taskId,
-      status: issues.length ? 'error' : 'success',
-      summary: issues.length ? 'QA issues detected' : 'QA checks passed',
-      artifacts: { executedChecks: message.guidelines.testing },
-      issues,
+      status: qaResult.success ? 'success' : 'error',
+      summary,
+      artifacts,
+      issues: qaResult.issues.map(
+        (issue) => `${issue.engine}(${issue.severity}): ${issue.message}`
+      ),
       contextUpdates: message.context,
       durationMs: 30,
-      error: issues.length ? 'Context missing' : undefined,
+      error: qaResult.success ? undefined : summary,
     };
   }
 }
@@ -241,11 +410,18 @@ export class RefinementAgent extends BaseAgent {
   }
 
   protected async execute(message: AgentMessage): Promise<AgentResult> {
+    const qaIssues = Array.isArray((message.payload as Record<string, JsonValue>)?.qaIssues)
+      ? ((message.payload as Record<string, JsonValue>).qaIssues as string[])
+      : [];
+    const refinements = message.context.map((packet) => ({
+      id: packet.id,
+      improvement: qaIssues.length
+        ? `Resolved ${qaIssues.length} QA issue(s) for packet ${packet.id}`
+        : 'Applied styling cognition refinements',
+    }));
     const artifacts: Record<string, JsonValue> = {
-      refinements: message.context.map((packet) => ({
-        id: packet.id,
-        improvement: 'Applied styling cognition refinements',
-      })),
+      refinements,
+      qaIssues,
     };
     return {
       taskId: message.taskId,

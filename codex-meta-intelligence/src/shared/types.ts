@@ -38,6 +38,7 @@ export interface AgentMessage {
     createdAt: string;
     source: string;
     version: string;
+    guidelinePaths?: string[];
   };
 }
 

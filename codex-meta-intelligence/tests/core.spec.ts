@@ -33,6 +33,38 @@ describe('Codex Meta-Intelligence Stage 1', () => {
     expect(response.blocks[0]?.block.id).toBe(block.id);
   });
 
+  it('upserts existing knowledge blocks without duplicating metadata', () => {
+    const service = new KnowledgeService();
+    const timestamp = new Date().toISOString();
+    service.storeBlock({
+      id: 'kb-upsert',
+      content: 'Initial content',
+      metadata: {
+        author: 'system',
+        timestamp,
+        tags: ['initial'],
+        citations: ['doc-1'],
+        source: 'test',
+        reliabilityScore: 0.5,
+      },
+    });
+    const updated = service.upsertBlock({
+      id: 'kb-upsert',
+      content: 'Initial content with refinements',
+      metadata: {
+        author: 'system',
+        timestamp,
+        tags: ['refined'],
+        citations: ['doc-2'],
+        source: 'test',
+        reliabilityScore: 0.8,
+      },
+    });
+    expect(updated.metadata.tags.sort()).toEqual(['initial', 'refined']);
+    expect(updated.metadata.citations.sort()).toEqual(['doc-1', 'doc-2']);
+    expect(updated.metadata.reliabilityScore).toBe(0.8);
+  });
+
   it('runs macros through the execution pipeline', async () => {
     const orchestrator = new MacroOrchestrator();
     const packet = createSamplePacket();
