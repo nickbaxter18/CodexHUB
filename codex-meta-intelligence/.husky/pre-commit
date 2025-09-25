@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+. "$(dirname "$0")/../node_modules/husky/lib/runner.sh"
+pnpm lint
+pnpm test
