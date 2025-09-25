@@ -8,6 +8,7 @@ import hashlib
 import logging
 import os
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Iterable, Optional, TypeVar
 
@@ -144,3 +145,9 @@ class TokenEncryptor:
         if self._fernet is not None:
             return self._fernet.decrypt(payload)
         return _xor_bytes(payload, self._key)
+
+
+def utcnow() -> datetime:
+    """Return a timezone-aware ``datetime`` in UTC."""
+
+    return datetime.now(timezone.utc)

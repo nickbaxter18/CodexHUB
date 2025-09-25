@@ -5,11 +5,12 @@ from __future__ import annotations
 import sqlite3
 from contextlib import contextmanager
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, Iterable, Iterator, List, Optional
 
 from .news_fetcher import NewsArticle
+from .utils import utcnow
 
 
 @dataclass(frozen=True)
@@ -73,13 +74,20 @@ class ArticleRepository:
         return article.url or article.title
 
     def persist(self, articles: Iterable[NewsArticle]) -> None:
-        now = datetime.utcnow().isoformat()
+        now = utcnow().isoformat()
         payload: List[tuple[str, str, str | None, str, str | None, str | None, str]] = []
         for article in articles:
             identifier = self._article_id(article)
             if not identifier:
                 continue
-            published = article.published_at.isoformat() if article.published_at else None
+            published = None
+            if article.published_at is not None:
+                published_dt = article.published_at
+                if published_dt.tzinfo is None:
+                    published_dt = published_dt.replace(tzinfo=timezone.utc)
+                else:
+                    published_dt = published_dt.astimezone(timezone.utc)
+                published = published_dt.isoformat()
             payload.append(
                 (
                     identifier,

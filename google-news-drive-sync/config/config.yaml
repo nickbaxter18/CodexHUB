@@ -48,10 +48,20 @@ plugins:
   settings:
     sample:
       enabled: false
+  sandbox:
+    enabled: true
+    timeout_seconds: 30
+    max_workers: 4
 
 server:
   host: '127.0.0.1'
   port: 8000
+  auth:
+    api_keys:
+      - 'REPLACE_WITH_SECURE_KEY'
+  rate_limit:
+    requests_per_minute: 120
+    window_seconds: 60
 
 secrets:
   env_file: '../.env'

@@ -5,11 +5,12 @@ from __future__ import annotations
 import hashlib
 import sqlite3
 from contextlib import contextmanager
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Iterable, Iterator, List
 
 from .news_fetcher import NewsArticle
+from .utils import utcnow
 
 
 class ArticleCache:
@@ -64,7 +65,7 @@ class ArticleCache:
         return fresh
 
     def record(self, articles: Iterable[NewsArticle]) -> None:
-        now = datetime.utcnow()
+        now = utcnow()
         cutoff = now - timedelta(days=self.retention_days)
         with self._connect() as conn:
             conn.executemany(
@@ -73,7 +74,7 @@ class ArticleCache:
                     (
                         self._article_key(article),
                         article.url or article.title,
-                        (article.published_at or now).isoformat(),
+                        _normalise_datetime(article.published_at, fallback=now).isoformat(),
                     )
                     for article in articles
                 ],
@@ -83,6 +84,14 @@ class ArticleCache:
                 (cutoff.isoformat(),),
             )
             conn.commit()
+
+
+def _normalise_datetime(value: datetime | None, *, fallback: datetime) -> datetime:
+    if value is None:
+        return fallback
+    if value.tzinfo is None:
+        return value.replace(tzinfo=timezone.utc)
+    return value.astimezone(timezone.utc)
 
 
 __all__ = ["ArticleCache"]

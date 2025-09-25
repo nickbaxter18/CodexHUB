@@ -7,6 +7,7 @@ import asyncio
 import logging
 import os
 import threading
+from contextlib import nullcontext
 from pathlib import Path
 from typing import Any, Dict, Optional
 
@@ -24,7 +25,7 @@ from .utils import (
     load_env_file,
     setup_logging,
 )
-from .server import create_app, run_server
+from .server import RateLimiter, create_app, run_server
 
 logger = logging.getLogger(__name__)
 
@@ -119,7 +120,9 @@ def _run_once(
         monitor.start_run()
 
     try:
-        articles = asyncio.run(_collect_articles(config, cache, monitor, base_dir))
+        latency_cm = monitor.track_latency("fetch") if monitor is not None else nullcontext()
+        with latency_cm:
+            articles = asyncio.run(_collect_articles(config, cache, monitor, base_dir))
     except Exception:
         if monitor is not None:
             monitor.complete_run(status="error")
@@ -133,18 +136,24 @@ def _run_once(
 
     if repository is not None:
         repository.persist(articles)
+        if monitor is not None:
+            monitor.record_queue_depth(repository.count())
 
-    filename, content = create_document(
-        articles,
-        format=document_cfg.get("format", "markdown"),
-        timezone_name=document_cfg.get("timezone"),
-    )
+    format_cm = monitor.track_latency("format") if monitor is not None else nullcontext()
+    with format_cm:
+        filename, content = create_document(
+            articles,
+            format=document_cfg.get("format", "markdown"),
+            timezone_name=document_cfg.get("timezone"),
+        )
 
-    client = _create_drive_client(drive_cfg, encryptor, base_dir)
-    client.authenticate()
-    folder_name = drive_cfg.get("folder_name", "News")
-    folder_id = client.get_or_create_folder(folder_name)
-    client.upload_document(folder_id, filename, content)
+    upload_cm = monitor.track_latency("upload") if monitor is not None else nullcontext()
+    with upload_cm:
+        client = _create_drive_client(drive_cfg, encryptor, base_dir)
+        client.authenticate()
+        folder_name = drive_cfg.get("folder_name", "News")
+        folder_id = client.get_or_create_folder(folder_name)
+        client.upload_document(folder_id, filename, content)
     logger.info("Uploaded document %s", filename)
     if monitor is not None:
         monitor.record_document_upload()
@@ -212,6 +221,18 @@ def main(argv: list[str] | None = None) -> None:
     server_cfg = config.get("server", {})
     server_host = server_cfg.get("host", args.host)
     server_port = int(server_cfg.get("port", args.port))
+    auth_cfg = server_cfg.get("auth", {}) if isinstance(server_cfg, dict) else {}
+    api_keys = [key for key in auth_cfg.get("api_keys", []) if key]
+    rate_cfg = server_cfg.get("rate_limit", {}) if isinstance(server_cfg, dict) else {}
+    rate_limiter: RateLimiter | None = None
+    if rate_cfg:
+        try:
+            requests_per_minute = int(rate_cfg.get("requests_per_minute", 0))
+        except (TypeError, ValueError):
+            requests_per_minute = 0
+        window_seconds = float(rate_cfg.get("window_seconds", 60))
+        if requests_per_minute > 0:
+            rate_limiter = RateLimiter(requests_per_minute, window_seconds=window_seconds)
 
     try:
         _run_once(
@@ -261,7 +282,12 @@ def main(argv: list[str] | None = None) -> None:
 
     server_thread: threading.Thread | None = None
     if args.serve:
-        app = create_app(repository=repository, monitor=monitor)
+        app = create_app(
+            repository=repository,
+            monitor=monitor,
+            api_keys=api_keys,
+            rate_limiter=rate_limiter,
+        )
 
         def _serve() -> None:  # pragma: no cover - interactive behaviour
             run_server(app, host=server_host, port=server_port)
