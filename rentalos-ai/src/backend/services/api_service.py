@@ -3,12 +3,23 @@
 from __future__ import annotations
 
 import hashlib
+import importlib
 import json
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, Iterable, List, MutableMapping, Optional, Sequence, Tuple
 
 from ..config import settings
+from ..plugins import (
+    EnergyAdvisorResult,
+    EnergyTradeContext,
+    PluginRuntime,
+    PricingAdjustment,
+    PricingContext,
+)
+from ..utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 class PluginRegistryError(RuntimeError):
@@ -54,6 +65,7 @@ class PluginRegistry:
 
     def __init__(self) -> None:
         self._plugins: MutableMapping[str, Plugin] = {}
+        self._runtimes: MutableMapping[str, PluginRuntime] = {}
 
     def register(self, plugin: Plugin) -> Plugin:
         self._plugins[plugin.name] = plugin
@@ -73,16 +85,33 @@ class PluginRegistry:
     def list(self) -> List[Plugin]:
         return list(self._plugins.values())
 
+    def plugins(self) -> List[Plugin]:
+        return list(self._plugins.values())
+
     def describe(self) -> Dict[str, Dict[str, object]]:
         return {plugin.name: plugin.as_dict() for plugin in self._plugins.values()}
 
     def clear(self) -> None:
         self._plugins.clear()
+        self._runtimes.clear()
+
+    def attach_runtime(self, name: str, runtime: PluginRuntime) -> None:
+        self._runtimes[name] = runtime
+
+    def get_runtime(self, name: str) -> PluginRuntime:
+        return self._runtimes[name]
+
+    def get_runtime_optional(self, name: str) -> Optional[PluginRuntime]:
+        return self._runtimes.get(name)
+
+    def runtimes(self) -> List[PluginRuntime]:
+        return list(self._runtimes.values())
 
 
 registry = PluginRegistry()
 
 DEFAULT_PLUGIN_ROOT = Path(__file__).resolve().parents[3] / settings.plugin_directory
+_auto_load_attempted = False
 
 
 def _normalize_str_iterable(values: object) -> List[str]:
@@ -146,6 +175,49 @@ def _build_plugin_from_manifest(
         source=str(source),
     )
     return plugin
+
+
+def _resolve_entrypoint(entrypoint: str):
+    module_path, separator, attribute = entrypoint.partition(":")
+    if not separator:
+        module_path, dot, attribute = entrypoint.rpartition(".")
+        if not dot:
+            raise PluginRegistryError(
+                f"Invalid entrypoint '{entrypoint}'. Use 'module:callable' syntax."
+            )
+    try:
+        module = importlib.import_module(module_path)
+    except ModuleNotFoundError as exc:  # pragma: no cover - defensive
+        raise PluginRegistryError(f"Unable to import module '{module_path}'") from exc
+    try:
+        target = getattr(module, attribute)
+    except AttributeError as exc:  # pragma: no cover - defensive
+        raise PluginRegistryError(
+            f"Entrypoint '{entrypoint}' does not expose '{attribute}'"
+        ) from exc
+    if not callable(target):  # pragma: no cover - defensive
+        raise PluginRegistryError(f"Entrypoint '{entrypoint}' is not callable")
+    return target
+
+
+def _activate_plugin(plugin: Plugin) -> Optional[str]:
+    if not plugin.entrypoint:
+        return None
+    try:
+        callback = _resolve_entrypoint(plugin.entrypoint)
+    except PluginRegistryError as exc:
+        plugin.enabled = False
+        return f"{plugin.name}: {exc}"
+
+    runtime = PluginRuntime(plugin.name)
+    try:
+        callback(runtime)
+    except Exception as exc:  # pragma: no cover - defensive
+        plugin.enabled = False
+        return f"{plugin.name}: failed to execute entrypoint - {exc}"
+
+    registry.attach_runtime(plugin.name, runtime)
+    return None
 
 
 def register_plugin(
@@ -221,6 +293,9 @@ def load_plugins_from_directory(
             signature=plugin.signature,
             source=plugin.source,
         )
+        activation_error = _activate_plugin(plugin)
+        if activation_error:
+            errors.append(activation_error)
         loaded.append(plugin)
     return loaded, errors
 
@@ -229,6 +304,76 @@ def reload_default_plugins() -> Tuple[List[Plugin], List[str]]:
     """Reload plugins from the configured plugin directory."""
 
     return load_plugins_from_directory(DEFAULT_PLUGIN_ROOT)
+
+
+def _ensure_registry_loaded() -> None:
+    global _auto_load_attempted
+    if registry.plugins():
+        return
+    if _auto_load_attempted:
+        return
+    _auto_load_attempted = True
+    try:
+        loaded, errors = reload_default_plugins()
+    except FileNotFoundError:
+        logger.warning("Default plugin directory '%s' not found", DEFAULT_PLUGIN_ROOT)
+        return
+    if not loaded:
+        logger.warning("No plugins discovered in '%s'", DEFAULT_PLUGIN_ROOT)
+    for error in errors:
+        logger.warning("Plugin load issue: %s", error)
+
+
+def _iter_enabled_plugins() -> Iterable[Plugin]:
+    for plugin in registry.plugins():
+        if plugin.enabled:
+            yield plugin
+
+
+def collect_pricing_adjustments(
+    context: PricingContext,
+) -> List[Tuple[str, PricingAdjustment]]:
+    """Return pricing adjustments supplied by enabled plugins."""
+
+    _ensure_registry_loaded()
+    adjustments: List[Tuple[str, PricingAdjustment]] = []
+    for plugin in _iter_enabled_plugins():
+        runtime = registry.get_runtime_optional(plugin.name)
+        if runtime is None:
+            continue
+        for adjuster in runtime.pricing_adjusters:
+            try:
+                result = adjuster(context)
+            except Exception as exc:  # pragma: no cover - defensive
+                logger.warning("Plugin '%s' adjuster error: %s", plugin.name, exc)
+                continue
+            if result is None or result.amount == 0:
+                continue
+            adjustments.append((plugin.name, result))
+    return adjustments
+
+
+def collect_energy_recommendations(
+    context: EnergyTradeContext,
+) -> List[Tuple[str, EnergyAdvisorResult]]:
+    """Return energy optimisation advice from enabled plugins."""
+
+    _ensure_registry_loaded()
+    recommendations: List[Tuple[str, EnergyAdvisorResult]] = []
+    for plugin in _iter_enabled_plugins():
+        runtime = registry.get_runtime_optional(plugin.name)
+        if runtime is None:
+            continue
+        for advisor in runtime.energy_advisors:
+            try:
+                result = advisor(context)
+            except Exception as exc:  # pragma: no cover - defensive
+                logger.warning("Plugin '%s' energy advisor error: %s", plugin.name, exc)
+                continue
+            if result is None:
+                continue
+            recommendations.append((plugin.name, result))
+    return recommendations
 
 
 def enable_plugin(name: str) -> Dict[str, object]:
