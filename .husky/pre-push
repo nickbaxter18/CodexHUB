@@ -1,5 +1,3 @@
 #!/bin/sh
 
-pnpm lint
-pnpm check-format
-python -m pytest
+scripts/run-quality-gates.sh pre-push
