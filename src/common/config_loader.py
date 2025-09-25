@@ -210,6 +210,147 @@ class PipelineConfig(BaseModel):
     inference: InferenceConfig
 
 
+class EnvironmentSettings(BaseModel):
+    """Schema describing required environment variables for CodexHUB."""
+
+    model_config = ConfigDict(populate_by_name=True, extra="allow", protected_namespaces=())
+
+    port: PositiveInt = Field(alias="PORT", default=4000)
+    node_env: Literal["development", "production", "test"] = Field(
+        alias="NODE_ENV",
+        default="development",
+    )
+    session_secret: str = Field(
+        alias="SESSION_SECRET",
+        default="replace-with-strong-secret",
+    )
+    openai_api_key: str = Field(alias="OPENAI_API_KEY", default="changeme")
+    cursor_api_key: str | None = Field(alias="CURSOR_API_KEY", default=None)
+    cursor_api_url: str = Field(alias="CURSOR_API_URL", default="https://api.cursor.sh")
+    mlflow_tracking_uri: str = Field(
+        alias="MLFLOW_TRACKING_URI",
+        default="./results/mlruns",
+    )
+    mlflow_registry_uri: str = Field(
+        alias="MLFLOW_REGISTRY_URI",
+        default="./results/mlruns",
+    )
+    mlflow_experiment_name: str = Field(
+        alias="MLFLOW_EXPERIMENT_NAME",
+        default="CodexHUB-Baseline",
+    )
+    pipeline_config_path: Path = Field(
+        alias="PIPELINE_CONFIG_PATH",
+        default=Path("config/default.yaml"),
+    )
+    governance_config_path: Path = Field(
+        alias="GOVERNANCE_CONFIG_PATH",
+        default=Path("config/governance.yaml"),
+    )
+    metrics_config_path: Path = Field(
+        alias="METRICS_CONFIG_PATH",
+        default=Path("config/metrics.yaml"),
+    )
+    performance_results_dir: Path = Field(
+        alias="PERFORMANCE_RESULTS_DIR",
+        default=Path("results/performance"),
+    )
+    audit_log_dir: Path = Field(
+        alias="AUDIT_LOG_DIR",
+        default=Path("results/audit"),
+    )
+    model_card_dir: Path = Field(
+        alias="MODEL_CARD_DIR",
+        default=Path("docs/model_cards"),
+    )
+    cursor_auto_invocation_enabled: bool = Field(
+        alias="CURSOR_AUTO_INVOCATION_ENABLED",
+        default=False,
+    )
+    cursor_monitor_interval: PositiveInt = Field(alias="CURSOR_MONITOR_INTERVAL", default=5)
+    cursor_file_patterns: str = Field(
+        alias="CURSOR_FILE_PATTERNS",
+        default="**/*.tsx,**/*.py,**/*.md,**/*.js,**/*.ts",
+    )
+    knowledge_auto_load: bool = Field(alias="KNOWLEDGE_AUTO_LOAD", default=False)
+    knowledge_ndjson_paths: str | None = Field(
+        alias="KNOWLEDGE_NDJSON_PATHS",
+        default="Brain docs cleansed .ndjson,Bundle cleansed .ndjson",
+    )
+    knowledge_watch_interval: PositiveInt | None = Field(
+        alias="KNOWLEDGE_WATCH_INTERVAL",
+        default=None,
+    )
+    mobile_control_enabled: bool = Field(alias="MOBILE_CONTROL_ENABLED", default=False)
+    mobile_notifications_enabled: bool = Field(alias="MOBILE_NOTIFICATIONS_ENABLED", default=False)
+    mobile_app_port: PositiveInt = Field(alias="MOBILE_APP_PORT", default=3001)
+    brain_blocks_auto_load: bool = Field(alias="BRAIN_BLOCKS_AUTO_LOAD", default=False)
+    brain_blocks_data_source: str = Field(
+        alias="BRAIN_BLOCKS_DATA_SOURCE",
+        default="Brain docs cleansed .ndjson",
+    )
+    brain_blocks_query_depth: str = Field(alias="BRAIN_BLOCKS_QUERY_DEPTH", default="summary")
+    cursor_performance_monitoring: bool = Field(
+        alias="CURSOR_PERFORMANCE_MONITORING",
+        default=False,
+    )
+    cursor_usage_tracking: bool = Field(alias="CURSOR_USAGE_TRACKING", default=False)
+    cursor_compliance_reporting: bool = Field(alias="CURSOR_COMPLIANCE_REPORTING", default=False)
+
+    @staticmethod
+    def _parse_bool(value: bool | str | None, *, default: bool = False) -> bool:
+        if isinstance(value, bool):
+            return value
+        if value is None:
+            return default
+        normalized = value.strip().lower()
+        if normalized in {"1", "true", "yes", "on"}:
+            return True
+        if normalized in {"0", "false", "no", "off", ""}:
+            return False
+        msg = f"Unable to interpret boolean value from '{value}'"
+        raise ValueError(msg)
+
+    @field_validator(
+        "cursor_auto_invocation_enabled",
+        "knowledge_auto_load",
+        "mobile_control_enabled",
+        "mobile_notifications_enabled",
+        "brain_blocks_auto_load",
+        "cursor_performance_monitoring",
+        "cursor_usage_tracking",
+        "cursor_compliance_reporting",
+        mode="before",
+    )
+    @classmethod
+    def _validate_bool_fields(cls, value: bool | str | None) -> bool:
+        return cls._parse_bool(value)
+
+    @field_validator("knowledge_ndjson_paths", "cursor_file_patterns", mode="before")
+    @classmethod
+    def _strip_quotes(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        trimmed = value.strip()
+        if (trimmed.startswith('"') and trimmed.endswith('"')) or (
+            trimmed.startswith("'") and trimmed.endswith("'")
+        ):
+            return trimmed[1:-1]
+        return value
+
+    @field_validator(
+        "cursor_monitor_interval",
+        "mobile_app_port",
+        "knowledge_watch_interval",
+        mode="before",
+    )
+    @classmethod
+    def _empty_to_none(cls, value: str | int | None) -> int | None:
+        if isinstance(value, str) and not value.strip():
+            return None
+        return value
+
+
 ConfigModel = TypeVar("ConfigModel", bound=BaseModel)
 
 
@@ -236,6 +377,45 @@ def load_config(path: Path, model: Type[ConfigModel]) -> ConfigModel:
     raw = load_yaml(path)
     try:
         return model.model_validate(raw)
+    except ValidationError as exc:
+        raise ConfigValidationError(str(exc)) from exc
+
+
+def _parse_env_file(path: Path) -> Dict[str, Any]:
+    """Parse a dotenv-style file into a mapping."""
+
+    if not path.exists():
+        raise ConfigValidationError(f"Environment file not found: {path}")
+
+    data: Dict[str, Any] = {}
+    with path.open("r", encoding="utf-8") as handle:
+        for line_number, raw_line in enumerate(handle, start=1):
+            line = raw_line.strip()
+            if not line or line.startswith("#"):
+                continue
+            if "=" not in line:
+                msg = f"Invalid environment entry on line {line_number}: {raw_line.rstrip()}"
+                raise ConfigValidationError(msg)
+            key, raw_value = line.split("=", 1)
+            value = raw_value.strip()
+            if value in {"", "''", '""'}:
+                parsed_value: Any = None
+            else:
+                parsed_value = value
+            data[key.strip()] = parsed_value
+    return data
+
+
+def load_environment(path: Path) -> EnvironmentSettings:
+    """Load and validate environment variables from a dotenv file."""
+
+    try:
+        raw = _parse_env_file(path)
+    except OSError as exc:  # pragma: no cover - filesystem errors
+        raise ConfigValidationError(str(exc)) from exc
+
+    try:
+        return EnvironmentSettings.model_validate(raw)
     except ValidationError as exc:
         raise ConfigValidationError(str(exc)) from exc
 
@@ -284,6 +464,30 @@ def validate_known_configs(config_map: Mapping[str, Path] | None = None) -> Dict
     return results
 
 
+def validate_environment_files(paths: Iterable[Path]) -> Dict[str, Any]:
+    """Validate environment files and return structured results."""
+
+    results: Dict[str, Any] = {}
+    for env_path in paths:
+        key = f"env::{env_path}"
+        try:
+            instance = load_environment(env_path)
+        except ConfigValidationError as exc:
+            results[key] = {
+                "status": "error",
+                "path": str(env_path),
+                "message": str(exc),
+            }
+            continue
+
+        results[key] = {
+            "status": "ok",
+            "path": str(env_path),
+            "model": instance.model_dump(mode="json"),
+        }
+    return results
+
+
 def _render_validation_report(results: Mapping[str, Any]) -> str:
     """Render a human-readable validation report."""
 
@@ -312,10 +516,21 @@ def main(argv: Iterable[str] | None = None) -> int:
         default=Path.cwd(),
         help="Override the project root when resolving config paths.",
     )
+    parser.add_argument(
+        "--env",
+        action="append",
+        type=Path,
+        default=[],
+        help="Validate one or more environment files against the repository schema.",
+    )
     args = parser.parse_args(list(argv) if argv is not None else None)
 
     config_map = _default_config_map(args.project_root)
     results = validate_known_configs(config_map)
+
+    if args.env:
+        env_results = validate_environment_files(args.env)
+        results.update(env_results)
 
     if args.json:
         print(json.dumps(results, indent=2))
@@ -346,9 +561,11 @@ __all__ = [
     "ComplianceConfig",
     "ConfigValidationError",
     "DatasetConfig",
+    "EnvironmentSettings",
     "ExperimentConfig",
     "FairnessGovernanceConfig",
     "GovernanceConfig",
+    "load_environment",
     "InferenceConfig",
     "load_config",
     "load_yaml",
@@ -359,5 +576,6 @@ __all__ = [
     "MonitoringConfig",
     "PipelineConfig",
     "PrivacyConfig",
+    "validate_environment_files",
     "TrainingConfig",
 ]

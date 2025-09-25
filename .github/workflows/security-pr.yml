@@ -1,0 +1,38 @@
+---
+name: PR Security Gate
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: read
+  security-events: write
+
+jobs:
+  dependency-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dependency review
+        uses: actions/dependency-review-action@v4
+        with:
+          deny-licenses: 'GPL-1.0,GPL-2.0,GPL-3.0,AGPL-1.0,AGPL-3.0'
+          fail-on-severity: high
+
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: TruffleHog scan
+        uses: trufflesecurity/trufflehog@v3.81.7
+        with:
+          extra_args: >-
+            filesystem
+            --only-verified
+            --fail
+            .

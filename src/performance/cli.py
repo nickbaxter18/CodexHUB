@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import subprocess
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Dict, Iterable, List, Mapping, MutableSequence, Sequence
 
@@ -68,7 +69,18 @@ def _resolve_suite(name: str) -> List[SuiteCommand]:
     raise KeyError(f"Unknown suite: {name}")
 
 
-def _run_command(command: SuiteCommand, collector: PerformanceCollector, suite_name: str) -> None:
+def _should_skip(command: SuiteCommand, skip_patterns: Sequence[str]) -> bool:
+    if not skip_patterns:
+        return False
+    command_text = " ".join(command)
+    return any(pattern in command_text for pattern in skip_patterns)
+
+
+def _run_command(
+    command: SuiteCommand,
+    collector: PerformanceCollector,
+    suite_name: str,
+) -> None:
     start = time.perf_counter()
     metadata: Dict[str, object] = {"command": " ".join(command)}
     try:
@@ -93,19 +105,50 @@ def _run_command(command: SuiteCommand, collector: PerformanceCollector, suite_n
         )
 
 
-def run_suite(name: str, *, output_dir: Path | None = None) -> Path:
+def run_suite(
+    name: str,
+    *,
+    output_dir: Path | None = None,
+    skip: Sequence[str] | None = None,
+    max_workers: int = 1,
+) -> Path:
     collector = PerformanceCollector(output_dir or Path("results/performance"))
     collector.clear_metrics()
     commands = _resolve_suite(name)
+    skip_patterns = list(skip or [])
+    filtered_commands = [
+        command for command in commands if not _should_skip(command, skip_patterns)
+    ]
+    if not filtered_commands:
+        collector.record_metric(
+            name=f"{name}::total",
+            value=0.0,
+            category="quality",
+            metadata={"command_count": 0.0, "skipped": float(len(commands))},
+        )
+        return collector.save_metrics()
     total_start = time.perf_counter()
-    for command in commands:
-        _run_command(command, collector, name)
+    if max_workers <= 1:
+        for command in filtered_commands:
+            _run_command(command, collector, name)
+    else:
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = [
+                executor.submit(_run_command, command, collector, name)
+                for command in filtered_commands
+            ]
+            for future in as_completed(futures):
+                future.result()
     total_duration = time.perf_counter() - total_start
     collector.record_metric(
         name=f"{name}::total",
         value=total_duration,
         category="quality",
-        metadata={"command_count": float(len(commands))},
+        metadata={
+            "command_count": float(len(filtered_commands)),
+            "skipped": float(len(commands) - len(filtered_commands)),
+            "max_workers": float(max(1, max_workers)),
+        },
     )
     return collector.save_metrics()
 
@@ -119,9 +162,26 @@ def main(argv: Iterable[str] | None = None) -> int:
         default=None,
         help="Optional directory for performance snapshots.",
     )
+    parser.add_argument(
+        "--skip",
+        action="append",
+        default=[],
+        help="Skip commands containing the provided substring (may be repeated).",
+    )
+    parser.add_argument(
+        "--max-workers",
+        type=int,
+        default=1,
+        help="Maximum number of commands to execute concurrently.",
+    )
     args = parser.parse_args(list(argv) if argv is not None else None)
 
-    output = run_suite(args.suite, output_dir=args.output_dir)
+    output = run_suite(
+        args.suite,
+        output_dir=args.output_dir,
+        skip=args.skip,
+        max_workers=max(1, args.max_workers),
+    )
     print(f"Performance metrics stored at {output}")
     return 0
 

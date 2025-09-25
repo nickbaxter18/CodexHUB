@@ -80,12 +80,16 @@ The watchers run in the background on the active event loop, so startup scripts 
 - `make quality` – Runs Node, documentation, and Python suites in one command while saving
   performance metrics to `results/performance/`.
 - `python -m src.performance.cli node-quality` – Execute only the Node.js commands (typecheck, lint,
-  tests, audit) with timing capture.
+  tests, audit) with timing capture. Pass `--skip <substring>` to omit expensive commands (for
+  example `--skip "pnpm audit"`) and `--max-workers <n>` to run independent steps in parallel when you
+  need a faster feedback loop.
 - `python -m src.performance.cli docs-quality` – Run Markdown/YAML/editorconfig linting with timing
   capture.
 - `python -m src.performance.cli python-quality` – Validate configuration bundles, execute pytest
   with coverage, run Bandit, and audit Python dependencies.
 - `python -m src.common.config_loader --json` – Emit a machine-readable report verifying pipeline,
   metrics, and governance configuration files.
+- `python -m src.common.config_loader --env .env --env config/environments/ci.env --json` – Validate
+  environment variable bundles against the shared schema and confirm defaults are applied.
 
 Always run the relevant checks before committing to maintain the mixed-language toolchain.

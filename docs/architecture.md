@@ -16,7 +16,7 @@ CodexHUB combines an Express entry point, a governance-aware Python pipeline, an
 
 ## Data & Control Flow
 
-1. **Configuration Loading** – YAML and environment variables are parsed via `src/common.config_loader`, yielding validated settings for downstream modules.
+1. **Configuration Loading** – YAML and environment variables are parsed via `src/common.config_loader`, yielding validated settings for downstream modules. Environment bundles are checked against the generated JSON Schema (`config/env.schema.json`) so CI and local runs share the same contract.
 2. **Training & Evaluation** – `src/training` loads datasets, produces reproducible splits, and emits metrics. `src/governance` enforces fairness/privacy rules using thresholds defined in `config/`.
 3. **Registry Management** – `src/registry.registry.MLflowRegistry` standardises run creation, metric logging, and model promotion inside MLflow.
 4. **Inference Delivery** – `src/inference.inference.InferenceService` hydrates the latest registry version, guards concurrency limits, and caches predictions.
@@ -30,8 +30,10 @@ CodexHUB combines an Express entry point, a governance-aware Python pipeline, an
 
 ## Operational Notes
 
-- Environment defaults now live in [`.env.example`](../.env.example), covering Cursor, knowledge ingestion, mobile control, and MLflow destinations.
+- Environment defaults now live in [`.env.example`](../.env.example), covering Cursor, knowledge ingestion, mobile control, and MLflow destinations. Regenerate the schema and validator outputs with `python scripts/generate_env_schema.py` whenever the variable set evolves.
 - Container builds install both Node and Python dependencies and expose port `4000` to align with the Express default. Use `docker run -p 4000:4000 codexhub` after `docker build` to mirror local behaviour.
 - The Makefile centralises commands (`make lint`, `make test-python`, `make status`) to coordinate the mixed-language toolchain.
+- `src/performance.cli` now supports selective skips and configurable concurrency, allowing developers to parallelise fast checks while deferring heavier audits when iterating quickly.
+- GitHub Actions enforces dependency review and secret scanning on every pull request via the `PR Security Gate` workflow, supplementing the scheduled weekly audits.
 
 Refer to [`SECURITY.md`](../SECURITY.md) for hardening guidance and the top-level [`README`](../README.md) for onboarding workflows.

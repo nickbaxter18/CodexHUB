@@ -49,6 +49,19 @@ documentation, automation, and templates aligned. Curated profiles now live unde
 minimal setup and the Cursor-heavy automation stack. Review `docs/setup.md` for a complete option
 reference and avoid committing secrets.
 
+The repository now publishes a machine-readable schema at `config/env.schema.json`. Use the shared
+validator to confirm that all required values (and their defaults) are present before committing:
+
+```bash
+python -m src.common.config_loader --env .env --env config/environments/ci.env --json
+```
+
+When schema changes are required, regenerate the artifact with:
+
+```bash
+python scripts/generate_env_schema.py
+```
+
 Knowledge ingestion watchers are now opt-in: leave `KNOWLEDGE_WATCH_INTERVAL` blank to skip polling
 and set it to a positive number to enable background reloads.
 
@@ -109,6 +122,7 @@ make test-python   # execute pytest suites
 make security      # run npm and pip security audits
 make cursor-status # emit Cursor automation health as JSON (non-zero exit on failure)
 python -m src.common.config_loader --json  # validate pipeline/governance/metrics bundles
+python -m src.performance.cli node-quality --skip "pnpm audit" --max-workers 2  # targeted quality run
 ```
 
 Each command is idempotent and suitable for CI usage; the aggregated `make quality` target mirrors
