@@ -63,14 +63,43 @@ async def auto_start_cursor_integration() -> bool:
 
         # 2. Import and start Cursor components
         print("📦 Importing Cursor components...")
-        from src.cursor import (
-            get_auto_invoker,
-            start_cursor_auto_invocation,
-            validate_cursor_compliance,
-        )
-        from src.knowledge.auto_loader import start_knowledge_auto_loading
-        from src.knowledge.brain_blocks_integration import start_brain_blocks_integration
-        from src.mobile.mobile_app import start_mobile_app
+        try:
+            from src.cursor import (
+                get_auto_invoker,
+                start_cursor_auto_invocation,
+                validate_cursor_compliance,
+            )
+        except ModuleNotFoundError as exc:
+            print("⚠️ Cursor integration package is unavailable.")
+            print("   Skipping auto-start until the package is installed.")
+            print(f"   Details: {exc}")
+            return False
+        except ImportError as exc:  # pragma: no cover - defensive logging
+            print("⚠️ Failed to import Cursor integration dependencies.")
+            print("   Skipping auto-start until the package issues are resolved.")
+            print(f"   Details: {exc}")
+            return False
+
+        try:
+            from src.knowledge.auto_loader import start_knowledge_auto_loading
+        except (ModuleNotFoundError, ImportError) as exc:
+            start_knowledge_auto_loading = None
+            print("ℹ️ Knowledge auto-loader unavailable; skipping knowledge integration.")
+            print(f"   Details: {exc}")
+
+        try:
+            from src.knowledge.brain_blocks_integration import start_brain_blocks_integration
+        except (ModuleNotFoundError, ImportError) as exc:
+            start_brain_blocks_integration = None
+            print("ℹ️ Brain blocks integration unavailable; skipping brain blocks setup.")
+            print(f"   Details: {exc}")
+
+        try:
+            from src.mobile.mobile_app import start_mobile_app
+        except (ModuleNotFoundError, ImportError) as exc:
+            start_mobile_app = None
+            print("ℹ️ Mobile control module unavailable; skipping mobile control setup.")
+            print(f"   Details: {exc}")
 
         print("✅ Cursor components imported successfully")
 
@@ -80,28 +109,34 @@ async def auto_start_cursor_integration() -> bool:
         print("✅ Cursor auto-invocation request processed")
 
         # 4. Start knowledge integration
-        if _is_feature_enabled(os.getenv("KNOWLEDGE_AUTO_LOAD"), True):
+        if start_knowledge_auto_loading is None:
+            print("ℹ️ Knowledge integration module unavailable; skipping knowledge setup.")
+        elif _is_feature_enabled(os.getenv("KNOWLEDGE_AUTO_LOAD"), True):
             print("📚 Starting knowledge integration...")
             await start_knowledge_auto_loading()
             print("✅ Knowledge integration active")
         else:
-            print("ℹ️ Knowledge auto-loading disabled")
+            print("ℹ️ Knowledge auto-loading disabled via configuration")
 
         # 5. Start mobile control
-        if _is_feature_enabled(os.getenv("MOBILE_CONTROL_ENABLED"), False):
+        if start_mobile_app is None:
+            print("ℹ️ Mobile control module unavailable; skipping mobile setup.")
+        elif _is_feature_enabled(os.getenv("MOBILE_CONTROL_ENABLED"), False):
             print("📱 Starting mobile control...")
             await start_mobile_app()
             print("✅ Mobile control active")
         else:
-            print("ℹ️ Mobile control disabled")
+            print("ℹ️ Mobile control disabled via configuration")
 
         # 6. Start brain blocks integration
-        if _is_feature_enabled(os.getenv("BRAIN_BLOCKS_AUTO_LOAD"), True):
+        if start_brain_blocks_integration is None:
+            print("ℹ️ Brain blocks module unavailable; skipping brain blocks setup.")
+        elif _is_feature_enabled(os.getenv("BRAIN_BLOCKS_AUTO_LOAD"), True):
             print("🧠 Starting brain blocks integration...")
             await start_brain_blocks_integration()
             print("✅ Brain blocks integration active")
         else:
-            print("ℹ️ Brain blocks integration disabled")
+            print("ℹ️ Brain blocks integration disabled via configuration")
 
         # 7. Validate compliance
         print("✅ Validating Cursor compliance...")
