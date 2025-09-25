@@ -5,11 +5,31 @@ export class InMemoryKnowledgeStore {
   private readonly blocks = new Map<string, KnowledgeBlock>();
 
   storeBlock(block: KnowledgeBlock): KnowledgeBlock {
-    if (this.blocks.has(block.id)) {
-      throw new Error(`Knowledge block with id ${block.id} already exists`);
-    }
     this.blocks.set(block.id, block);
     return block;
+  }
+
+  upsertBlock(block: KnowledgeBlock): KnowledgeBlock {
+    const existing = this.blocks.get(block.id);
+    if (!existing) {
+      this.blocks.set(block.id, block);
+      return block;
+    }
+    const merged: KnowledgeBlock = {
+      ...existing,
+      ...block,
+      metadata: {
+        ...existing.metadata,
+        ...block.metadata,
+        tags: Array.from(new Set([...(existing.metadata.tags ?? []), ...(block.metadata.tags ?? [])])),
+        citations: Array.from(
+          new Set([...(existing.metadata.citations ?? []), ...(block.metadata.citations ?? [])])
+        ),
+      },
+      links: block.links ?? existing.links,
+    };
+    this.blocks.set(block.id, merged);
+    return merged;
   }
 
   createBlock(content: string, metadata: KnowledgeBlock['metadata']): KnowledgeBlock {

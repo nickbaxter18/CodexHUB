@@ -3,6 +3,7 @@ import Ajv from 'ajv';
 import type {
   AgentRole,
   AgentResult,
+  ContextPacket,
   MacroContext,
   MacroDefinition,
   MacroResult,
@@ -59,6 +60,7 @@ export interface MacroStageExecutionResult {
   stage: MacroStage;
   result: AgentResult;
   attempts: number;
+  updatedContext: ContextPacket[];
 }
 
 export type MacroRegistry = Map<string, MacroDefinition>;

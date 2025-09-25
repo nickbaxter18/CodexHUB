@@ -6,6 +6,8 @@ export type ExecutionStageName = (typeof PIPELINE_STAGES)[number];
 export interface ExecutionStage {
   name: ExecutionStageName;
   action: () => Promise<AgentResult>;
+  allowFailure?: boolean;
+  onResult?: (result: AgentResult) => void;
 }
 
 export interface ExecutionSummary {
@@ -23,8 +25,9 @@ export class ExecutionPipeline {
     for (const stage of stages) {
       // eslint-disable-next-line no-await-in-loop
       const result = await this.runStage(stage);
+      stage.onResult?.(result);
       results.push({ name: stage.name, result });
-      if (result.status === 'error') {
+      if (result.status === 'error' && !stage.allowFailure) {
         return { stages: results, success: false };
       }
     }
