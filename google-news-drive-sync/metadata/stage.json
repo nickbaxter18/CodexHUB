@@ -1,0 +1,13 @@
+{
+  "stage": "stage1",
+  "stage_complete": true,
+  "task_id": "stage1",
+  "variants_compared": true,
+  "tests_pass": true,
+  "security_risks_identified": [
+    "API key exposure",
+    "credential leakage",
+    "DoS via unbounded fetch"
+  ],
+  "mitigation_plans": ["Use env vars for secrets", "OAuth token refresh", "Rate limiting"]
+}

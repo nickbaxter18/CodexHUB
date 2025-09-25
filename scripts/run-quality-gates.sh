@@ -10,6 +10,7 @@ run() {
   "$@"
 }
 
+codex/codify-project-improvements-and-upgrades-pgjoca
 should_skip_cursor_validation() {
   case "${CURSOR_SKIP_VALIDATE:-false}" in
     1|true|TRUE|True|yes|YES)
@@ -48,6 +49,7 @@ case "$STAGE" in
     run pnpm test
     run pnpm run typecheck
     run python -m pytest
+codex/codify-project-improvements-and-upgrades-pgjoca
     run_cursor_validation
     run pnpm run scan:sast
     run pnpm run scan:secrets -- --report-format sarif --report-path "$ROOT_DIR/results/security/gitleaks-pre-push.sarif"

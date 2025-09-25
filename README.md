@@ -42,18 +42,26 @@ subset of the toolchain. If you want to hydrate additional pnpm workspaces (for 
 
 ### 2. Configure environment variables
 
-Copy `.env.example` into `.env` and adjust the values to match your environment. Regenerate the
-example file with `pnpm run env:example` whenever environment variables change to keep
-documentation, automation, and templates aligned. Curated profiles now live under
+Copy the environment example that best matches your workflow and adjust the values to fit your
+machine:
+
+- `.env.example` – Minimal profile with all automation toggles disabled.
+- `.env.cursor-first.example` – Power profile with Cursor automation, knowledge syncing, mobile
+  controls, and telemetry enabled.
+
+Regenerate both templates with `pnpm run env:example` whenever environment variables change to keep
+documentation, automation, and templates aligned. Curated profiles also live under
 `config/environments/` (`development.env`, `cursor.env`, `ci.env`) so you can quickly swap between a
 minimal setup and the Cursor-heavy automation stack. Review `docs/setup.md` for a complete option
 reference and avoid committing secrets.
 
 The repository now publishes a machine-readable schema at `config/env.schema.json`. Use the shared
-validator to confirm that all required values (and their defaults) are present before committing:
+validator to confirm that all required values (and their defaults) are present before committing.
+The validator now also checks YAML overlays and curated `.env` bundles:
 
 ```bash
 python -m src.common.config_loader --env .env --env config/environments/ci.env --json
+python scripts/validate_configs.py
 ```
 
 When schema changes are required, regenerate the artifact with:
@@ -162,11 +170,12 @@ bundle as `context-bundle.tar.gz` so agents can download a single artifact.
 
 ## Automated Quality Gates
 
+codex/codify-project-improvements-and-upgrades-pgjoca
 Husky manages the local Git hooks and delegates linting, formatting, unit tests, and security
 scans through `scripts/run-quality-gates.sh`. The pre-commit hook wraps `lint-staged` and the Python
 pre-commit suite (which includes pnpm tests and pytest), while the pre-push hook executes linting,
 format checks, pnpm tests, type-checking, pytest, Cursor compliance validation, Semgrep (SAST), and a
-full-history Gitleaks scan. Commit message validation is enforced via the `commit-msg` hook.
+full-history Gitleaks scan. Commit message validation is enforced via the `commit-msg` hook.>>> main
 
 To refresh the hooks after cloning or when tooling changes:
 
@@ -178,6 +187,7 @@ pnpm run prepare
 To run the same checks manually (for example, on CI agents without Husky), invoke:
 
 ```bash
+codex/codify-project-improvements-and-upgrades-pgjoca
 scripts/run-quality-gates.sh pre-commit
 scripts/run-quality-gates.sh pre-push
 ```
@@ -185,6 +195,8 @@ scripts/run-quality-gates.sh pre-push
 Set `CURSOR_SKIP_VALIDATE=true` (or `1`) when you deliberately need to bypass Cursor validation—for
 example on ephemeral CI runners that do not have the Cursor requirements installed. Keep the toggle
 off in day-to-day development so regressions surface early.
+
+
 
 Secret scanning can be executed on demand across the entire Git history with either the Husky
 pre-push hook or a standalone command:

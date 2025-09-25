@@ -2,11 +2,13 @@ import hashlib
 import json
 from pathlib import Path
 
+from src.backend.plugins.runtime import EnergyTradeContext, PricingContext
 from src.backend.services import api_service
 
 
 def test_register_plugin_persists_metadata():
     api_service.registry = api_service.PluginRegistry()  # reset
+    api_service._auto_load_attempted = False
     plugin = api_service.register_plugin(
         "green-energy",
         "1.0.0",
@@ -23,6 +25,7 @@ def test_register_plugin_persists_metadata():
 
 def test_registry_enable_disable_cycle():
     api_service.registry = api_service.PluginRegistry()  # reset
+    api_service._auto_load_attempted = False
     api_service.register_plugin("payments", "0.2.0")
     api_service.registry.disable("payments")
     assert api_service.list_plugins()["payments"]["enabled"] is False
@@ -97,3 +100,36 @@ def test_enable_disable_helpers_return_payload(tmp_path: Path):
     assert payload["enabled"] is False
     payload = api_service.enable_plugin("toggle-plugin")
     assert payload["enabled"] is True
+
+
+def test_collect_pricing_adjustments_from_default_plugins():
+    api_service.registry = api_service.PluginRegistry()
+    api_service._auto_load_attempted = False
+    loaded, errors = api_service.reload_default_plugins()
+    assert loaded
+    assert not errors
+    context = PricingContext(
+        asset_id=9,
+        base_price=180.0,
+        occupancy=0.97,
+        esg_score=88.0,
+        duration=21,
+    )
+    adjustments = api_service.collect_pricing_adjustments(context)
+    assert any(name == "equitable-pricing" for name, _ in adjustments)
+
+
+def test_collect_energy_recommendations_from_default_plugins():
+    api_service.registry = api_service.PluginRegistry()
+    api_service._auto_load_attempted = False
+    loaded, errors = api_service.reload_default_plugins()
+    assert loaded
+    assert not errors
+    context = EnergyTradeContext(
+        asset_id=3,
+        kilowatt_hours=20.0,
+        direction="buy",
+        market_price=0.19,
+    )
+    recommendations = api_service.collect_energy_recommendations(context)
+    assert any(name == "energy-optimizer" for name, _ in recommendations)

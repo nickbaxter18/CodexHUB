@@ -25,11 +25,13 @@ flowchart TD
 
 ## Execution Steps
 
+codex/codify-project-improvements-and-upgrades-pgjoca
 1. **Trigger** – Workflows run on PRs, pushes to `main`, and scheduled jobs (`codeql.yml`,
    `scheduled_security.yml`). Manual execution is available via `scripts/run-quality-gates.sh` or
    `scripts/metrics/collect_metrics.py --run-commands`.
 2. **Quality Gates** – Husky pre-push hook (and CI) execute lint, format, pnpm/PyTest suites,
    Cursor validation, Semgrep SAST, and Gitleaks history scans.
+   
 3. **Classification** – Findings feed into `results/security/` (SARIF) and `results/metrics/`. Use
    severity tags from CodeQL/Semgrep and map secrets via `scripts/scan-secrets.sh` output.
 4. **Remediation Planning** – Create issue templates (see `.github/ISSUE_TEMPLATE/`) describing

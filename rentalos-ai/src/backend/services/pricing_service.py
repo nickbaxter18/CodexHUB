@@ -11,7 +11,9 @@ from pydantic import BaseModel
 
 from ..orchestrator import dispatcher
 from ..orchestrator.knowledge_base import knowledge_base
+from ..plugins.runtime import PricingContext
 from ..utils.logger import get_logger
+from . import api_service
 
 logger = get_logger(__name__)
 
@@ -119,14 +121,35 @@ async def calculate_price(asset_id: int, start_date: datetime, duration: int) ->
     }
     logger.info("Calculating price", extra={"asset_id": asset_id})
     agent_result = await dispatcher.dispatch("pricing", payload)
-    suggested_price = agent_result["data"]["price"]
+    agent_price = agent_result["data"]["price"]
+    suggested_price = agent_price
     occupancy_component = round(adjusted_base - base_price, 2)
-    agent_component = round(suggested_price - adjusted_base, 2)
+    agent_component = round(agent_price - adjusted_base, 2)
     components = [
         PriceComponent(label="base", value=round(base_price, 2)),
         PriceComponent(label="market_adjustment", value=occupancy_component),
         PriceComponent(label="agent_adjustment", value=agent_component),
     ]
+    plugin_context = PricingContext(
+        asset_id=asset_id,
+        base_price=adjusted_base,
+        occupancy=snapshot.occupancy,
+        esg_score=esg_score,
+        duration=duration,
+    )
+    for plugin_name, adjustment in api_service.collect_pricing_adjustments(plugin_context):
+        suggested_price += adjustment.amount
+        label = f"{plugin_name}:{adjustment.label}"
+        components.append(PriceComponent(label=label, value=round(adjustment.amount, 2)))
+        if adjustment.rationale:
+            logger.debug(
+                "Applied plugin pricing adjustment",
+                extra={
+                    "plugin": plugin_name,
+                    "amount": adjustment.amount,
+                    "reason": adjustment.rationale,
+                },
+            )
     suggestion = PriceSuggestion(
         asset_id=asset_id,
         start_date=start_date,
