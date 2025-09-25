@@ -5,3 +5,4 @@ packages:
   - 'src/cursor'
   - 'src/knowledge'
   - 'src/mobile'
+  - 'codex-meta-intelligence'
