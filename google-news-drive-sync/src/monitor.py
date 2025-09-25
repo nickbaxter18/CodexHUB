@@ -11,8 +11,11 @@ from statistics import mean
 from threading import Lock
 from time import perf_counter
 from typing import ContextManager, Dict, Iterator, List, Optional
+codex/implement-google-news-drive-sync-project-pipeline-xuy9hr
 
 from .utils import utcnow
+
+
 
 logger = logging.getLogger(__name__)
 
@@ -62,12 +65,16 @@ class MonitoringClient:
 
     def start_run(self) -> None:
         with self._lock:
+ codex/implement-google-news-drive-sync-project-pipeline-xuy9hr
             self._last_run_started = utcnow()
+  
+
             self._last_status = "running"
 
     def complete_run(self, *, status: str = "success") -> None:
         with self._lock:
             self._runs += 1
+codex/implement-google-news-drive-sync-project-pipeline-xuy9hr
             self._last_run_completed = utcnow()
             self._last_status = status
 

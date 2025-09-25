@@ -129,7 +129,7 @@ make test          # execute JavaScript/TypeScript unit tests
 make test-python   # execute pytest suites
 make security      # run npm and pip security audits
 make cursor-status # emit Cursor automation health as JSON (non-zero exit on failure)
-scripts/run-quality-gates.sh pre-push   # Husky-equivalent gate (lint, format, tests, Semgrep, Gitleaks)
+scripts/run-quality-gates.sh pre-push   # Husky-equivalent gate (lint, format, tests, Semgrep, Gitleaks) + telemetry in results/metrics/quality-gates-log.ndjson
 python scripts/metrics/collect_metrics.py --skip-commands  # refresh governance metrics snapshot
 python -m src.common.config_loader --json  # validate pipeline/governance/metrics bundles
 python -m src.performance.cli node-quality --skip "pnpm audit" --max-workers 2  # targeted quality run
@@ -170,7 +170,6 @@ bundle as `context-bundle.tar.gz` so agents can download a single artifact.
 
 ## Automated Quality Gates
 
-
 To refresh the hooks after cloning or when tooling changes:
 
 ```bash
@@ -180,14 +179,14 @@ pnpm run prepare
 
 To run the same checks manually (for example, on CI agents without Husky), invoke:
 
-```bash
+````bash
 
 Secret scanning can be executed on demand across the entire Git history with either the Husky
 pre-push hook or a standalone command:
 
 ```bash
 pnpm run scan:secrets            # writes SARIF to results/security/gitleaks-report.sarif
-```
+````
 
 The scheduled GitHub Actions security workflow now executes the same `scripts/scan-secrets.sh`
 wrapper weekly and uploads the SARIF report alongside audit, Bandit, CodeQL, and Snyk scans so

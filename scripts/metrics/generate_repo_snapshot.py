@@ -1,0 +1,295 @@
+#!/usr/bin/env python3
+"""Generate a repository snapshot with directory inventory and knowledge graph data."""
+
+from __future__ import annotations
+
+import argparse
+import datetime as dt
+import json
+import re
+from collections import defaultdict
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Dict, Iterable, List, Optional, Sequence
+
+ROOT = Path(__file__).resolve().parents[2]
+RESULTS_DIR = ROOT / "results" / "metrics"
+DEFAULT_GRAPH_PATH = RESULTS_DIR / "repo-graph.json"
+DEFAULT_MERMAID_PATH = RESULTS_DIR / "repo-graph.mmd"
+
+
+@dataclass
+class Node:
+    identifier: str
+    label: str
+    node_type: str
+    path: str
+
+    def to_dict(self) -> Dict[str, str]:
+        return {
+            "id": self.identifier,
+            "label": self.label,
+            "type": self.node_type,
+            "path": self.path,
+        }
+
+
+@dataclass
+class Edge:
+    source: str
+    target: str
+    relation: str
+
+    def to_dict(self) -> Dict[str, str]:
+        return {
+            "source": self.source,
+            "target": self.target,
+            "relation": self.relation,
+        }
+
+
+def load_json(path: Path) -> Optional[dict]:
+    if not path.exists():
+        return None
+    with path.open("r", encoding="utf-8") as handle:
+        return json.load(handle)
+
+
+def decode_workspace_patterns(path: Path) -> List[str]:
+    raw = path.read_text(encoding="utf-8")
+    patterns = []
+    for line in raw.splitlines():
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        if stripped.startswith("-"):
+            patterns.append(stripped.lstrip("- ").strip("'\""))
+    return patterns
+
+
+def resolve_workspace_members(patterns: Sequence[str]) -> Dict[str, Path]:
+    members: Dict[str, Path] = {}
+    for pattern in patterns:
+        for path in ROOT.glob(pattern):
+            if path.is_dir():
+                key = path.name
+                if key in members:
+                    key = f"{path.parent.name}/{path.name}"
+                members[key] = path
+    return members
+
+
+def collect_package_info(path: Path) -> Optional[dict]:
+    package_json = path / "package.json"
+    if not package_json.exists():
+        return None
+    data = load_json(package_json)
+    if not data:
+        return None
+    return {
+        "name": data.get("name", path.name),
+        "dependencies": sorted((data.get("dependencies") or {}).keys()),
+        "devDependencies": sorted((data.get("devDependencies") or {}).keys()),
+        "scripts": sorted((data.get("scripts") or {}).keys()),
+    }
+
+
+def infer_node_type(path: Path) -> str:
+    parts = path.relative_to(ROOT).parts
+    if parts[0] == "apps":
+        return "app"
+    if parts[0] in {"packages", "libs"}:
+        return "library"
+    if parts[0] in {"src", "scripts"}:
+        return "core"
+    if parts[0] in {
+        "backend",
+        "qa_engine",
+        "meta_agent",
+        "macro_system",
+        "codex-meta-intelligence",
+        "agents",
+    }:
+        return "service"
+    return "misc"
+
+
+def build_node_identifier(path: Path) -> str:
+    return "/".join(path.relative_to(ROOT).parts)
+
+
+def collect_python_packages() -> Dict[str, Path]:
+    config_path = ROOT / "pyproject.toml"
+    if not config_path.exists():
+        return {}
+    config = config_path.read_text(encoding="utf-8")
+    pattern = re.compile(r"^src\s*=\s*\[(.*?)\]", re.MULTILINE | re.DOTALL)
+    match = pattern.search(config)
+    packages: Dict[str, Path] = {}
+    if match:
+        entries = match.group(1).splitlines()
+        for entry in entries:
+            cleaned = entry.strip()
+            cleaned = cleaned.strip(",")
+            cleaned = cleaned.strip()
+            cleaned = cleaned.strip('"')
+            if not cleaned:
+                continue
+            packages[cleaned] = ROOT / cleaned
+    extras = {
+        "meta_agent": ROOT / "meta_agent",
+        "macro_system": ROOT / "macro_system",
+        "qa_engine": ROOT / "qa_engine",
+    }
+    for name, path in extras.items():
+        packages.setdefault(name, path)
+    return {name: path for name, path in packages.items() if path.exists()}
+
+
+def scan_python_imports(
+    package_name: str, path: Path, module_map: Dict[str, str]
+) -> Dict[str, int]:
+    import_counts: Dict[str, int] = defaultdict(int)
+    if not path.exists():
+        return import_counts
+    for file_path in path.rglob("*.py"):
+        try:
+            source = file_path.read_text(encoding="utf-8")
+        except UnicodeDecodeError:
+            continue
+        for match in re.finditer(r"^(?:from|import)\s+([\w\.]+)", source, re.MULTILINE):
+            module = match.group(1)
+            top_level = module.split(".")[0]
+            target = module_map.get(top_level)
+            if target and target != package_name:
+                import_counts[target] += 1
+    return import_counts
+
+
+def compose_mermaid(nodes: Iterable[Node], edges: Iterable[Edge]) -> str:
+    lines = ["graph TD"]
+    for node in nodes:
+        safe_label = node.label.replace("`", '"')
+        lines.append(f"  {node.identifier.replace('/', '_')}[{safe_label}]")
+    for edge in edges:
+        lines.append(
+            "  "
+            + edge.source.replace("/", "_")
+            + " -->|"
+            + edge.relation.replace("|", "/")
+            + "| "
+            + edge.target.replace("/", "_")
+        )
+    return "\n".join(lines)
+
+
+def build_graph() -> dict:
+    workspace_patterns = decode_workspace_patterns(ROOT / "pnpm-workspace.yaml")
+    workspace_members = resolve_workspace_members(workspace_patterns)
+
+    python_packages = collect_python_packages()
+    module_map = {}
+    for name in python_packages:
+        module_map[name.split("/")[-1]] = name
+    module_map.update(
+        {
+            "src": "src",
+            "packages": "packages/automation",
+            "qa_engine": "qa_engine",
+            "meta_agent": "meta_agent",
+            "macro_system": "macro_system",
+        }
+    )
+
+    nodes: Dict[str, Node] = {}
+    edges: List[Edge] = []
+
+    for _key, path in workspace_members.items():
+        identifier = build_node_identifier(path)
+        node_type = infer_node_type(path)
+        package_info = collect_package_info(path)
+        label = package_info["name"] if package_info else path.name
+        nodes[identifier] = Node(
+            identifier=identifier,
+            label=label,
+            node_type=node_type,
+            path=str(path.relative_to(ROOT)),
+        )
+        if package_info:
+            for dep in package_info["dependencies"] + package_info["devDependencies"]:
+                for _other_key, other_path in workspace_members.items():
+                    other_info = collect_package_info(other_path)
+                    if other_info and other_info["name"] == dep:
+                        edges.append(
+                            Edge(
+                                source=identifier,
+                                target=build_node_identifier(other_path),
+                                relation="depends_on",
+                            )
+                        )
+
+    for package, path in python_packages.items():
+        identifier = build_node_identifier(path)
+        if identifier not in nodes:
+            nodes[identifier] = Node(
+                identifier=identifier,
+                label=package,
+                node_type="python",
+                path=str(path.relative_to(ROOT)),
+            )
+
+    for package, path in python_packages.items():
+        identifier = build_node_identifier(path)
+        import_counts = scan_python_imports(package, path, module_map)
+        for target_name, count in import_counts.items():
+            target_path = python_packages.get(target_name)
+            if not target_path:
+                continue
+            target_identifier = build_node_identifier(target_path)
+            relation = "imports"
+            if count > 5:
+                relation = f"imports({count})"
+            edges.append(Edge(source=identifier, target=target_identifier, relation=relation))
+
+    nodes_list = sorted(nodes.values(), key=lambda item: item.identifier)
+    edges_list = edges
+
+    mermaid = compose_mermaid(nodes_list, edges_list)
+
+    return {
+        "generatedAt": dt.datetime.now(dt.timezone.utc).isoformat(),
+        "nodes": [node.to_dict() for node in nodes_list],
+        "edges": [edge.to_dict() for edge in edges_list],
+        "mermaid": mermaid,
+        "workspaceMembers": sorted(
+            {key: str(path.relative_to(ROOT)) for key, path in workspace_members.items()}.items(),
+        ),
+        "pythonPackages": sorted(
+            {key: str(path.relative_to(ROOT)) for key, path in python_packages.items()}.items()
+        ),
+    }
+
+
+def write_outputs(graph: dict, graph_path: Path, mermaid_path: Path) -> None:
+    graph_path.parent.mkdir(parents=True, exist_ok=True)
+    with graph_path.open("w", encoding="utf-8") as handle:
+        json.dump(graph, handle, indent=2)
+    mermaid_path.parent.mkdir(parents=True, exist_ok=True)
+    mermaid_path.write_text(graph["mermaid"] + "\n", encoding="utf-8")
+
+
+def main(argv: Optional[Sequence[str]] = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--graph-path", type=Path, default=DEFAULT_GRAPH_PATH)
+    parser.add_argument("--mermaid-path", type=Path, default=DEFAULT_MERMAID_PATH)
+    args = parser.parse_args(argv)
+
+    graph = build_graph()
+    write_outputs(graph, args.graph_path, args.mermaid_path)
+    print(f"Graph written to {args.graph_path}")
+    print(f"Mermaid snapshot written to {args.mermaid_path}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
