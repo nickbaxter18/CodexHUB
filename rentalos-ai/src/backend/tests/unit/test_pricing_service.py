@@ -3,16 +3,30 @@ from datetime import UTC, datetime
 import pytest
 
 from src.backend.orchestrator.knowledge_base import knowledge_base
+from src.backend.services import api_service
 from src.backend.services.pricing_service import calculate_price, ingest_market_snapshot
 
 
 @pytest.mark.asyncio
 async def test_calculate_price_returns_components():
     knowledge_base.clear()
-    result = await calculate_price(1, datetime.now(UTC), 7)
+    api_service.registry = api_service.PluginRegistry()
+    api_service._auto_load_attempted = False
+    api_service.reload_default_plugins()
+    ingest_market_snapshot(
+        asset_id=1,
+        rate=185.0,
+        occupancy=0.97,
+        esg_score=88.0,
+        demand_index=1.05,
+    )
+    result = await calculate_price(1, datetime.now(UTC), 21)
     assert result["asset_id"] == 1
     assert result["suggested_price"] > 0
     assert any(component["label"] == "base" for component in result["components"])
+    assert any(
+        component["label"].startswith("equitable-pricing") for component in result["components"]
+    )
 
 
 @pytest.mark.asyncio

@@ -1,11 +1,11 @@
 {
   "name": "energy-optimizer",
-  "version": "0.9.1",
-  "description": "Matches surplus energy supply with demand and tracks carbon offsets across the portfolio.",
-  "permissions": ["carbon:report", "energy:trade"],
-  "webhooks": [],
-  "entrypoint": "plugins.energy_optimizer.main",
-  "categories": ["sustainability", "marketplace"],
-  "enabled": false,
-  "signature": "16d4db099b091a7ef96b04526fada7c17ef0953a60711dd6e84d66ea0721b58e"
+  "version": "0.9.0",
+  "description": "Optimises energy trades by balancing carbon impact and pricing.",
+  "permissions": ["energy:trade", "esg:write"],
+  "webhooks": ["https://energy.example.com/trade"],
+  "entrypoint": "backend.plugins.energy_optimizer:setup_plugin",
+  "categories": ["energy", "sustainability"],
+  "enabled": true,
+  "signature": "0d5716835354a75c798d839df6994f986f4dc3272214703c911c9f4f0b2544b6"
 }

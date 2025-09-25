@@ -22,7 +22,8 @@ It covers both the structure and process for maintaining governance configuratio
 ### Editing Workflow
 
 1. Propose changes via Pull Request with context on the motivation and impact.
-2. Run `python scripts/validate_configs.py` locally to verify schema compliance.
+2. Run `python scripts/validate_configs.py` locally to verify JSON governance files, YAML overlays, and
+   environment bundles stay within the published schemas.
 3. Tag the Meta Agent and QA reviewers for approval.
 4. Update `CHANGELOG.md` and relevant ADRs describing governance shifts.
 

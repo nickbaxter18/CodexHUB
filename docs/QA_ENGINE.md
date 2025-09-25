@@ -51,7 +51,8 @@ dashboard_report = confidence_report(
 
 ## CLI & Automation
 
-- Run `python scripts/validate_configs.py` before commits to ensure probabilistic policies align with schemas (`qa_policies.json`).
+- Run `python scripts/validate_configs.py` before commits to ensure probabilistic policies align with schemas (`qa_policies.json`),
+  YAML overlays load correctly, and environment bundles remain valid.
 - CI executes `tests/test_probabilistic_qa.py` and `tests/test_statistics_helpers.py` to verify statistical helpers, calibration logic, and governance alignment.
 
 ## Extension Ideas
