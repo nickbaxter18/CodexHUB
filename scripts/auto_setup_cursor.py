@@ -10,8 +10,10 @@ import os
 import sys
 from pathlib import Path
 
-# Add src to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+# Add repository root to path so `src` package can be imported
+repo_root = Path(__file__).parent.parent
+if str(repo_root) not in sys.path:
+    sys.path.insert(0, str(repo_root))
 
 
 def _is_feature_enabled(value: str | None, default: bool = True) -> bool:
