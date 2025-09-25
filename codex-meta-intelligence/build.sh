@@ -20,10 +20,14 @@ run_stage_one() {
     exit 1
   fi
 
-  pnpm install --ignore-workspace-root-check
+  if ! pnpm install --filter codex-meta-intelligence...; then
+    echo "Primary pnpm install command failed, falling back to workspace install" >&2
+    CI=1 pnpm install
+  fi
   pnpm lint
   pnpm test
   pnpm typecheck
+  pnpm build
 }
 
 run_stage_two() {
@@ -37,12 +41,22 @@ run_stage_three() {
 }
 
 advance_stage() {
-  local next_stage
-  next_stage=$(jq '.stage + 1' "$STAGE_FILE")
+  local current_stage next_stage tmp_file timestamp
+  current_stage=$(jq -r '.stage' "$STAGE_FILE")
+  next_stage=$((current_stage + 1))
+  timestamp=$(date -u +%FT%TZ)
   tmp_file=$(mktemp)
-  jq ".stage = $next_stage | .completed |= . + {\"stage_$next_stage\": {\"timestamp\": \"$(date -u +%FT%TZ)\"}}" "$STAGE_FILE" > "$tmp_file"
+  jq \
+    --arg current "stage_${current_stage}" \
+    --arg time "$timestamp" \
+    --argjson next "$next_stage" \
+    '
+    .stage = $next
+    | .completed |= (. // {})
+    | .completed[$current] = { "completedAt": $time }
+  ' "$STAGE_FILE" >"$tmp_file"
   mv "$tmp_file" "$STAGE_FILE"
-  echo "Promoted to stage $next_stage"
+  echo "Promoted to stage $next_stage (recorded completion for stage $current_stage)"
 }
 
 current_stage=$(jq -r '.stage' "$STAGE_FILE")
