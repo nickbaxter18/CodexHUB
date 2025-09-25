@@ -142,8 +142,9 @@ durations) and `results/performance/` (for Cursor agents). See `docs/usage.md` a
 
 ### 7. Fetch repository context
 
-Use the Context Hub to gather a curated snapshot of architecture and governance docs for humans or
-automated agents. The fetch script copies the latest guidance into a portable bundle:
+Use the Context Hub to gather a curated snapshot of architecture, Cursor mandates, and governance
+docs for humans or automated agents. The fetch script copies the latest guidance into a portable
+bundle:
 
 ```bash
 ./scripts/fetch-context.sh .context-bundle --archive
@@ -169,11 +170,6 @@ bundle as `context-bundle.tar.gz` so agents can download a single artifact.
 
 ## Automated Quality Gates
 
-Husky manages the local Git hooks and delegates linting, formatting, unit tests, and security
-scans through `scripts/run-quality-gates.sh`. The pre-commit hook wraps `lint-staged` and the Python
-pre-commit suite (which includes pnpm tests and pytest), while the pre-push hook executes linting,
-format checks, pnpm tests, type-checking, pytest, Semgrep (SAST), and a full-history Gitleaks scan.
-Commit message validation is enforced via the `commit-msg` hook.
 
 To refresh the hooks after cloning or when tooling changes:
 
@@ -185,9 +181,6 @@ pnpm run prepare
 To run the same checks manually (for example, on CI agents without Husky), invoke:
 
 ```bash
-scripts/run-quality-gates.sh pre-commit
-scripts/run-quality-gates.sh pre-push
-```
 
 Secret scanning can be executed on demand across the entire Git history with either the Husky
 pre-push hook or a standalone command:

@@ -11,7 +11,6 @@ run() {
 }
 
 cd "$ROOT_DIR"
-
 case "$STAGE" in
   pre-commit)
     run pnpm lint-staged
