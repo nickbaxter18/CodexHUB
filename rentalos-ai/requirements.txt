@@ -12,3 +12,4 @@ redis==5.0.1
 python-dotenv==1.0.1
 ruff==0.8.1
 mypy==1.7.1
+urllib3>=2.6.3 # not directly required, pinned by Snyk to avoid a vulnerability
